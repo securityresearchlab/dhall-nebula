@@ -1,6 +1,7 @@
 let Map = https://prelude.dhall-lang.org/v21.1.0/Map/Type
 
 let Map/empty = https://prelude.dhall-lang.org/v21.1.0/Map/empty
+
 let Map/map = https://prelude.dhall-lang.org/v21.1.0/Map/map
 
 let PkiInfo =
@@ -37,7 +38,6 @@ let Host =
           , static_hosts : Map Text (List Text)
           , listen_interface : InterfaceInfo.Type
           , punchy : Bool
-          , tun_info : TunInfo.Type
           , logging : LogInfo.Type
           }
       , default =
@@ -47,7 +47,6 @@ let Host =
         , static_hosts = Map/empty
         , listen_interface = InterfaceInfo.default
         , punchy = True
-        , tun_info = TunInfo.default
         , logging = LogInfo.default
         }
       }
@@ -56,52 +55,71 @@ let GroupName
     : Type
     = Text
 
-let Group : Type
-    = {name : GroupName, hosts : List Host.Type }
+let Group
+    : Type
+    = { name : GroupName, hosts : List Host.Type }
 
 let Connection
     : Type
     = { port : Text, proto : Text, group : Group }
 
+let Network
+    : Type
+    = { lighthouses : List Host.Type, connections : List Connection }
+
 let ApplyTarget =
       < Host : Text | Hosts : List Text | Group : Text | Groups : List Text >
 
-let FirewallRule : Type = { port : Text, proto : Text, applies_to : ApplyTarget }
+let FirewallRule
+    : Type
+    = { port : Text, proto : Text, applies_to : ApplyTarget }
 
 let lighthouse
     : Host.Type
     = { is_lighthouse = True
       , pki = PkiInfo.default
       , lighthouse = Some LighthouseInfo.default
-      , static_hosts = [ { mapKey = "192.168.100.1", mapValue = ["20.63.142.142:4242"] } ]
+      , static_hosts =
+        [ { mapKey = "192.168.100.1", mapValue = [ "20.63.142.142:4242" ] } ]
       , listen_interface = InterfaceInfo.default
       , punchy = True
-      , tun_info = TunInfo.default
       , logging = LogInfo.default
       }
 
-let laptop : Host.Type = { is_lighthouse = False
+let laptop
+    : Host.Type
+    = { is_lighthouse = False
       , pki = PkiInfo.default
       , lighthouse = None LighthouseInfo.Type
-      , static_hosts = [ { mapKey = "192.168.100.1", mapValue = ["20.63.142.142:4242"] } ]
+      , static_hosts =
+        [ { mapKey = "192.168.100.1", mapValue = [ "20.63.142.142:4242" ] } ]
       , listen_interface = InterfaceInfo.default
       , punchy = True
-      , tun_info = TunInfo.default
       , logging = LogInfo.default
       }
 
-let laptop2 : Host.Type = { is_lighthouse = False
+let laptop2
+    : Host.Type
+    = { is_lighthouse = False
       , pki = PkiInfo.default
       , lighthouse = None LighthouseInfo.Type
-      , static_hosts = [ { mapKey = "192.168.100.1", mapValue = ["20.63.142.142:4242"] } ]
+      , static_hosts =
+        [ { mapKey = "192.168.100.1", mapValue = [ "20.63.142.142:4242" ] } ]
       , listen_interface = InterfaceInfo.default
       , punchy = True
-      , tun_info = TunInfo.default
       , logging = LogInfo.default
       }
 
-let home_group: Group = { name = "home", hosts = [laptop, laptop2]}
+let home_group
+    : Group
+    = { name = "home", hosts = [ laptop, laptop2 ] }
 
-let connection: Connection = { port = "any", proto = "any", group = home_group} 
+let connection
+    : Connection
+    = { port = "any", proto = "any", group = home_group }
 
-in  lighthouse
+let network
+    : Network
+    = { lighthouses = [ lighthouse ], connections = [ connection ] }
+
+in network
