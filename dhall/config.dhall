@@ -58,4 +58,4 @@ let network
       , connections = [ home_connection ]
       }
 
-in  network
+in  nebula.getRules network

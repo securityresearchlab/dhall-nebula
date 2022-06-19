@@ -8,6 +8,10 @@ let List/map =
       https://prelude.dhall-lang.org/v21.1.0/List/map
         sha256:dd845ffb4568d40327f2a817eb42d1c6138b929ca758d50bc33112ef3c885680
 
+let Map = https://prelude.dhall-lang.org/v21.1.0/Map/Type
+
+let Map/Entry = https://prelude.dhall-lang.org/v21.1.0/Map/Entry
+
 let Natural/equal = https://prelude.dhall-lang.org/v21.1.0/Natural/equal
 
 let isHostInGroup
@@ -93,7 +97,7 @@ let generateRulesForConnection
           }
           connection.type
 
-let getRules
+let getHostRules
     : types.Network -> types.Host -> List types.FirewallRule
     = \(network : types.Network) ->
       \(host : types.Host) ->
@@ -117,4 +121,15 @@ let getRules
               )
               ([] : List types.FirewallRule)
 
-in  { getRules }
+let getRules
+    : types.Network -> Map types.Host (List types.FirewallRule)
+    = \(network : types.Network) ->
+        List/map
+          types.Host
+          (Map/Entry types.Host (List types.FirewallRule))
+          ( \(h : types.Host) ->
+              { mapKey = h, mapValue = getHostRules network h }
+          )
+          network.hosts
+
+in  { getHostRules, getRules }
