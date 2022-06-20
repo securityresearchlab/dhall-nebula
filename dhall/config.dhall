@@ -2,14 +2,19 @@ let nebula = ./package.dhall
 
 let Map/empty = https://prelude.dhall-lang.org/v21.1.0/Map/empty
 
+let lighthouse_ip
+    : Text
+    = "192.168.100.1"
+
 let lighthouse
     : nebula.Host.Type
     = { id = 0
       , name = "lighthouse"
+      , ip = lighthouse_ip
       , is_lighthouse = True
       , pki = nebula.PkiInfo.default
-      , lighthouse = Some nebula.LighthouseInfo.default
-      , static_hosts = Map/empty Text (List Text)
+      , lighthouse = { interval = 60, hosts = [] : List Text }
+      , static_ips = [] : List Text
       , listen_interface = nebula.InterfaceInfo.default
       , punchy = True
       , logging = nebula.LogInfo.default
@@ -19,10 +24,11 @@ let laptop1
     : nebula.Host.Type
     = { id = 1
       , name = "laptop1"
+      , ip = "192.168.100.2"
       , is_lighthouse = False
       , pki = nebula.PkiInfo.default
-      , lighthouse = None nebula.LighthouseInfo.Type
-      , static_hosts = Map/empty Text (List Text)
+      , lighthouse = { interval = 60, hosts = [ lighthouse_ip ] }
+      , static_ips = [] : List Text
       , listen_interface = nebula.InterfaceInfo.default
       , punchy = True
       , logging = nebula.LogInfo.default
@@ -32,10 +38,11 @@ let laptop2
     : nebula.Host.Type
     = { id = 2
       , name = "laptop2"
+      , ip = "192.168.100.3"
       , is_lighthouse = False
       , pki = nebula.PkiInfo.default
-      , lighthouse = None nebula.LighthouseInfo.Type
-      , static_hosts = Map/empty Text (List Text)
+      , lighthouse = { interval = 60, hosts = [ lighthouse_ip ] }
+      , static_ips = [] : List Text
       , listen_interface = nebula.InterfaceInfo.default
       , punchy = True
       , logging = nebula.LogInfo.default
@@ -58,4 +65,4 @@ let network
       , connections = [ home_connection ]
       }
 
-in  nebula.getRules network
+in  nebula.generateHostConfig network lighthouse
