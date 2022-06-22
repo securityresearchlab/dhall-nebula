@@ -14,6 +14,33 @@ let Map/Entry = https://prelude.dhall-lang.org/v21.1.0/Map/Entry
 
 let Natural/equal = https://prelude.dhall-lang.org/v21.1.0/Natural/equal
 
+let mkPkiInfoWithBlocklist
+    : types.Directory ->
+      types.CAName ->
+      types.HostName ->
+      List Text ->
+        types.PkiInfo
+    = \(dir : types.Directory) ->
+      \(ca : types.CAName) ->
+      \(name : types.HostName) ->
+      \(blocklist : List Text) ->
+        { ca = dir ++ "/" ++ ca ++ ".crt"
+        , cert = dir ++ "/" ++ name ++ ".crt"
+        , key = dir ++ "/" ++ name ++ ".key"
+        , blocklist = Some blocklist
+        }
+
+let mkPkiInfoWithoutBlocklist
+    : types.Directory -> types.CAName -> types.HostName -> types.PkiInfo
+    = \(dir : types.Directory) ->
+      \(ca : types.CAName) ->
+      \(name : types.HostName) ->
+        { ca = dir ++ "/" ++ ca ++ ".crt"
+        , cert = dir ++ "/" ++ name ++ ".crt"
+        , key = dir ++ "/" ++ name ++ ".key"
+        , blocklist = None (List Text)
+        }
+
 let isHostInGroup
     : types.Host -> types.Group -> Bool
     = \(host : types.Host) ->
@@ -132,4 +159,8 @@ let getRules
           )
           network.hosts
 
-in  { getHostRules, getRules }
+in  { getHostRules
+    , getRules
+    , mkPkiInfoWithBlocklist
+    , mkPkiInfoWithoutBlocklist
+    }

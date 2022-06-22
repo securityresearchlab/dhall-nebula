@@ -1,5 +1,17 @@
 let Map = https://prelude.dhall-lang.org/v21.1.0/Map/Type
 
+let CAName
+    : Type
+    = Text
+
+let Directory
+    : Type
+    = Text
+
+let HostName
+    : Type
+    = Text
+
 let PkiInfo
     : Type
     = { ca : Text, cert : Text, key : Text, blocklist : Optional (List Text) }
@@ -31,7 +43,7 @@ let LogInfo
 let Host
     : Type
     = { id : Natural
-      , name : Text
+      , name : HostName
       , ip : Text
       , lighthouse_config : Optional IsLighthouseConfig
       , pki : PkiInfo
@@ -97,7 +109,10 @@ let FirewallRule
       , direction : RuleDirection
       }
 
-in  { PkiInfo
+in  { CAName
+    , Directory
+    , HostName
+    , PkiInfo
     , DNSConfig
     , IsLighthouseConfig
     , LighthouseInfo

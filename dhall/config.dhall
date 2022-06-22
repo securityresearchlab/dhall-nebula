@@ -1,18 +1,19 @@
 let nebula = ./package.dhall
 
+let inputs = ./config-input.dhall
+
 let Map/empty = https://prelude.dhall-lang.org/v21.1.0/Map/empty
 
-let lighthouse_ip
-    : Text
-    = "192.168.100.1"
+let lighthouse_ip = inputs.lighthouse_ip
+let lighthouse_name = "lighthouse"
 
 let lighthouse
     : nebula.Host.Type
     = { id = 0
-      , name = "lighthouse"
+      , name = lighthouse_name
       , ip = lighthouse_ip
       , lighthouse_config = Some { dns = Some { dns_interface = { host = "0.0.0.0", port = 53 }} }
-      , pki = nebula.PkiInfo.default
+      , pki = nebula.mkPkiInfoWithoutBlocklist inputs.lighthouse_dir "ca" lighthouse_name
       , lighthouse = { interval = 60, hosts = [] : List Text }
       , static_ips = [] : List Text
       , listen_interface = nebula.InterfaceInfo.default
