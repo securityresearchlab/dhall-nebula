@@ -20,7 +20,17 @@ let InterfaceInfo =
       , default = { host = "0.0.0.0", port = 4242 }
       }
 
-let TunInfo = { Type = types.TunInfo, default = {=} }
+let TunInfo = { Type = types.TunInfo,
+      default = {
+            disabled = False
+        , dev = "nebula"
+        , drop_local_broadcast = False
+        , drop_multicast = False
+        , tx_queue = 500
+        , mtu = 1300
+        , routes = [] : List types.TunRoute
+        , unsafe_routes = [] : List types.TunUnsafeRoute
+} }
 
 let LogInfo =
       { Type = types.LogInfo, default = { level = "info", format = "text" } }
@@ -38,6 +48,7 @@ let Host =
         , listen_interface = InterfaceInfo.default
         , punchy = True
         , logging = LogInfo.default
+        , tun = TunInfo.default
         }
       }
 

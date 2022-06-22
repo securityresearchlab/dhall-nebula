@@ -19,6 +19,7 @@ let lighthouse
       , listen_interface = nebula.InterfaceInfo.default
       , punchy = True
       , logging = nebula.LogInfo.default
+      , tun = nebula.TunInfo.default
       }
 
 let laptop1
@@ -33,6 +34,7 @@ let laptop1
       , listen_interface = nebula.InterfaceInfo.default
       , punchy = True
       , logging = nebula.LogInfo.default
+      , tun = nebula.TunInfo.default
       }
 
 let laptop2
@@ -47,6 +49,7 @@ let laptop2
       , listen_interface = nebula.InterfaceInfo.default
       , punchy = True
       , logging = nebula.LogInfo.default
+      , tun = nebula.TunInfo.default
       }
 
 let home_group

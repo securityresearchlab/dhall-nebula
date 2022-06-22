@@ -149,7 +149,7 @@ let generateHostConfig
             , lighthouse = lighthouse_config
             , listen = host.listen_interface
             , punchy.punch = host.punchy
-            , tun = {=}
+            , tun = schemas.TunInfo.default
             , logging = host.logging
             , firewall =
               { conntrack = schemas.FirewallConnectionConfig.default

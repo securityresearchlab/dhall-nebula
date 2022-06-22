@@ -32,9 +32,22 @@ let LighthouseInfo
     : Type
     = { interval : Natural, hosts : List Text }
 
+let TunRoute : Type = { mtu: Natural, route: Text}
+
+let TunUnsafeRoute : Type = { mtu: Natural, route: Text, via: Text}
+
 let TunInfo
     : Type
-    = {}
+    = {
+        disabled: Bool
+        , dev: Text
+        , drop_local_broadcast: Bool
+        , drop_multicast: Bool
+        , tx_queue: Natural
+        , mtu: Natural
+        , routes: List TunRoute
+        , unsafe_routes: List TunUnsafeRoute
+    }
 
 let LogInfo
     : Type
@@ -52,6 +65,7 @@ let Host
       , listen_interface : InterfaceInfo
       , punchy : Bool
       , logging : LogInfo
+      , tun: TunInfo
       }
 
 let GroupName
@@ -118,6 +132,8 @@ in  { CAName
     , LighthouseInfo
     , InterfaceInfo
     , TunInfo
+    , TunRoute
+    , TunUnsafeRoute
     , LogInfo
     , Host
     , GroupName
