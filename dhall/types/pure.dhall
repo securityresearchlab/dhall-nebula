@@ -2,15 +2,23 @@ let Map = https://prelude.dhall-lang.org/v21.1.0/Map/Type
 
 let PkiInfo
     : Type
-    = { ca : Text, cert : Text, key : Text }
-
-let LighthouseInfo
-    : Type
-    = { interval : Natural, hosts : List Text }
+    = { ca : Text, cert : Text, key : Text, blocklist : Optional (List Text) }
 
 let InterfaceInfo
     : Type
     = { host : Text, port : Natural }
+
+let DNSConfig
+    : Type
+    = { dns_interface : InterfaceInfo }
+
+let IsLighthouseConfig
+    : Type
+    = { dns : Optional DNSConfig }
+
+let LighthouseInfo
+    : Type
+    = { interval : Natural, hosts : List Text }
 
 let TunInfo
     : Type
@@ -25,7 +33,7 @@ let Host
     = { id : Natural
       , name : Text
       , ip : Text
-      , is_lighthouse : Bool
+      , lighthouse_config : Optional IsLighthouseConfig
       , pki : PkiInfo
       , lighthouse : LighthouseInfo
       , static_ips : List Text
@@ -70,7 +78,12 @@ let Network
 
 let ApplyTarget
     : Type
-    = < AnyHost | Host : Host | Hosts : List Host | Group : Group | Groups : List Group >
+    = < AnyHost
+      | Host : Host
+      | Hosts : List Host
+      | Group : Group
+      | Groups : List Group
+      >
 
 let RuleDirection
     : Type
@@ -85,6 +98,8 @@ let FirewallRule
       }
 
 in  { PkiInfo
+    , DNSConfig
+    , IsLighthouseConfig
     , LighthouseInfo
     , InterfaceInfo
     , TunInfo

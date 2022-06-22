@@ -4,7 +4,12 @@ let Map = https://prelude.dhall-lang.org/v21.1.0/Map/Type
 
 let LighthouseConfig
     : Type
-    = { am_lighthouse : Bool, interval : Natural, hosts : List Text }
+    = { am_lighthouse : Bool
+      , interval : Natural
+      , hosts : List Text
+      , serve_dns : Optional Bool
+      , dns : Optional types.InterfaceInfo
+      }
 
 let PunchyConfig
     : Type

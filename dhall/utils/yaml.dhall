@@ -27,23 +27,37 @@ let rule_map
 
         let general_info = { port, proto = rule.proto }
 
-        let result_rule : types.Rule =
-              merge
-                { AnyHost = types.Rule.HostRule (general_info // { host = "any" })
+        let result_rule
+            : types.Rule
+            = merge
+                { AnyHost =
+                    types.Rule.HostRule (general_info // { host = "any" })
                 , Host =
                     \(t : types.Host) ->
                       types.Rule.HostRule (general_info // { host = t.ip })
                 , Hosts =
                     \(l : List types.Host) ->
-                      let hosts = List/map types.Host Text (\(h: types.Host) -> h.ip) l
-                      in types.Rule.HostsRule (general_info // { hosts = hosts })
+                      let hosts =
+                            List/map
+                              types.Host
+                              Text
+                              (\(h : types.Host) -> h.ip)
+                              l
+
+                      in  types.Rule.HostsRule (general_info // { hosts })
                 , Group =
                     \(g : types.Group) ->
                       types.Rule.GroupRule (general_info // { group = g.name })
                 , Groups =
                     \(l : List types.Group) ->
-                      let groups = List/map types.Group Text (\(g: types.Group) -> g.name) l
-                      in types.Rule.GroupsRule (general_info // { groups = groups })
+                      let groups =
+                            List/map
+                              types.Group
+                              Text
+                              (\(g : types.Group) -> g.name)
+                              l
+
+                      in  types.Rule.GroupsRule (general_info // { groups })
                 }
                 rule.applies_to
 
@@ -97,11 +111,37 @@ let generateHostConfig
 
         let lighthouse_config
             : types.LighthouseConfig
-            = { am_lighthouse = host.is_lighthouse
-              , interval = host.lighthouse.interval
-              , hosts =
-                  if host.is_lighthouse then [] : List Text else host.lighthouse.hosts
-              }
+            = let lighthouse_base_config =
+                    { am_lighthouse = True
+                    , interval = host.lighthouse.interval
+                    , hosts = [] : List Text
+                    }
+
+              in  merge
+                    { Some =
+                        \(c : types.IsLighthouseConfig) ->
+                              lighthouse_base_config
+                          //  merge
+                                { Some =
+                                    \(d : types.DNSConfig) ->
+                                      { serve_dns = Some True
+                                      , dns = Some d.dns_interface
+                                      }
+                                , None = {
+                                    serve_dns = None Bool
+                                    , dns = None types.InterfaceInfo
+                                }
+                                }
+                                c.dns
+                    , None =
+                      { am_lighthouse = False
+                      , interval = host.lighthouse.interval
+                      , hosts = host.lighthouse.hosts
+                      , serve_dns = None Bool
+                      , dns = None types.InterfaceInfo
+                      }
+                    }
+                    host.lighthouse_config
 
         in  { pki = host.pki
             , ip = host.ip

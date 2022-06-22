@@ -11,7 +11,7 @@ let lighthouse
     = { id = 0
       , name = "lighthouse"
       , ip = lighthouse_ip
-      , is_lighthouse = True
+      , lighthouse_config = Some { dns = Some { dns_interface = { host = "0.0.0.0", port = 53 }} }
       , pki = nebula.PkiInfo.default
       , lighthouse = { interval = 60, hosts = [] : List Text }
       , static_ips = [] : List Text
@@ -25,7 +25,7 @@ let laptop1
     = { id = 1
       , name = "laptop1"
       , ip = "192.168.100.2"
-      , is_lighthouse = False
+      , lighthouse_config = None nebula.IsLighthouseConfig
       , pki = nebula.PkiInfo.default
       , lighthouse = { interval = 60, hosts = [ lighthouse_ip ] }
       , static_ips = [] : List Text
@@ -39,7 +39,7 @@ let laptop2
     = { id = 2
       , name = "laptop2"
       , ip = "192.168.100.3"
-      , is_lighthouse = False
+      , lighthouse_config = None nebula.IsLighthouseConfig
       , pki = nebula.PkiInfo.default
       , lighthouse = { interval = 60, hosts = [ lighthouse_ip ] }
       , static_ips = [] : List Text

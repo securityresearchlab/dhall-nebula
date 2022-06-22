@@ -6,6 +6,7 @@ let PkiInfo =
         { ca = "/etc/nebula/ca.crt"
         , cert = "/etc/nebula/host.crt"
         , key = "/etc/nebula/host.key"
+        , blocklist = None (List Text)
         }
       }
 
@@ -30,9 +31,9 @@ let Host =
         { id = 0
         , name = ""
         , ip = ""
-        , is_lighthouse = False
+        , lighthouse_config = None types.IsLighthouseConfig
         , pki = PkiInfo.default
-        , lighthouse = { interval = 60, hosts = [] : List Text}
+        , lighthouse = { interval = 60, hosts = [] : List Text }
         , static_ips = [] : List Text
         , listen_interface = InterfaceInfo.default
         , punchy = True
