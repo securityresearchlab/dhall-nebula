@@ -69,17 +69,27 @@ let home_connection
       , type = nebula.ConnectionType.GroupConnection home_group
       }
 
-let icmp_connection
-    : nebula.Connection
+let allow_all_outbound_rule
+    : nebula.FirewallRule
+    = { port = nebula.Port.Any
+      , proto = nebula.Proto.Any
+      , applies_to = nebula.ApplyTarget.AnyHost
+      , direction = nebula.RuleDirection.Out
+      }
+
+let allow_icmp_rule
+    : nebula.FirewallRule
     = { port = nebula.Port.Port 22
       , proto = nebula.Proto.Proto "icmp"
-      , type = nebula.ConnectionType.AllConnection
+      , applies_to = nebula.ApplyTarget.AnyHost
+      , direction = nebula.RuleDirection.In
       }
 
 let network
     : nebula.Network
     = { hosts = [ lighthouse, laptop1, laptop2 ]
       , connections = [ home_connection ]
+      , ad_hoc_rules = [ allow_all_outbound_rule, allow_icmp_rule ]
       }
 
 in  nebula.generateHostConfig network lighthouse

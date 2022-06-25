@@ -20,7 +20,6 @@ let ConnectionType
     : Type
     = < GroupConnection : Group
       | UnidirectionalConnection : UnidirectionalConnection
-      | AllConnection
       >
 
 let Port
@@ -34,10 +33,6 @@ let Proto
 let Connection
     : Type
     = { port : Port, proto : Proto, type : ConnectionType }
-
-let Network
-    : Type
-    = { hosts : List host.Host, connections : List Connection }
 
 let ApplyTarget
     : Type
@@ -58,6 +53,13 @@ let FirewallRule
       , proto : Proto
       , applies_to : ApplyTarget
       , direction : RuleDirection
+      }
+
+let Network
+    : Type
+    = { hosts : List host.Host
+      , connections : List Connection
+      , ad_hoc_rules : List FirewallRule
       }
 
 in  { GroupName

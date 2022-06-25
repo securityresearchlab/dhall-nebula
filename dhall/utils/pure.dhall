@@ -4,6 +4,8 @@ let schemas = ../schemas.dhall
 
 let List/any = https://prelude.dhall-lang.org/v21.1.0/List/any
 
+let List/filter = https://prelude.dhall-lang.org/v21.1.0/List/filter
+
 let List/map =
       https://prelude.dhall-lang.org/v21.1.0/List/map
         sha256:dd845ffb4568d40327f2a817eb42d1c6138b929ca758d50bc33112ef3c885680
@@ -60,6 +62,39 @@ let isTarget
           }
           target
 
+let isFirewallRuleTarget
+    : types.Host -> types.FirewallRule -> Bool
+    = \(host : types.Host) ->
+      \(rule : types.FirewallRule) ->
+        merge
+          { AnyHost = True
+          , Host = \(h : types.Host) -> Natural/equal h.id host.id
+          , Hosts =
+              \(hs : List types.Host) ->
+                List/fold
+                  types.Host
+                  hs
+                  Bool
+                  ( \(h : types.Host) ->
+                    \(a : Bool) ->
+                      Natural/equal h.id host.id || a
+                  )
+                  False
+          , Group = \(g : types.Group) -> isHostInGroup host g
+          , Groups =
+              \(gs : List types.Group) ->
+                List/fold
+                  types.Group
+                  gs
+                  Bool
+                  ( \(g : types.Group) ->
+                    \(a : Bool) ->
+                      isHostInGroup host g || a
+                  )
+                  False
+          }
+          rule.applies_to
+
 let getApplyTarget
     : types.ConnectionType -> types.RuleDirection -> types.ApplyTarget
     = \(type : types.ConnectionType) ->
@@ -73,7 +108,6 @@ let getApplyTarget
                   , Host = \(h : types.Host) -> types.ApplyTarget.Host h
                   }
                   (merge { In = c.from, Out = c.to } dir)
-          , AllConnection = types.ApplyTarget.AnyHost
           }
           type
 
@@ -121,20 +155,6 @@ let generateRulesForConnection
                         }
                       ]
                 else  [] : List types.FirewallRule
-          , AllConnection =
-            [ { port = connection.port
-              , proto = connection.proto
-              , applies_to =
-                  getApplyTarget connection.type types.RuleDirection.In
-              , direction = types.RuleDirection.In
-              }
-            , { port = connection.port
-              , proto = connection.proto
-              , applies_to =
-                  getApplyTarget connection.type types.RuleDirection.Out
-              , direction = types.RuleDirection.Out
-              }
-            ]
           }
           connection.type
 
@@ -142,7 +162,7 @@ let getHostRules
     : types.Network -> types.Host -> List types.FirewallRule
     = \(network : types.Network) ->
       \(host : types.Host) ->
-        let rules
+        let rules_lists
             : List (List types.FirewallRule)
             =
               -- TODO: does the lighthouse need all the possible firewall rules?
@@ -152,15 +172,25 @@ let getHostRules
                 (\(c : types.Connection) -> generateRulesForConnection c host)
                 network.connections
 
-        in  List/fold
-              (List types.FirewallRule)
-              rules
-              (List types.FirewallRule)
-              ( \(l : List types.FirewallRule) ->
-                \(a : List types.FirewallRule) ->
-                  l # a
-              )
-              ([] : List types.FirewallRule)
+        let connection_rules =
+              List/fold
+                (List types.FirewallRule)
+                rules_lists
+                (List types.FirewallRule)
+                ( \(l : List types.FirewallRule) ->
+                  \(a : List types.FirewallRule) ->
+                    l # a
+                )
+                ([] : List types.FirewallRule)
+
+        let ad_hoc_rules
+            : List types.FirewallRule
+            = List/filter
+                types.FirewallRule
+                (\(rule : types.FirewallRule) -> isFirewallRuleTarget host rule)
+                network.ad_hoc_rules
+
+        in  connection_rules # ad_hoc_rules
 
 let getRules
     : types.Network -> Map types.Host (List types.FirewallRule)
