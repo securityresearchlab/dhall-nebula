@@ -27,12 +27,18 @@ let PortConfig
     : Type
     = < Port : Natural | Description : Text >
 
+let ProtoConfig
+    : Type
+    = < Proto : Text | Description : Text >
+
 let Rule
     : Type
-    = < HostRule : { port : PortConfig, proto : Text, host : Text }
-      | HostsRule : { port : PortConfig, proto : Text, hosts : List Text }
-      | GroupRule : { port : PortConfig, proto : Text, group : Text }
-      | GroupsRule : { port : PortConfig, proto : Text, groups : List Text }
+    = < HostRule : { port : PortConfig, proto : ProtoConfig, host : Text }
+      | HostsRule :
+          { port : PortConfig, proto : ProtoConfig, hosts : List Text }
+      | GroupRule : { port : PortConfig, proto : ProtoConfig, group : Text }
+      | GroupsRule :
+          { port : PortConfig, proto : ProtoConfig, groups : List Text }
       >
 
 let FirewallConfig
@@ -62,4 +68,5 @@ in  { LighthouseConfig
     , FirewallConfig
     , Rule
     , PortConfig
+    , ProtoConfig
     }

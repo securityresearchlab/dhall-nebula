@@ -65,8 +65,7 @@ let getApplyTarget
     = \(type : types.ConnectionType) ->
       \(dir : types.RuleDirection) ->
         merge
-          { BidirectionalConnection =
-              \(g : types.Group) -> types.ApplyTarget.Group g
+          { GroupConnection = \(g : types.Group) -> types.ApplyTarget.Group g
           , UnidirectionalConnection =
               \(c : types.UnidirectionalConnection) ->
                 merge
@@ -74,6 +73,7 @@ let getApplyTarget
                   , Host = \(h : types.Host) -> types.ApplyTarget.Host h
                   }
                   (merge { In = c.from, Out = c.to } dir)
+          , AllConnection = types.ApplyTarget.AnyHost
           }
           type
 
@@ -82,7 +82,7 @@ let generateRulesForConnection
     = \(connection : types.Connection) ->
       \(host : types.Host) ->
         merge
-          { BidirectionalConnection =
+          { GroupConnection =
               \(group : types.Group) ->
                 if    isHostInGroup host group
                 then  [ { port = connection.port
@@ -121,6 +121,20 @@ let generateRulesForConnection
                         }
                       ]
                 else  [] : List types.FirewallRule
+          , AllConnection =
+            [ { port = connection.port
+              , proto = connection.proto
+              , applies_to =
+                  getApplyTarget connection.type types.RuleDirection.In
+              , direction = types.RuleDirection.In
+              }
+            , { port = connection.port
+              , proto = connection.proto
+              , applies_to =
+                  getApplyTarget connection.type types.RuleDirection.Out
+              , direction = types.RuleDirection.Out
+              }
+            ]
           }
           connection.type
 

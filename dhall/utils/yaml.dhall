@@ -25,7 +25,15 @@ let rule_map
                 }
                 rule.port
 
-        let general_info = { port, proto = rule.proto }
+        let proto
+            : types.ProtoConfig
+            = merge
+                { Proto = \(p : Text) -> types.ProtoConfig.Proto p
+                , Any = types.ProtoConfig.Description "any"
+                }
+                rule.proto
+
+        let general_info = { port, proto }
 
         let result_rule
             : types.Rule
@@ -127,10 +135,10 @@ let generateHostConfig
                                       { serve_dns = Some True
                                       , dns = Some d.dns_interface
                                       }
-                                , None = {
-                                    serve_dns = None Bool
-                                    , dns = None types.InterfaceInfo
-                                }
+                                , None =
+                                  { serve_dns = None Bool
+                                  , dns = None types.InterfaceInfo
+                                  }
                                 }
                                 c.dns
                     , None =

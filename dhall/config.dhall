@@ -5,6 +5,7 @@ let inputs = ./config-input.dhall
 let Map/empty = https://prelude.dhall-lang.org/v21.1.0/Map/empty
 
 let lighthouse_ip = inputs.lighthouse_ip
+
 let lighthouse_name = "lighthouse"
 
 let lighthouse
@@ -12,8 +13,13 @@ let lighthouse
     = { id = 0
       , name = lighthouse_name
       , ip = lighthouse_ip
-      , lighthouse_config = Some { dns = Some { dns_interface = { host = "0.0.0.0", port = 53 }} }
-      , pki = nebula.mkPkiInfoWithoutBlocklist inputs.lighthouse_dir "ca" lighthouse_name
+      , lighthouse_config = Some
+        { dns = Some { dns_interface = { host = "0.0.0.0", port = 53 } } }
+      , pki =
+          nebula.mkPkiInfoWithoutBlocklist
+            inputs.lighthouse_dir
+            "ca"
+            lighthouse_name
       , lighthouse = { interval = 60, hosts = [] : List Text }
       , static_ips = [] : List Text
       , listen_interface = nebula.InterfaceInfo.default
@@ -59,8 +65,15 @@ let home_group
 let home_connection
     : nebula.Connection
     = { port = nebula.Port.Any
-      , proto = "tcp"
-      , type = nebula.ConnectionType.BidirectionalConnection home_group
+      , proto = nebula.Proto.Proto "tcp"
+      , type = nebula.ConnectionType.GroupConnection home_group
+      }
+
+let icmp_connection
+    : nebula.Connection
+    = { port = nebula.Port.Port 22
+      , proto = nebula.Proto.Proto "icmp"
+      , type = nebula.ConnectionType.AllConnection
       }
 
 let network
