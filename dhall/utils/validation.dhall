@@ -39,16 +39,12 @@ let validateHosts
 let validate
     : types.Network -> Type
     = \(network : types.Network) ->
-        let expected =
-              { ciphers_check = True
-              , hosts_check = True
-              , lighthouse_present_check = True
-              }
+        let expected = { hosts_check = True, lighthouse_present_check = True }
 
         let actual =
-              { ciphers_check = True -- TODO:
-              , hosts_check = validateHosts network.hosts
-              , lighthouse_present_check = List/any types.Host isLighthouse network.hosts
+              { hosts_check = validateHosts network.hosts
+              , lighthouse_present_check =
+                  List/any types.Host isLighthouse network.hosts
               }
 
         in  expected === actual

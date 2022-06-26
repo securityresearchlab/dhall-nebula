@@ -59,6 +59,7 @@ let HostConfig
       , tun : types.TunInfo
       , logging : types.LogInfo
       , firewall : FirewallConfig
+      , cipher : types.Cipher
       }
 
 in  { LighthouseConfig

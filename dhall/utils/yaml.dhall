@@ -164,6 +164,7 @@ let generateHostConfig
               , outbound = outbound_rules
               , inbound = inbound_rules
               }
+            , cipher = network.cipher
             }
 
 in  { generateHostConfig }

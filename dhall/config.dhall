@@ -90,6 +90,7 @@ let network
     = { hosts = [ lighthouse, laptop1, laptop2 ]
       , connections = [ home_connection ]
       , ad_hoc_rules = [ allow_all_outbound_rule, allow_icmp_rule ]
+      , cipher = nebula.Cipher.aes
       }
 
 let _ = assert : nebula.validate network

@@ -55,11 +55,16 @@ let FirewallRule
       , direction : RuleDirection
       }
 
+let Cipher
+    : Type
+    = < aes | chachapoly >
+
 let Network
     : Type
     = { hosts : List host.Host
       , connections : List Connection
       , ad_hoc_rules : List FirewallRule
+      , cipher : Cipher
       }
 
 in  { GroupName
@@ -70,6 +75,7 @@ in  { GroupName
     , Port
     , Proto
     , Connection
+    , Cipher
     , Network
     , ApplyTarget
     , RuleDirection
