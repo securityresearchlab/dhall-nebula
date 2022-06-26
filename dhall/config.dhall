@@ -92,4 +92,6 @@ let network
       , ad_hoc_rules = [ allow_all_outbound_rule, allow_icmp_rule ]
       }
 
+let _ = assert : nebula.validate network
+
 in  nebula.generateHostConfig network lighthouse
