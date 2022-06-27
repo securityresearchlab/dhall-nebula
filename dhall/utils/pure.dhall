@@ -187,7 +187,7 @@ let getHostRules
                       merge
                         { Some =
                             \(d : types.DNSConfig) ->
-                              [ { port = types.Port.Port 53
+                              [ { port = types.Port.Port d.dns_interface.port
                                 , proto = types.Proto.any
                                 , applies_to = types.ApplyTarget.AnyHost
                                 , direction = types.RuleDirection.In
