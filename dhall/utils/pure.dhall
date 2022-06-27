@@ -190,7 +190,28 @@ let getHostRules
                 (\(rule : types.FirewallRule) -> isFirewallRuleTarget host rule)
                 network.ad_hoc_rules
 
-        in  connection_rules # ad_hoc_rules
+        let dns_rules
+            : List types.FirewallRule
+            = merge
+                { Some =
+                    \(c : types.IsLighthouseConfig) ->
+                      merge
+                        { Some =
+                            \(d : types.DNSConfig) ->
+                              [ { port = types.Port.Port 53
+                                , proto = types.Proto.Proto "dns"
+                                , applies_to = types.ApplyTarget.AnyHost
+                                , direction = types.RuleDirection.In
+                                }
+                              ]
+                        , None = [] : List types.FirewallRule
+                        }
+                        c.dns
+                , None = [] : List types.FirewallRule
+                }
+                host.lighthouse_config
+
+        in  connection_rules # ad_hoc_rules # dns_rules
 
 let getRules
     : types.Network -> Map types.Host (List types.FirewallRule)
