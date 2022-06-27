@@ -51,7 +51,6 @@ let FirewallConfig
 let HostConfig
     : Type
     = { pki : types.PkiInfo
-      , ip : Text
       , static_host_map : Map Text (List Text)
       , lighthouse : LighthouseConfig
       , listen : types.ListenInfo

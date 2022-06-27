@@ -152,7 +152,6 @@ let generateHostConfig
                     host.lighthouse_config
 
         in  { pki = host.pki
-            , ip = host.ip
             , static_host_map = static_hosts
             , lighthouse = lighthouse_config
             , listen = host.listen_interface
