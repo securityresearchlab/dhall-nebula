@@ -52,6 +52,8 @@ let FirewallRule
       , proto : Proto
       , applies_to : ApplyTarget
       , direction : RuleDirection
+      , ca_name: Optional Text
+      , ca_sha: Optional Text
       }
 
 let Cipher
