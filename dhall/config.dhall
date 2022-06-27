@@ -20,13 +20,14 @@ let lighthouse
             inputs.lighthouse_dir
             "ca"
             lighthouse_name
-      , lighthouse = { interval = 60 }
+      , lighthouse.interval = 60
       , static_ips = [ "20.20.20.20:4242" ]
       , listen_interface = nebula.ListenInfo.default
       , punchy = nebula.PunchyInfo.default
       , logging = nebula.LogInfo.default
       , tun = nebula.TunInfo.default
       , local_range = None Text
+      , sshd = None nebula.SSHDInfo
       }
 
 let laptop1
@@ -36,13 +37,14 @@ let laptop1
       , ip = "192.168.100.2"
       , lighthouse_config = None nebula.IsLighthouseConfig
       , pki = nebula.PkiInfo.default
-      , lighthouse = { interval = 60 }
+      , lighthouse.interval = 60
       , static_ips = [] : List Text
       , listen_interface = nebula.ListenInfo.default
       , punchy = nebula.PunchyInfo.default
       , logging = nebula.LogInfo.default
       , tun = nebula.TunInfo.default
       , local_range = None Text
+      , sshd = None nebula.SSHDInfo
       }
 
 let laptop2
@@ -52,13 +54,14 @@ let laptop2
       , ip = "192.168.100.3"
       , lighthouse_config = None nebula.IsLighthouseConfig
       , pki = nebula.PkiInfo.default
-      , lighthouse = { interval = 60 }
+      , lighthouse.interval = 60
       , static_ips = [] : List Text
       , listen_interface = nebula.ListenInfo.default
       , punchy = nebula.PunchyInfo.default
       , logging = nebula.LogInfo.default
       , tun = nebula.TunInfo.default
       , local_range = None Text
+      , sshd = None nebula.SSHDInfo
       }
 
 let home_group

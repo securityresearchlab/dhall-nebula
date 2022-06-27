@@ -8,6 +8,8 @@ let List/map = https://prelude.dhall-lang.org/v21.1.0/List/map
 
 let List/null = https://prelude.dhall-lang.org/v21.1.0/List/null
 
+let Natural/equal = https://prelude.dhall-lang.org/v21.1.0/Natural/equal
+
 let isLighthouse
     : types.Host -> Bool
     = \(host : types.Host) ->
@@ -17,7 +19,13 @@ let isLighthouse
 
 let validateHost
     : types.Host -> Bool
-    = \(host : types.Host) -> True
+    = \(host : types.Host) ->
+        merge
+          { Some =
+              \(c : types.SSHDInfo) -> Bool/not (Natural/equal c.listen.port 22)
+          , None = True
+          }
+          host.sshd
 
 let validateHosts
     : List types.Host -> Bool

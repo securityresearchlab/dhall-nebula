@@ -71,6 +71,7 @@ let Host =
         , punchy = True
         , logging = LogInfo.default
         , tun = TunInfo.default
+        , sshd = None types.SSHDInfo
         }
       }
 

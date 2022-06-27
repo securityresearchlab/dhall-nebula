@@ -44,6 +44,14 @@ let FirewallConfig
       , inbound : List Rule
       }
 
+let SSHDConfig
+    : Type
+    = { enabled : Bool
+      , listen : Text
+      , host_key : Text
+      , authorized_users : List types.SSHDUsers
+      }
+
 let HostConfig
     : Type
     = { pki : types.PkiInfo
@@ -56,9 +64,11 @@ let HostConfig
       , firewall : FirewallConfig
       , cipher : types.Cipher
       , local_range : Optional Text
+      , sshd : Optional SSHDConfig
       }
 
 in  { LighthouseConfig
+    , SSHDConfig
     , HostConfig
     , FirewallConnectionConfig
     , FirewallConfig

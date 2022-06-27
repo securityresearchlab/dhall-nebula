@@ -43,6 +43,17 @@ let LighthouseInfo
     : Type
     = { interval : Natural }
 
+let SSHDUsers
+    : Type
+    = { user : Text, keys : List Text }
+
+let SSHDInfo
+    : Type
+    = { listen : InterfaceInfo
+      , host_key : Text
+      , authorized_users : List SSHDUsers
+      }
+
 let TunRoute
     : Type
     = { mtu : Natural, route : Text }
@@ -85,6 +96,7 @@ let Host
       , logging : LogInfo
       , tun : TunInfo
       , local_range : Optional Text
+      , sshd : Optional SSHDInfo
       }
 
 in  { CAName
@@ -95,6 +107,8 @@ in  { CAName
     , IsLighthouseConfig
     , PunchyInfo
     , LighthouseInfo
+    , SSHDUsers
+    , SSHDInfo
     , InterfaceInfo
     , ListenInfo
     , TunInfo

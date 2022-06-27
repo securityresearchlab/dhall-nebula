@@ -117,7 +117,7 @@ let generateHostConfig
                 )
                 network.hosts
 
-        let lighthouses
+        let lighthouses_ips
             : List Text
             = List/map
                 types.Host
@@ -162,12 +162,28 @@ let generateHostConfig
                     , None =
                       { am_lighthouse = False
                       , interval = host.lighthouse.interval
-                      , hosts = lighthouses
+                      , hosts = lighthouses_ips
                       , serve_dns = None Bool
                       , dns = None types.InterfaceInfo
                       }
                     }
                     host.lighthouse_config
+
+        let sshd_config
+            : Optional types.SSHDConfig
+            = merge
+                { Some =
+                    \(c : types.SSHDInfo) ->
+                      Some
+                        { enabled = True
+                        , listen =
+                            "${c.listen.host}:${Natural/show c.listen.port}"
+                        , host_key = c.host_key
+                        , authorized_users = c.authorized_users
+                        }
+                , None = None types.SSHDConfig
+                }
+                host.sshd
 
         in  { pki = host.pki
             , static_host_map = static_hosts
@@ -183,6 +199,7 @@ let generateHostConfig
               }
             , cipher = network.cipher
             , local_range = host.local_range
+            , sshd = sshd_config
             }
 
 in  { generateHostConfig }
