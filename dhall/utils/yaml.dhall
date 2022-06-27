@@ -22,18 +22,11 @@ let rule_map
             = merge
                 { Port = \(n : Natural) -> types.PortConfig.Port n
                 , Any = types.PortConfig.Description "any"
+                , Range = \(r: types.PortRange) -> types.PortConfig.Description "${Natural/show r.from}-${Natural/show r.to}"
                 }
                 rule.port
 
-        let proto
-            : types.ProtoConfig
-            = merge
-                { Proto = \(p : Text) -> types.ProtoConfig.Proto p
-                , Any = types.ProtoConfig.Description "any"
-                }
-                rule.proto
-
-        let general_info = { port, proto }
+        let general_info = { port, proto = rule.proto }
 
         let result_rule
             : types.Rule

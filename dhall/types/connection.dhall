@@ -22,13 +22,15 @@ let ConnectionType
       | UnidirectionalConnection : UnidirectionalConnection
       >
 
+let PortRange : Type = { from: Natural, to: Natural }
+
 let Port
     : Type
-    = < Port : Natural | Any >
+    = < Port : Natural | Range : PortRange | Any > -- TODO: add fragment
 
 let Proto
     : Type
-    = < Proto : Text | Any >
+    = < any | tcp | udp | icmp >
 
 let Connection
     : Type
@@ -72,6 +74,7 @@ in  { GroupName
     , UnidirectionalConnection
     , ConnectionTarget
     , Port
+    , PortRange
     , Proto
     , Connection
     , Cipher

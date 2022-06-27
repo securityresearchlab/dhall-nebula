@@ -188,7 +188,7 @@ let getHostRules
                         { Some =
                             \(d : types.DNSConfig) ->
                               [ { port = types.Port.Port 53
-                                , proto = types.Proto.Proto "dns"
+                                , proto = types.Proto.any
                                 , applies_to = types.ApplyTarget.AnyHost
                                 , direction = types.RuleDirection.In
                                 }

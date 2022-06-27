@@ -71,14 +71,14 @@ let home_group
 let home_connection
     : nebula.Connection
     = { port = nebula.Port.Any
-      , proto = nebula.Proto.Proto "tcp"
+      , proto = nebula.Proto.tcp
       , type = nebula.ConnectionType.GroupConnection home_group
       }
 
 let allow_all_outbound_rule
     : nebula.FirewallRule
     = { port = nebula.Port.Any
-      , proto = nebula.Proto.Any
+      , proto = nebula.Proto.any
       , applies_to = nebula.ApplyTarget.AnyHost
       , direction = nebula.RuleDirection.Out
       }
@@ -86,7 +86,7 @@ let allow_all_outbound_rule
 let allow_icmp_rule
     : nebula.FirewallRule
     = { port = nebula.Port.Port 22
-      , proto = nebula.Proto.Proto "icmp"
+      , proto = nebula.Proto.icmp
       , applies_to = nebula.ApplyTarget.AnyHost
       , direction = nebula.RuleDirection.In
       }
