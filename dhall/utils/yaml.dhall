@@ -43,16 +43,6 @@ let rule_map
                 , Host =
                     \(t : types.Host) ->
                       types.Rule.HostRule (general_info // { host = t.ip })
-                , Hosts =
-                    \(l : List types.Host) ->
-                      let hosts =
-                            List/map
-                              types.Host
-                              Text
-                              (\(h : types.Host) -> h.ip)
-                              l
-
-                      in  types.Rule.HostsRule (general_info // { hosts })
                 , Group =
                     \(g : types.Group) ->
                       types.Rule.GroupRule (general_info // { group = g.name })

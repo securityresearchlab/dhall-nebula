@@ -69,17 +69,6 @@ let isFirewallRuleTarget
         merge
           { AnyHost = True
           , Host = \(h : types.Host) -> Natural/equal h.id host.id
-          , Hosts =
-              \(hs : List types.Host) ->
-                List/fold
-                  types.Host
-                  hs
-                  Bool
-                  ( \(h : types.Host) ->
-                    \(a : Bool) ->
-                      Natural/equal h.id host.id || a
-                  )
-                  False
           , Group = \(g : types.Group) -> isHostInGroup host g
           , Groups =
               \(gs : List types.Group) ->

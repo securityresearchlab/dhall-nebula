@@ -38,7 +38,6 @@ let ApplyTarget
     : Type
     = < AnyHost
       | Host : host.Host
-      | Hosts : List host.Host
       | Group : Group
       | Groups : List Group
       >
