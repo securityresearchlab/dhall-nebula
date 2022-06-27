@@ -156,7 +156,7 @@ let generateHostConfig
             , lighthouse = lighthouse_config
             , listen = host.listen_interface
             , punchy = host.punchy
-            , tun = schemas.TunInfo.default
+            , tun = host.tun
             , logging = host.logging
             , firewall =
               { conntrack = schemas.FirewallConnectionConfig.default
@@ -164,6 +164,7 @@ let generateHostConfig
               , inbound = inbound_rules
               }
             , cipher = network.cipher
+            , local_range = host.local_range
             }
 
 in  { generateHostConfig }

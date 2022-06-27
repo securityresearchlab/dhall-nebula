@@ -55,6 +55,7 @@ let HostConfig
       , logging : types.LogInfo
       , firewall : FirewallConfig
       , cipher : types.Cipher
+      , local_range : Optional Text
       }
 
 in  { LighthouseConfig

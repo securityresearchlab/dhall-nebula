@@ -84,6 +84,7 @@ let Host
       , punchy : PunchyInfo
       , logging : LogInfo
       , tun : TunInfo
+      , local_range : Optional Text
       }
 
 in  { CAName
