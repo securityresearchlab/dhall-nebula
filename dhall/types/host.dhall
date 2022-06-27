@@ -35,6 +35,10 @@ let IsLighthouseConfig
     : Type
     = { dns : Optional DNSConfig }
 
+let PunchyInfo
+    : Type
+    = { punch : Bool, respond : Optional Bool, delay : Optional Text }
+
 let LighthouseInfo
     : Type
     = { interval : Natural, hosts : List Text }
@@ -77,7 +81,7 @@ let Host
       , lighthouse : LighthouseInfo
       , static_ips : List Text
       , listen_interface : ListenInfo
-      , punchy : Bool
+      , punchy : PunchyInfo
       , logging : LogInfo
       , tun : TunInfo
       }
@@ -88,6 +92,7 @@ in  { CAName
     , PkiInfo
     , DNSConfig
     , IsLighthouseConfig
+    , PunchyInfo
     , LighthouseInfo
     , InterfaceInfo
     , ListenInfo

@@ -155,7 +155,7 @@ let generateHostConfig
             , static_host_map = static_hosts
             , lighthouse = lighthouse_config
             , listen = host.listen_interface
-            , punchy.punch = host.punchy
+            , punchy = host.punchy
             , tun = schemas.TunInfo.default
             , logging = host.logging
             , firewall =

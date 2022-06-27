@@ -11,10 +11,6 @@ let LighthouseConfig
       , dns : Optional types.InterfaceInfo
       }
 
-let PunchyConfig
-    : Type
-    = { punch : Bool }
-
 let FirewallConnectionConfig
     : Type
     = { tcp_timeout : Text
@@ -54,7 +50,7 @@ let HostConfig
       , static_host_map : Map Text (List Text)
       , lighthouse : LighthouseConfig
       , listen : types.ListenInfo
-      , punchy : PunchyConfig
+      , punchy : types.PunchyInfo
       , tun : types.TunInfo
       , logging : types.LogInfo
       , firewall : FirewallConfig
@@ -63,7 +59,6 @@ let HostConfig
 
 in  { LighthouseConfig
     , HostConfig
-    , PunchyConfig
     , FirewallConnectionConfig
     , FirewallConfig
     , Rule

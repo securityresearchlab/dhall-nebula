@@ -55,6 +55,11 @@ let LogInfo =
         }
       }
 
+let PunchyInfo =
+      { Type = types.PunchyInfo
+      , default = { punch = True, respond = None Bool, delay = None Text }
+      }
+
 let Host =
       { Type = types.Host
       , default =
@@ -78,5 +83,6 @@ in  { PkiInfo
     , InterfaceInfo
     , TunInfo
     , LogInfo
+    , PunchyInfo
     , Host
     }
