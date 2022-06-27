@@ -22,7 +22,10 @@ let rule_map
             = merge
                 { Port = \(n : Natural) -> types.PortConfig.Port n
                 , Any = types.PortConfig.Description "any"
-                , Range = \(r: types.PortRange) -> types.PortConfig.Description "${Natural/show r.from}-${Natural/show r.to}"
+                , Range =
+                    \(r : types.PortRange) ->
+                      types.PortConfig.Description
+                        "${Natural/show r.from}-${Natural/show r.to}"
                 }
                 rule.port
 

@@ -22,11 +22,13 @@ let ConnectionType
       | UnidirectionalConnection : UnidirectionalConnection
       >
 
-let PortRange : Type = { from: Natural, to: Natural }
+let PortRange
+    : Type
+    = { from : Natural, to : Natural }
 
 let Port
     : Type
-    = < Port : Natural | Range : PortRange | Any > -- TODO: add fragment
+    = < Port : Natural | Range : PortRange | Any >
 
 let Proto
     : Type
@@ -38,11 +40,7 @@ let Connection
 
 let ApplyTarget
     : Type
-    = < AnyHost
-      | Host : host.Host
-      | Group : Group
-      | Groups : List Group
-      >
+    = < AnyHost | Host : host.Host | Group : Group | Groups : List Group >
 
 let RuleDirection
     : Type
