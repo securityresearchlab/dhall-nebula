@@ -117,6 +117,24 @@ let generateHostConfig
                 )
                 network.hosts
 
+        let lighthouses
+            : List Text
+            = List/map
+                types.Host
+                Text
+                (\(h : types.Host) -> h.ip)
+                ( List/filter
+                    types.Host
+                    ( \(host : types.Host) ->
+                        merge
+                          { Some = \(l : types.IsLighthouseConfig) -> True
+                          , None = False
+                          }
+                          host.lighthouse_config
+                    )
+                    network.hosts
+                )
+
         let lighthouse_config
             : types.LighthouseConfig
             = let lighthouse_base_config =
@@ -144,7 +162,7 @@ let generateHostConfig
                     , None =
                       { am_lighthouse = False
                       , interval = host.lighthouse.interval
-                      , hosts = host.lighthouse.hosts
+                      , hosts = lighthouses
                       , serve_dns = None Bool
                       , dns = None types.InterfaceInfo
                       }

@@ -10,10 +10,7 @@ let PkiInfo =
         }
       }
 
-let LighthouseInfo =
-      { Type = types.LighthouseInfo
-      , default = { interval = 60, hosts = [ "192.168.100.1" ] }
-      }
+let LighthouseInfo = { Type = types.LighthouseInfo, default.interval = 60 }
 
 let InterfaceInfo =
       { Type = types.InterfaceInfo
@@ -68,7 +65,7 @@ let Host =
         , ip = ""
         , lighthouse_config = None types.IsLighthouseConfig
         , pki = PkiInfo.default
-        , lighthouse = { interval = 60, hosts = [] : List Text }
+        , lighthouse = LighthouseInfo.default
         , static_ips = [] : List Text
         , listen_interface = ListenInfo.default
         , punchy = True

@@ -41,7 +41,7 @@ let PunchyInfo
 
 let LighthouseInfo
     : Type
-    = { interval : Natural, hosts : List Text }
+    = { interval : Natural }
 
 let TunRoute
     : Type

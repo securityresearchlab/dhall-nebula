@@ -17,12 +17,7 @@ let isLighthouse
 
 let validateHost
     : types.Host -> Bool
-    = \(host : types.Host) ->
-        let is_lighthouse = isLighthouse host
-
-        let hosts_check = List/null Text host.lighthouse.hosts
-
-        in  is_lighthouse && hosts_check || Bool/not is_lighthouse
+    = \(host : types.Host) -> True
 
 let validateHosts
     : List types.Host -> Bool
