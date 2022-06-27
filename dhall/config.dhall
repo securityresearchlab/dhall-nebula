@@ -21,8 +21,8 @@ let lighthouse
             "ca"
             lighthouse_name
       , lighthouse = { interval = 60, hosts = [] : List Text }
-      , static_ips = [] : List Text
-      , listen_interface = nebula.InterfaceInfo.default
+      , static_ips = ["20.20.20.20:4242"]
+      , listen_interface = nebula.ListenInfo.default
       , punchy = True
       , logging = nebula.LogInfo.default
       , tun = nebula.TunInfo.default
@@ -37,7 +37,7 @@ let laptop1
       , pki = nebula.PkiInfo.default
       , lighthouse = { interval = 60, hosts = [ lighthouse_ip ] }
       , static_ips = [] : List Text
-      , listen_interface = nebula.InterfaceInfo.default
+      , listen_interface = nebula.ListenInfo.default
       , punchy = True
       , logging = nebula.LogInfo.default
       , tun = nebula.TunInfo.default
@@ -52,7 +52,7 @@ let laptop2
       , pki = nebula.PkiInfo.default
       , lighthouse = { interval = 60, hosts = [ lighthouse_ip ] }
       , static_ips = [] : List Text
-      , listen_interface = nebula.InterfaceInfo.default
+      , listen_interface = nebula.ListenInfo.default
       , punchy = True
       , logging = nebula.LogInfo.default
       , tun = nebula.TunInfo.default

@@ -20,6 +20,17 @@ let InterfaceInfo =
       , default = { host = "0.0.0.0", port = 4242 }
       }
 
+let ListenInfo =
+      { Type = types.ListenInfo
+      , default =
+        { host = "0.0.0.0"
+        , port = 4242
+        , batch = None Natural
+        , read_buffer = None Natural
+        , write_buffer = None Natural
+        }
+      }
+
 let TunInfo =
       { Type = types.TunInfo
       , default =
@@ -54,11 +65,18 @@ let Host =
         , pki = PkiInfo.default
         , lighthouse = { interval = 60, hosts = [] : List Text }
         , static_ips = [] : List Text
-        , listen_interface = InterfaceInfo.default
+        , listen_interface = ListenInfo.default
         , punchy = True
         , logging = LogInfo.default
         , tun = TunInfo.default
         }
       }
 
-in  { PkiInfo, LighthouseInfo, InterfaceInfo, TunInfo, LogInfo, Host }
+in  { PkiInfo
+    , LighthouseInfo
+    , ListenInfo
+    , InterfaceInfo
+    , TunInfo
+    , LogInfo
+    , Host
+    }

@@ -18,6 +18,15 @@ let InterfaceInfo
     : Type
     = { host : Text, port : Natural }
 
+let ListenInfo
+    : Type
+    = { host : Text
+      , port : Natural
+      , batch : Optional Natural
+      , read_buffer : Optional Natural
+      , write_buffer : Optional Natural
+      }
+
 let DNSConfig
     : Type
     = { dns_interface : InterfaceInfo }
@@ -67,7 +76,7 @@ let Host
       , pki : PkiInfo
       , lighthouse : LighthouseInfo
       , static_ips : List Text
-      , listen_interface : InterfaceInfo
+      , listen_interface : ListenInfo
       , punchy : Bool
       , logging : LogInfo
       , tun : TunInfo
@@ -81,6 +90,7 @@ in  { CAName
     , IsLighthouseConfig
     , LighthouseInfo
     , InterfaceInfo
+    , ListenInfo
     , TunInfo
     , TunRoute
     , TunUnsafeRoute

@@ -54,7 +54,7 @@ let HostConfig
       , ip : Text
       , static_host_map : Map Text (List Text)
       , lighthouse : LighthouseConfig
-      , listen : types.InterfaceInfo
+      , listen : types.ListenInfo
       , punchy : PunchyConfig
       , tun : types.TunInfo
       , logging : types.LogInfo
