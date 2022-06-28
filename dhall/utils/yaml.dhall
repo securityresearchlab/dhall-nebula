@@ -52,6 +52,7 @@ let rule_map
                               l
 
                       in  types.Rule.GroupsRule (general_info // { groups })
+                , CIDR = \(cidr : Text) -> types.Rule.CIDRRule ( general_info // { cidr})
                 }
                 rule.traffic_target
 

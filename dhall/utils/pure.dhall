@@ -68,28 +68,6 @@ let isTarget
           }
           target
 
-let isFirewallRuleTrafficTarget
-    : types.Host -> types.FirewallRule -> Bool
-    = \(host : types.Host) ->
-      \(rule : types.FirewallRule) ->
-        merge
-          { AnyHost = True
-          , Host = \(h : types.Host) -> Natural/equal h.id host.id
-          , Group = \(g : types.Group) -> isHostInGroup host g
-          , Groups =
-              \(gs : List types.Group) ->
-                List/fold
-                  types.Group
-                  gs
-                  Bool
-                  ( \(g : types.Group) ->
-                    \(a : Bool) ->
-                      isHostInGroup host g || a
-                  )
-                  False
-          }
-          rule.traffic_target
-
 let getTrafficTarget
     : types.ConnectionType -> types.RuleDirection -> types.TrafficTarget
     = \(type : types.ConnectionType) ->

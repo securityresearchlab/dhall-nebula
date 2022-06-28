@@ -40,7 +40,7 @@ let Connection
 
 let TrafficTarget
     : Type
-    = < AnyHost | Host : host.Host | Group : Group | Groups : List Group >
+    = < AnyHost | Host : host.Host | Group : Group | Groups : List Group | CIDR : Text >
 
 let RuleDirection
     : Type

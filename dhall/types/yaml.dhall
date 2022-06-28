@@ -36,6 +36,7 @@ let Rule
     = < HostRule : BaseRule //\\ { host : Text }
       | GroupRule : BaseRule //\\ { group : Text }
       | GroupsRule : BaseRule //\\ { groups : List Text }
+      | CIDRRule : BaseRule //\\ { cidr : Text }
       >
 
 let FirewallConfig
