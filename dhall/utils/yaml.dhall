@@ -59,7 +59,8 @@ let rule_map
                       in  types.Rule.GroupsRule (general_info // { groups })
                 , CIDR =
                     \(cidr : types.IPv4Network) ->
-                      types.Rule.CIDRRule (general_info // { cidr = (pure.showIPv4Network cidr)})
+                      types.Rule.CIDRRule
+                        (general_info // { cidr = pure.showIPv4Network cidr })
                 }
                 rule.traffic_target
 

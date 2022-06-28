@@ -82,22 +82,19 @@ let home_connection
 
 let outbound_connection
     : nebula.Connection
-    = nebula.mkUnidirectionalConnection nebula.Port.Any nebula.Proto.any nebula.ConnectionTarget.AnyNebulaHost nebula.ConnectionTarget.AnyExternalHost
+    = nebula.mkUnidirectionalConnection
+        nebula.Port.Any
+        nebula.Proto.any
+        nebula.ConnectionTarget.AnyNebulaHost
+        nebula.ConnectionTarget.AnyExternalHost
 
 let icmp_connection
     : nebula.Connection
-    = nebula.mkUnidirectionalConnection (nebula.Port.Port 22) nebula.Proto.icmp nebula.ConnectionTarget.AnyExternalHost nebula.ConnectionTarget.AnyNebulaHost
-
--- let laptop1_rule
---     : nebula.AdHocFirewallRule
---     = { port = nebula.Port.Any
---       , proto = nebula.Proto.any
---       , traffic_target = nebula.TrafficTarget.AnyHost
---       , direction = nebula.RuleDirection.In
---       , ca_name = None Text
---       , ca_sha = None Text
---       , target = laptop1
---       }
+    = nebula.mkUnidirectionalConnection
+        (nebula.Port.Port 22)
+        nebula.Proto.icmp
+        nebula.ConnectionTarget.AnyExternalHost
+        nebula.ConnectionTarget.AnyNebulaHost
 
 let network
     : nebula.Network

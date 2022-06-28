@@ -2,11 +2,15 @@ let types = ../types.dhall
 
 let pure_utils = ./pure.dhall
 
+let Bool/and = https://prelude.dhall-lang.org/v21.1.0/Bool/and
+
 let Bool/not = https://prelude.dhall-lang.org/v21.1.0/Bool/not
 
 let List/all = https://prelude.dhall-lang.org/v21.1.0/List/all
 
 let List/any = https://prelude.dhall-lang.org/v21.1.0/List/any
+
+let List/concat = https://prelude.dhall-lang.org/v21.1.0/List/concat
 
 let List/filter = https://prelude.dhall-lang.org/v21.1.0/List/filter
 
@@ -48,12 +52,7 @@ let areIdsUnique
 
         let checks = List/map Natural Bool check_id ns
 
-        in  List/fold
-              Bool
-              checks
-              Bool
-              (\(b : Bool) -> \(a : Bool) -> b && a)
-              True
+        in  Bool/and checks
 
 let validateHost
     : types.Host -> Bool
@@ -69,12 +68,7 @@ let validateHosts
     : List types.Host -> Bool
     = \(hs : List types.Host) ->
         let single_hosts_validity =
-              List/fold
-                Bool
-                (List/map types.Host Bool validateHost hs)
-                Bool
-                (\(b : Bool) -> \(a : Bool) -> b && a)
-                True
+              Bool/and (List/map types.Host Bool validateHost hs)
 
         let hosts_validity =
               areIdsUnique
@@ -119,16 +113,7 @@ let validate
                 (List types.FirewallRule)
                 (pure_utils.getRules network)
 
-        let rules =
-              List/fold
-                (List types.FirewallRule)
-                rules_lists
-                (List types.FirewallRule)
-                ( \(l : List types.FirewallRule) ->
-                  \(a : List types.FirewallRule) ->
-                    l # a
-                )
-                ([] : List types.FirewallRule)
+        let rules = List/concat types.FirewallRule rules_lists
 
         let actual =
               { hosts_check = validateHosts network.hosts

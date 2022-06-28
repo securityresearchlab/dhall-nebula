@@ -22,11 +22,19 @@ let Natural/equal = https://prelude.dhall-lang.org/v21.1.0/Natural/equal
 
 let showIPv4Network
     : types.IPv4Network -> Text
-    = \(n : types.IPv4Network) -> "${Natural/show n._1}.${Natural/show n._2}.${Natural/show n._3}.${Natural/show n._4}/${Natural/show n.mask}"
+    = \(n : types.IPv4Network) ->
+        "${Natural/show n._1}.${Natural/show
+                                  n._2}.${Natural/show
+                                            n._3}.${Natural/show
+                                                      n._4}/${Natural/show
+                                                                n.mask}"
 
 let showIPv4
     : types.IPv4 -> Text
-    = \(ip : types.IPv4) -> "${Natural/show ip._1}.${Natural/show ip._2}.${Natural/show ip._3}.${Natural/show ip._4}"
+    = \(ip : types.IPv4) ->
+        "${Natural/show ip._1}.${Natural/show ip._2}.${Natural/show
+                                                         ip._3}.${Natural/show
+                                                                    ip._4}"
 
 let isHostInList
     : types.Host -> List types.Host -> Bool
@@ -54,7 +62,9 @@ let isTarget
         merge
           { Group = \(g : types.Group) -> isHostInGroup host g
           , Host = \(h : types.Host) -> Natural/equal host.id h.id
-          , CIDR = \(n : types.IPv4Network) -> isIPInNetwork {- host.ip -} { _1 = 1, _2 = 2, _3 = 3, _4 = 4} n
+          , CIDR =
+              \(n : types.IPv4Network) ->
+                isIPInNetwork { _1 = 1, _2 = 2, _3 = 3, _4 = 4 } n
           , AnyNebulaHost = True
           , AnyExternalHost = False
           }
@@ -209,8 +219,4 @@ let getRules
           )
           network.hosts
 
-in  { getHostRules
-    , getRules
-    , showIPv4Network
-    , showIPv4
-    }
+in  { getHostRules, getRules, showIPv4Network, showIPv4 }

@@ -17,7 +17,12 @@ let IPv4Network =
 
 let ConnectionTarget
     : Type
-    = < Group : Group | Host : host.Host | CIDR : IPv4Network | AnyNebulaHost | AnyExternalHost >
+    = < Group : Group
+      | Host : host.Host
+      | CIDR : IPv4Network
+      | AnyNebulaHost
+      | AnyExternalHost
+      >
 
 let TrafficTarget
     : Type

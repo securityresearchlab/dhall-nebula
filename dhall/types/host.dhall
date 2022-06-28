@@ -1,4 +1,6 @@
-let IPv4 : Type = { _1 : Natural, _2 : Natural, _3 : Natural, _4 : Natural }
+let IPv4
+    : Type
+    = { _1 : Natural, _2 : Natural, _3 : Natural, _4 : Natural }
 
 let CAName
     : Type
@@ -101,7 +103,8 @@ let Host
       , sshd : Optional SSHDInfo
       }
 
-in  { IPv4, CAName
+in  { IPv4
+    , CAName
     , Directory
     , HostName
     , PkiInfo

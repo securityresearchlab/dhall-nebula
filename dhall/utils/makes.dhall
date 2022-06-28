@@ -27,7 +27,6 @@ let mkPkiInfoWithoutBlocklist
         , blocklist = None (List Text)
         }
 
-
 let mkBidirectionalConnection
     : types.Port ->
       types.Proto ->
@@ -66,10 +65,9 @@ let mkUnidirectionalConnection
       \(to : types.ConnectionTarget) ->
         [ { port, proto, from, to } ]
 
-in {
-    mkPkiInfoWithBlocklist
+in  { mkPkiInfoWithBlocklist
     , mkPkiInfoWithoutBlocklist
     , mkBidirectionalConnection
     , mkUnidirectionalConnection
     , mkIntraGroupConnection
-}
+    }
