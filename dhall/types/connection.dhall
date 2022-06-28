@@ -8,18 +8,36 @@ let Group
     : Type
     = { name : GroupName, hosts : List host.Host }
 
+let Direction
+    : Type
+    = < In | Out >
+
 let ConnectionTarget
     : Type
     = < Group : Group | Host : host.Host >
+
+let TrafficTarget
+    : Type
+    = < AnyHost
+      | Host : host.Host
+      | Group : Group
+      | Groups : List Group
+      | CIDR : Text
+      >
 
 let UnidirectionalConnection
     : Type
     = { from : ConnectionTarget, to : ConnectionTarget }
 
+let FreeConnection
+    : Type
+    = { target : TrafficTarget, direction : Direction }
+
 let ConnectionType
     : Type
-    = < GroupConnection : Group
-      | UnidirectionalConnection : UnidirectionalConnection
+    = < GroupConnection : Group -- allows connectivity between all group hosts, inbound and outbound
+      | UnidirectionalConnection : UnidirectionalConnection -- allows connectivity from a ConnectionTarget to another
+      | FreeConnection : FreeConnection -- allows connectivity, in the specified direction, for all hosts, from/to the given traffic target
       >
 
 let PortRange
@@ -38,27 +56,15 @@ let Connection
     : Type
     = { port : Port, proto : Proto, type : ConnectionType }
 
-let TrafficTarget
-    : Type
-    = < AnyHost | Host : host.Host | Group : Group | Groups : List Group | CIDR : Text >
-
-let RuleDirection
-    : Type
-    = < In | Out >
-
 let FirewallRule
     : Type
     = { port : Port
       , proto : Proto
       , traffic_target : TrafficTarget
-      , direction : RuleDirection
+      , direction : Direction
       , ca_name : Optional Text
       , ca_sha : Optional Text
       }
-
-let AdHocFirewallRule
-    : Type
-    = { targets : List host.Host } //\\ FirewallRule
 
 let Cipher
     : Type
@@ -66,16 +72,13 @@ let Cipher
 
 let Network
     : Type
-    = { hosts : List host.Host
-      , connections : List Connection
-      , ad_hoc_rules : List AdHocFirewallRule
-      , cipher : Cipher
-      }
+    = { hosts : List host.Host, connections : List Connection, cipher : Cipher }
 
 in  { GroupName
     , Group
     , ConnectionType
     , UnidirectionalConnection
+    , FreeConnection
     , ConnectionTarget
     , Port
     , PortRange
@@ -84,7 +87,6 @@ in  { GroupName
     , Cipher
     , Network
     , TrafficTarget
-    , RuleDirection
+    , Direction
     , FirewallRule
-    , AdHocFirewallRule
     }

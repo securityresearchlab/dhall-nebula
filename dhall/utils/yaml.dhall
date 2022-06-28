@@ -29,7 +29,12 @@ let rule_map
                 }
                 rule.port
 
-        let general_info = { port, proto = rule.proto, ca_sha = None Text, ca_name = None Text }
+        let general_info =
+              { port
+              , proto = rule.proto
+              , ca_sha = None Text
+              , ca_name = None Text
+              }
 
         let result_rule
             : types.Rule
@@ -52,7 +57,9 @@ let rule_map
                               l
 
                       in  types.Rule.GroupsRule (general_info // { groups })
-                , CIDR = \(cidr : Text) -> types.Rule.CIDRRule ( general_info // { cidr})
+                , CIDR =
+                    \(cidr : Text) ->
+                      types.Rule.CIDRRule (general_info // { cidr })
                 }
                 rule.traffic_target
 

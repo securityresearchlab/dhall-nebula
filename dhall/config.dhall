@@ -68,6 +68,10 @@ let hosts_list
     : List nebula.Host.Type
     = [ lighthouse, laptop1, laptop2 ]
 
+let all_group
+    : nebula.Group
+    = { name = "all", hosts = hosts_list }
+
 let home_group
     : nebula.Group
     = { name = "home", hosts = [ laptop1, laptop2 ] }
@@ -79,33 +83,43 @@ let home_connection
       , type = nebula.ConnectionType.GroupConnection home_group
       }
 
-let allow_all_outbound_rule
-    : nebula.AdHocFirewallRule
+let outbound_connection
+    : nebula.Connection
     = { port = nebula.Port.Any
       , proto = nebula.Proto.any
-      , traffic_target = nebula.TrafficTarget.AnyHost
-      , direction = nebula.RuleDirection.Out
-      , targets = hosts_list
-      , ca_name = None Text
-      , ca_sha = None Text
+      , type =
+          nebula.ConnectionType.FreeConnection
+            { target = nebula.TrafficTarget.AnyHost
+            , direction = nebula.Direction.Out
+            }
       }
 
-let allow_icmp_rule
-    : nebula.AdHocFirewallRule
+let outbound_connection
+    : nebula.Connection
+    = { port = nebula.Port.Any
+      , proto = nebula.Proto.any
+      , type =
+          nebula.ConnectionType.FreeConnection
+            { target = nebula.TrafficTarget.AnyHost
+            , direction = nebula.Direction.Out
+            }
+      }
+
+let icmp_connection
+    : nebula.Connection
     = { port = nebula.Port.Port 22
       , proto = nebula.Proto.icmp
-      , traffic_target = nebula.TrafficTarget.AnyHost
-      , direction = nebula.RuleDirection.In
-      , targets = hosts_list
-      , ca_name = None Text
-      , ca_sha = None Text
+      , type =
+          nebula.ConnectionType.FreeConnection
+            { target = nebula.TrafficTarget.AnyHost
+            , direction = nebula.Direction.In
+            }
       }
 
 let network
     : nebula.Network
     = { hosts = hosts_list
-      , connections = [ home_connection ]
-      , ad_hoc_rules = [ allow_all_outbound_rule, allow_icmp_rule ]
+      , connections = [ home_connection, outbound_connection, icmp_connection ]
       , cipher = nebula.Cipher.aes
       }
 

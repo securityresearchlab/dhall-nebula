@@ -69,9 +69,9 @@ let isTarget
           target
 
 let getTrafficTarget
-    : types.ConnectionType -> types.RuleDirection -> types.TrafficTarget
+    : types.ConnectionType -> types.Direction -> types.TrafficTarget
     = \(type : types.ConnectionType) ->
-      \(dir : types.RuleDirection) ->
+      \(dir : types.Direction) ->
         merge
           { GroupConnection = \(g : types.Group) -> types.TrafficTarget.Group g
           , UnidirectionalConnection =
@@ -81,6 +81,7 @@ let getTrafficTarget
                   , Host = \(h : types.Host) -> types.TrafficTarget.Host h
                   }
                   (merge { In = c.from, Out = c.to } dir)
+          , FreeConnection = \(c : types.FreeConnection) -> c.target
           }
           type
 
@@ -95,14 +96,14 @@ let generateRulesForConnection
                 then  [ { port = connection.port
                         , proto = connection.proto
                         , traffic_target = types.TrafficTarget.Group group
-                        , direction = types.RuleDirection.In
+                        , direction = types.Direction.In
                         , ca_name = None Text
                         , ca_sha = None Text
                         }
                       , { port = connection.port
                         , proto = connection.proto
                         , traffic_target = types.TrafficTarget.Group group
-                        , direction = types.RuleDirection.Out
+                        , direction = types.Direction.Out
                         , ca_name = None Text
                         , ca_sha = None Text
                         }
@@ -115,10 +116,8 @@ let generateRulesForConnection
                 then  [ { port = connection.port
                         , proto = connection.proto
                         , traffic_target =
-                            getTrafficTarget
-                              connection.type
-                              types.RuleDirection.Out
-                        , direction = types.RuleDirection.Out
+                            getTrafficTarget connection.type types.Direction.Out
+                        , direction = types.Direction.Out
                         , ca_name = None Text
                         , ca_sha = None Text
                         }
@@ -127,15 +126,23 @@ let generateRulesForConnection
                 then  [ { port = connection.port
                         , proto = connection.proto
                         , traffic_target =
-                            getTrafficTarget
-                              connection.type
-                              types.RuleDirection.In
-                        , direction = types.RuleDirection.In
+                            getTrafficTarget connection.type types.Direction.In
+                        , direction = types.Direction.In
                         , ca_name = None Text
                         , ca_sha = None Text
                         }
                       ]
                 else  [] : List types.FirewallRule
+          , FreeConnection =
+              \(c : types.FreeConnection) ->
+                [ { port = connection.port
+                  , proto = connection.proto
+                  , traffic_target = c.target
+                  , direction = c.direction
+                  , ca_name = None Text
+                  , ca_sha = None Text
+                  }
+                ]
           }
           connection.type
 
@@ -164,28 +171,6 @@ let getHostRules
                 )
                 ([] : List types.FirewallRule)
 
-        let ad_hoc_rules
-            : List types.FirewallRule
-            = List/map
-                types.AdHocFirewallRule
-                types.FirewallRule
-                ( \(rule : types.AdHocFirewallRule) ->
-                    rule.{ port
-                         , proto
-                         , traffic_target
-                         , direction
-                         , ca_name
-                         , ca_sha
-                         }
-                )
-                ( List/filter
-                    types.AdHocFirewallRule
-                    ( \(rule : types.AdHocFirewallRule) ->
-                        isHostInList host rule.targets
-                    )
-                    network.ad_hoc_rules
-                )
-
         let dns_rules
             : List types.FirewallRule
             = merge
@@ -197,7 +182,7 @@ let getHostRules
                               [ { port = types.Port.Port d.dns_interface.port
                                 , proto = types.Proto.any
                                 , traffic_target = types.TrafficTarget.AnyHost
-                                , direction = types.RuleDirection.In
+                                , direction = types.Direction.In
                                 , ca_name = None Text
                                 , ca_sha = None Text
                                 }
@@ -209,7 +194,7 @@ let getHostRules
                 }
                 host.lighthouse_config
 
-        in  connection_rules # ad_hoc_rules # dns_rules
+        in  connection_rules # dns_rules
 
 let getRules
     : types.Network -> Map types.Host (List types.FirewallRule)
