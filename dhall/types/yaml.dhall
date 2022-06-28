@@ -23,14 +23,19 @@ let PortConfig
     : Type
     = < Port : Natural | Description : Text >
 
-let BaseRule : Type = { port : PortConfig, proto : types.Proto, ca_name : Optional Text, ca_sha : Optional Text }
+let BaseRule
+    : Type
+    = { port : PortConfig
+      , proto : types.Proto
+      , ca_name : Optional Text
+      , ca_sha : Optional Text
+      }
 
 let Rule
     : Type
     = < HostRule : BaseRule //\\ { host : Text }
       | GroupRule : BaseRule //\\ { group : Text }
-      | GroupsRule :
-          BaseRule //\\ { groups : List Text }
+      | GroupsRule : BaseRule //\\ { groups : List Text }
       >
 
 let FirewallConfig

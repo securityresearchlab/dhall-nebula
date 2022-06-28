@@ -112,7 +112,12 @@ let validate
               , rules_check = True
               }
 
-        let rules_lists : List (List types.FirewallRule) = Map/values types.Host (List types.FirewallRule) (pure_utils.getRules network)
+        let rules_lists
+            : List (List types.FirewallRule)
+            = Map/values
+                types.Host
+                (List types.FirewallRule)
+                (pure_utils.getRules network)
 
         let rules =
               List/fold

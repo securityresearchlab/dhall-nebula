@@ -38,7 +38,7 @@ let Connection
     : Type
     = { port : Port, proto : Proto, type : ConnectionType }
 
-let ApplyTarget
+let TrafficTarget
     : Type
     = < AnyHost | Host : host.Host | Group : Group | Groups : List Group >
 
@@ -50,11 +50,15 @@ let FirewallRule
     : Type
     = { port : Port
       , proto : Proto
-      , applies_to : ApplyTarget
+      , traffic_target : TrafficTarget
       , direction : RuleDirection
-      , ca_name: Optional Text
-      , ca_sha: Optional Text
+      , ca_name : Optional Text
+      , ca_sha : Optional Text
       }
+
+let AdHocFirewallRule
+    : Type
+    = { targets : List host.Host } //\\ FirewallRule
 
 let Cipher
     : Type
@@ -64,7 +68,7 @@ let Network
     : Type
     = { hosts : List host.Host
       , connections : List Connection
-      , ad_hoc_rules : List FirewallRule
+      , ad_hoc_rules : List AdHocFirewallRule
       , cipher : Cipher
       }
 
@@ -79,7 +83,8 @@ in  { GroupName
     , Connection
     , Cipher
     , Network
-    , ApplyTarget
+    , TrafficTarget
     , RuleDirection
     , FirewallRule
+    , AdHocFirewallRule
     }

@@ -29,7 +29,7 @@ let rule_map
                 }
                 rule.port
 
-        let general_info = { port, proto = rule.proto }
+        let general_info = { port, proto = rule.proto, ca_sha = None Text, ca_name = None Text }
 
         let result_rule
             : types.Rule
@@ -53,7 +53,7 @@ let rule_map
 
                       in  types.Rule.GroupsRule (general_info // { groups })
                 }
-                rule.applies_to
+                rule.traffic_target
 
         in  result_rule
 

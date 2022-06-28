@@ -43,14 +43,20 @@ let mkPkiInfoWithoutBlocklist
         , blocklist = None (List Text)
         }
 
+let isHostInList
+    : types.Host -> List types.Host -> Bool
+    = \(host : types.Host) ->
+      \(list : List types.Host) ->
+        List/any
+          types.Host
+          (\(h : types.Host) -> Natural/equal host.id h.id)
+          list
+
 let isHostInGroup
     : types.Host -> types.Group -> Bool
     = \(host : types.Host) ->
       \(group : types.Group) ->
-        List/any
-          types.Host
-          (\(h : types.Host) -> Natural/equal host.id h.id)
-          group.hosts
+        isHostInList host group.hosts
 
 let isTarget
     : types.Host -> types.ConnectionTarget -> Bool
@@ -62,7 +68,7 @@ let isTarget
           }
           target
 
-let isFirewallRuleTarget
+let isFirewallRuleTrafficTarget
     : types.Host -> types.FirewallRule -> Bool
     = \(host : types.Host) ->
       \(rule : types.FirewallRule) ->
@@ -82,19 +88,19 @@ let isFirewallRuleTarget
                   )
                   False
           }
-          rule.applies_to
+          rule.traffic_target
 
-let getApplyTarget
-    : types.ConnectionType -> types.RuleDirection -> types.ApplyTarget
+let getTrafficTarget
+    : types.ConnectionType -> types.RuleDirection -> types.TrafficTarget
     = \(type : types.ConnectionType) ->
       \(dir : types.RuleDirection) ->
         merge
-          { GroupConnection = \(g : types.Group) -> types.ApplyTarget.Group g
+          { GroupConnection = \(g : types.Group) -> types.TrafficTarget.Group g
           , UnidirectionalConnection =
               \(c : types.UnidirectionalConnection) ->
                 merge
-                  { Group = \(g : types.Group) -> types.ApplyTarget.Group g
-                  , Host = \(h : types.Host) -> types.ApplyTarget.Host h
+                  { Group = \(g : types.Group) -> types.TrafficTarget.Group g
+                  , Host = \(h : types.Host) -> types.TrafficTarget.Host h
                   }
                   (merge { In = c.from, Out = c.to } dir)
           }
@@ -110,13 +116,17 @@ let generateRulesForConnection
                 if    isHostInGroup host group
                 then  [ { port = connection.port
                         , proto = connection.proto
-                        , applies_to = types.ApplyTarget.Group group
+                        , traffic_target = types.TrafficTarget.Group group
                         , direction = types.RuleDirection.In
+                        , ca_name = None Text
+                        , ca_sha = None Text
                         }
                       , { port = connection.port
                         , proto = connection.proto
-                        , applies_to = types.ApplyTarget.Group group
+                        , traffic_target = types.TrafficTarget.Group group
                         , direction = types.RuleDirection.Out
+                        , ca_name = None Text
+                        , ca_sha = None Text
                         }
                       ]
                 else  [] : List types.FirewallRule
@@ -126,21 +136,25 @@ let generateRulesForConnection
                 if    isTarget host c.from
                 then  [ { port = connection.port
                         , proto = connection.proto
-                        , applies_to =
-                            getApplyTarget
+                        , traffic_target =
+                            getTrafficTarget
                               connection.type
                               types.RuleDirection.Out
                         , direction = types.RuleDirection.Out
+                        , ca_name = None Text
+                        , ca_sha = None Text
                         }
                       ]
                 else  if isTarget host c.to
                 then  [ { port = connection.port
                         , proto = connection.proto
-                        , applies_to =
-                            getApplyTarget
+                        , traffic_target =
+                            getTrafficTarget
                               connection.type
                               types.RuleDirection.In
                         , direction = types.RuleDirection.In
+                        , ca_name = None Text
+                        , ca_sha = None Text
                         }
                       ]
                 else  [] : List types.FirewallRule
@@ -174,10 +188,25 @@ let getHostRules
 
         let ad_hoc_rules
             : List types.FirewallRule
-            = List/filter
+            = List/map
+                types.AdHocFirewallRule
                 types.FirewallRule
-                (\(rule : types.FirewallRule) -> isFirewallRuleTarget host rule)
-                network.ad_hoc_rules
+                ( \(rule : types.AdHocFirewallRule) ->
+                    rule.{ port
+                         , proto
+                         , traffic_target
+                         , direction
+                         , ca_name
+                         , ca_sha
+                         }
+                )
+                ( List/filter
+                    types.AdHocFirewallRule
+                    ( \(rule : types.AdHocFirewallRule) ->
+                        isHostInList host rule.targets
+                    )
+                    network.ad_hoc_rules
+                )
 
         let dns_rules
             : List types.FirewallRule
@@ -189,8 +218,10 @@ let getHostRules
                             \(d : types.DNSConfig) ->
                               [ { port = types.Port.Port d.dns_interface.port
                                 , proto = types.Proto.any
-                                , applies_to = types.ApplyTarget.AnyHost
+                                , traffic_target = types.TrafficTarget.AnyHost
                                 , direction = types.RuleDirection.In
+                                , ca_name = None Text
+                                , ca_sha = None Text
                                 }
                               ]
                         , None = [] : List types.FirewallRule

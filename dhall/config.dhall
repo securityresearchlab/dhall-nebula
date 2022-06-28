@@ -64,6 +64,10 @@ let laptop2
       , sshd = None nebula.SSHDInfo
       }
 
+let hosts_list
+    : List nebula.Host.Type
+    = [ lighthouse, laptop1, laptop2 ]
+
 let home_group
     : nebula.Group
     = { name = "home", hosts = [ laptop1, laptop2 ] }
@@ -76,24 +80,30 @@ let home_connection
       }
 
 let allow_all_outbound_rule
-    : nebula.FirewallRule
+    : nebula.AdHocFirewallRule
     = { port = nebula.Port.Any
       , proto = nebula.Proto.any
-      , applies_to = nebula.ApplyTarget.AnyHost
+      , traffic_target = nebula.TrafficTarget.AnyHost
       , direction = nebula.RuleDirection.Out
+      , targets = hosts_list
+      , ca_name = None Text
+      , ca_sha = None Text
       }
 
 let allow_icmp_rule
-    : nebula.FirewallRule
+    : nebula.AdHocFirewallRule
     = { port = nebula.Port.Port 22
       , proto = nebula.Proto.icmp
-      , applies_to = nebula.ApplyTarget.AnyHost
+      , traffic_target = nebula.TrafficTarget.AnyHost
       , direction = nebula.RuleDirection.In
+      , targets = hosts_list
+      , ca_name = None Text
+      , ca_sha = None Text
       }
 
 let network
     : nebula.Network
-    = { hosts = [ lighthouse, laptop1, laptop2 ]
+    = { hosts = hosts_list
       , connections = [ home_connection ]
       , ad_hoc_rules = [ allow_all_outbound_rule, allow_icmp_rule ]
       , cipher = nebula.Cipher.aes
