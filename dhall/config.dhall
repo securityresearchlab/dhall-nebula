@@ -10,8 +10,7 @@ let lighthouse_name = "lighthouse"
 
 let lighthouse
     : nebula.Host.Type
-    = { id = 0
-      , name = lighthouse_name
+    = { name = lighthouse_name
       , ip = lighthouse_ip
       , lighthouse_config = Some
         { dns = Some { dns_interface = { host = "0.0.0.0", port = 53 } } }
@@ -32,9 +31,8 @@ let lighthouse
 
 let laptop1
     : nebula.Host.Type
-    = { id = 1
-      , name = "laptop1"
-      , ip = "192.168.100.2"
+    = { name = "laptop1"
+      , ip = nebula.mkIPv4 192 168 100 2
       , lighthouse_config = None nebula.IsLighthouseConfig
       , pki = nebula.PkiInfo.default
       , lighthouse.interval = 60
@@ -49,9 +47,8 @@ let laptop1
 
 let laptop2
     : nebula.Host.Type
-    = { id = 2
-      , name = "laptop2"
-      , ip = "192.168.100.3"
+    = { name = "laptop2"
+      , ip = nebula.mkIPv4 192 168 100 3
       , lighthouse_config = None nebula.IsLighthouseConfig
       , pki = nebula.PkiInfo.default
       , lighthouse.interval = 60

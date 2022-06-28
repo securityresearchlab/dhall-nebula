@@ -65,9 +65,18 @@ let mkUnidirectionalConnection
       \(to : types.ConnectionTarget) ->
         [ { port, proto, from, to } ]
 
+let mkIPv4
+    : Natural -> Natural -> Natural -> Natural -> types.IPv4
+    = \(_1 : Natural) ->
+      \(_2 : Natural) ->
+      \(_3 : Natural) ->
+      \(_4 : Natural) ->
+        { _1, _2, _3, _4 }
+
 in  { mkPkiInfoWithBlocklist
     , mkPkiInfoWithoutBlocklist
     , mkBidirectionalConnection
     , mkUnidirectionalConnection
     , mkIntraGroupConnection
+    , mkIPv4
     }

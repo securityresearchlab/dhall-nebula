@@ -88,9 +88,8 @@ let LogInfo
 
 let Host
     : Type
-    = { id : Natural
-      , name : HostName
-      , ip : Text
+    = { name : HostName
+      , ip : IPv4
       , lighthouse_config : Optional IsLighthouseConfig
       , pki : PkiInfo
       , lighthouse : LighthouseInfo

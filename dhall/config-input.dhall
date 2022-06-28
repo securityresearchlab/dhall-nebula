@@ -1,6 +1,8 @@
+let nebula = ./package.dhall
+
 let lighthouse_ip
-    : Text
-    = "192.168.100.1"
+    : nebula.IPv4
+    = nebula.mkIPv4 192 168 100 1
 
 let lighthouse_dir
     : Text

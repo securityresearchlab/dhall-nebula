@@ -33,24 +33,24 @@ let isLighthouse
           { Some = \(config : types.IsLighthouseConfig) -> True, None = False }
           host.lighthouse_config
 
-let areIdsUnique
-    : List Natural -> Bool
-    = \(ns : List Natural) ->
-        let check_id
-            : Natural -> Bool
-            = \(n : Natural) ->
+let areIPsUnique
+    : List types.IPv4 -> Bool
+    = \(ns : List types.IPv4) ->
+        let check_ip
+            : types.IPv4 -> Bool
+            = \(n : types.IPv4) ->
                 Natural/equal
                   ( List/length
-                      Natural
+                      types.IPv4
                       ( List/partition
-                          Natural
-                          (\(x : Natural) -> Natural/equal n x)
+                          types.IPv4
+                          (\(x : types.IPv4) -> pure_utils.areIPv4Equal n x)
                           ns
                       ).true
                   )
                   1
 
-        let checks = List/map Natural Bool check_id ns
+        let checks = List/map types.IPv4 Bool check_ip ns
 
         in  Bool/and checks
 
@@ -71,8 +71,8 @@ let validateHosts
               Bool/and (List/map types.Host Bool validateHost hs)
 
         let hosts_validity =
-              areIdsUnique
-                (List/map types.Host Natural (\(h : types.Host) -> h.id) hs)
+              areIPsUnique
+                (List/map types.Host types.IPv4 (\(h : types.Host) -> h.ip) hs)
 
         in  single_hosts_validity && hosts_validity
 

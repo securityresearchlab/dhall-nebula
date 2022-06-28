@@ -36,13 +36,22 @@ let showIPv4
                                                          ip._3}.${Natural/show
                                                                     ip._4}"
 
+let areIPv4Equal
+    : types.IPv4 -> types.IPv4 -> Bool
+    = \(ip1 : types.IPv4) ->
+      \(ip2 : types.IPv4) ->
+            Natural/equal ip1._1 ip2._1
+        &&  Natural/equal ip1._2 ip2._2
+        &&  Natural/equal ip1._3 ip2._3
+        &&  Natural/equal ip1._4 ip2._4
+
 let isHostInList
     : types.Host -> List types.Host -> Bool
     = \(host : types.Host) ->
       \(list : List types.Host) ->
         List/any
           types.Host
-          (\(h : types.Host) -> Natural/equal host.id h.id)
+          (\(h : types.Host) -> areIPv4Equal h.ip host.ip)
           list
 
 let isHostInGroup
@@ -61,7 +70,7 @@ let isTarget
       \(target : types.ConnectionTarget) ->
         merge
           { Group = \(g : types.Group) -> isHostInGroup host g
-          , Host = \(h : types.Host) -> Natural/equal host.id h.id
+          , Host = \(h : types.Host) -> areIPv4Equal host.ip h.ip
           , CIDR =
               \(n : types.IPv4Network) ->
                 isIPInNetwork { _1 = 1, _2 = 2, _3 = 3, _4 = 4 } n
@@ -178,7 +187,7 @@ let getHostRules
                 ( List/filter
                     types.AdHocFirewallRule
                     ( \(rule : types.AdHocFirewallRule) ->
-                        Natural/equal rule.target.id host.id
+                        areIPv4Equal rule.target.ip host.ip
                     )
                     network.ad_hoc_rules
                 )
@@ -219,4 +228,4 @@ let getRules
           )
           network.hosts
 
-in  { getHostRules, getRules, showIPv4Network, showIPv4 }
+in  { getHostRules, getRules, showIPv4Network, showIPv4, areIPv4Equal }

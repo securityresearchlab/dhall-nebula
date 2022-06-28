@@ -43,7 +43,8 @@ let rule_map
                     types.Rule.HostRule (general_info // { host = "any" })
                 , Host =
                     \(t : types.Host) ->
-                      types.Rule.HostRule (general_info // { host = t.ip })
+                      types.Rule.HostRule
+                        (general_info // { host = pure.showIPv4 t.ip })
                 , Group =
                     \(g : types.Group) ->
                       types.Rule.GroupRule (general_info // { group = g.name })
@@ -108,7 +109,7 @@ let generateHostConfig
                 types.Host
                 (Map/Entry Text (List Text))
                 ( \(h : types.Host) ->
-                    { mapKey = h.ip, mapValue = h.static_ips }
+                    { mapKey = pure.showIPv4 h.ip, mapValue = h.static_ips }
                 )
                 network.hosts
 
@@ -117,7 +118,7 @@ let generateHostConfig
             = List/map
                 types.Host
                 Text
-                (\(h : types.Host) -> h.ip)
+                (\(h : types.Host) -> pure.showIPv4 h.ip)
                 ( List/filter
                     types.Host
                     ( \(host : types.Host) ->
