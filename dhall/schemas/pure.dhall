@@ -1,5 +1,7 @@
 let types = ../types.dhall
 
+let makes = ../utils/makes.dhall
+
 let PkiInfo =
       { Type = types.PkiInfo
       , default =
@@ -60,18 +62,16 @@ let PunchyInfo =
 let Host =
       { Type = types.Host
       , default =
-        { id = 0
-        , name = ""
-        , ip = ""
-        , lighthouse_config = None types.IsLighthouseConfig
+        { lighthouse_config = None types.IsLighthouseConfig
         , pki = PkiInfo.default
         , lighthouse = LighthouseInfo.default
-        , static_ips = [] : List Text
+        , static_ips = [] : List types.IPv4WithPort
         , listen_interface = ListenInfo.default
-        , punchy = True
+        , punchy = PunchyInfo.default
         , logging = LogInfo.default
         , tun = TunInfo.default
         , sshd = None types.SSHDInfo
+        , local_range = None Text
         }
       }
 

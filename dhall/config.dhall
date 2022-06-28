@@ -10,7 +10,8 @@ let lighthouse_name = "lighthouse"
 
 let lighthouse
     : nebula.Host.Type
-    = { name = lighthouse_name
+    = nebula.Host::{
+      , name = lighthouse_name
       , ip = lighthouse_ip
       , lighthouse_config = Some
         { dns = Some { dns_interface = { host = "0.0.0.0", port = 53 } } }
@@ -19,47 +20,16 @@ let lighthouse
             inputs.lighthouse_dir
             "ca"
             lighthouse_name
-      , lighthouse.interval = 60
       , static_ips = [ nebula.mkIPv4WithPort 20 20 20 20 4242 ]
-      , listen_interface = nebula.ListenInfo.default
-      , punchy = nebula.PunchyInfo.default
-      , logging = nebula.LogInfo.default
-      , tun = nebula.TunInfo.default
-      , local_range = None Text
-      , sshd = None nebula.SSHDInfo
       }
 
 let laptop1
     : nebula.Host.Type
-    = { name = "laptop1"
-      , ip = nebula.mkIPv4 192 168 100 2
-      , lighthouse_config = None nebula.IsLighthouseConfig
-      , pki = nebula.PkiInfo.default
-      , lighthouse.interval = 60
-      , static_ips = [] : List nebula.IPv4WithPort
-      , listen_interface = nebula.ListenInfo.default
-      , punchy = nebula.PunchyInfo.default
-      , logging = nebula.LogInfo.default
-      , tun = nebula.TunInfo.default
-      , local_range = None Text
-      , sshd = None nebula.SSHDInfo
-      }
+    = nebula.Host::{ name = "laptop1", ip = nebula.mkIPv4 192 168 100 2 }
 
 let laptop2
     : nebula.Host.Type
-    = { name = "laptop2"
-      , ip = nebula.mkIPv4 192 168 100 3
-      , lighthouse_config = None nebula.IsLighthouseConfig
-      , pki = nebula.PkiInfo.default
-      , lighthouse.interval = 60
-      , static_ips = [] : List nebula.IPv4WithPort
-      , listen_interface = nebula.ListenInfo.default
-      , punchy = nebula.PunchyInfo.default
-      , logging = nebula.LogInfo.default
-      , tun = nebula.TunInfo.default
-      , local_range = None Text
-      , sshd = None nebula.SSHDInfo
-      }
+    = nebula.Host::{ name = "laptop2", ip = nebula.mkIPv4 192 168 100 3 }
 
 let hosts_list
     : List nebula.Host.Type
