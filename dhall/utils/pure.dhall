@@ -81,7 +81,7 @@ let getTrafficTarget
                   , Host = \(h : types.Host) -> types.TrafficTarget.Host h
                   }
                   (merge { In = c.from, Out = c.to } dir)
-          , FreeConnection = \(c : types.FreeConnection) -> c.target
+          , NetworkConnection = \(c : types.NetworkConnection) -> c.target
           }
           type
 
@@ -133,8 +133,8 @@ let generateRulesForConnection
                         }
                       ]
                 else  [] : List types.FirewallRule
-          , FreeConnection =
-              \(c : types.FreeConnection) ->
+          , NetworkConnection =
+              \(c : types.NetworkConnection) ->
                 [ { port = connection.port
                   , proto = connection.proto
                   , traffic_target = c.target

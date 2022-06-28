@@ -88,7 +88,7 @@ let outbound_connection
     = { port = nebula.Port.Any
       , proto = nebula.Proto.any
       , type =
-          nebula.ConnectionType.FreeConnection
+          nebula.ConnectionType.NetworkConnection
             { target = nebula.TrafficTarget.AnyHost
             , direction = nebula.Direction.Out
             }
@@ -99,7 +99,7 @@ let outbound_connection
     = { port = nebula.Port.Any
       , proto = nebula.Proto.any
       , type =
-          nebula.ConnectionType.FreeConnection
+          nebula.ConnectionType.NetworkConnection
             { target = nebula.TrafficTarget.AnyHost
             , direction = nebula.Direction.Out
             }
@@ -110,7 +110,7 @@ let icmp_connection
     = { port = nebula.Port.Port 22
       , proto = nebula.Proto.icmp
       , type =
-          nebula.ConnectionType.FreeConnection
+          nebula.ConnectionType.NetworkConnection
             { target = nebula.TrafficTarget.AnyHost
             , direction = nebula.Direction.In
             }

@@ -29,7 +29,7 @@ let UnidirectionalConnection
     : Type
     = { from : ConnectionTarget, to : ConnectionTarget }
 
-let FreeConnection
+let NetworkConnection
     : Type
     = { target : TrafficTarget, direction : Direction }
 
@@ -37,7 +37,7 @@ let ConnectionType
     : Type
     = < GroupConnection : Group -- allows connectivity between all group hosts, inbound and outbound
       | UnidirectionalConnection : UnidirectionalConnection -- allows connectivity from a ConnectionTarget to another
-      | FreeConnection : FreeConnection -- allows connectivity, in the specified direction, for all hosts, from/to the given traffic target
+      | NetworkConnection : NetworkConnection -- allows connectivity, in the specified direction, for all hosts, from/to the given traffic target
       >
 
 let PortRange
@@ -78,7 +78,7 @@ in  { GroupName
     , Group
     , ConnectionType
     , UnidirectionalConnection
-    , FreeConnection
+    , NetworkConnection
     , ConnectionTarget
     , Port
     , PortRange
