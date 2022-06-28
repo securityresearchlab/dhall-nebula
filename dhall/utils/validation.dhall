@@ -1,6 +1,8 @@
-let types = ../types.dhall
+let connection = ./connection.dhall
 
-let pure_utils = ./pure.dhall
+let generics = ./generics.dhall
+
+let types = ../types.dhall
 
 let Bool/and = https://prelude.dhall-lang.org/v21.1.0/Bool/and
 
@@ -44,7 +46,7 @@ let areIPsUnique
                       types.IPv4
                       ( List/partition
                           types.IPv4
-                          (\(x : types.IPv4) -> pure_utils.areIPv4Equal n x)
+                          (\(x : types.IPv4) -> generics.areIPv4Equal n x)
                           ns
                       ).true
                   )
@@ -111,7 +113,7 @@ let validate
             = Map/values
                 types.Host
                 (List types.FirewallRule)
-                (pure_utils.getRules network)
+                (connection.getRules network)
 
         let rules = List/concat types.FirewallRule rules_lists
 

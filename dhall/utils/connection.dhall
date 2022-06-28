@@ -1,3 +1,5 @@
+let generics = ./generics.dhall
+
 let makes = ./makes.dhall
 
 let types = ../types.dhall
@@ -18,62 +20,16 @@ let Map = https://prelude.dhall-lang.org/v21.1.0/Map/Type
 
 let Map/Entry = https://prelude.dhall-lang.org/v21.1.0/Map/Entry
 
-let Natural/equal = https://prelude.dhall-lang.org/v21.1.0/Natural/equal
-
-let showIPv4Network
-    : types.IPv4Network -> Text
-    = \(n : types.IPv4Network) ->
-        "${Natural/show n._1}.${Natural/show
-                                  n._2}.${Natural/show
-                                            n._3}.${Natural/show
-                                                      n._4}/${Natural/show
-                                                                n.mask}"
-
-let showIPv4
-    : types.IPv4 -> Text
-    = \(ip : types.IPv4) ->
-        "${Natural/show ip._1}.${Natural/show ip._2}.${Natural/show
-                                                         ip._3}.${Natural/show
-                                                                    ip._4}"
-
-let areIPv4Equal
-    : types.IPv4 -> types.IPv4 -> Bool
-    = \(ip1 : types.IPv4) ->
-      \(ip2 : types.IPv4) ->
-            Natural/equal ip1._1 ip2._1
-        &&  Natural/equal ip1._2 ip2._2
-        &&  Natural/equal ip1._3 ip2._3
-        &&  Natural/equal ip1._4 ip2._4
-
-let isHostInList
-    : types.Host -> List types.Host -> Bool
-    = \(host : types.Host) ->
-      \(list : List types.Host) ->
-        List/any
-          types.Host
-          (\(h : types.Host) -> areIPv4Equal h.ip host.ip)
-          list
-
-let isHostInGroup
-    : types.Host -> types.Group -> Bool
-    = \(host : types.Host) ->
-      \(group : types.Group) ->
-        isHostInList host group.hosts
-
-let isIPInNetwork
-    : types.IPv4 -> types.IPv4Network -> Bool
-    = \(ip : types.IPv4) -> \(network : types.IPv4Network) -> True
-
 let isTarget
     : types.Host -> types.ConnectionTarget -> Bool
     = \(host : types.Host) ->
       \(target : types.ConnectionTarget) ->
         merge
-          { Group = \(g : types.Group) -> isHostInGroup host g
-          , Host = \(h : types.Host) -> areIPv4Equal host.ip h.ip
+          { Group = \(g : types.Group) -> generics.isHostInGroup host g
+          , Host = \(h : types.Host) -> generics.areIPv4Equal host.ip h.ip
           , CIDR =
               \(n : types.IPv4Network) ->
-                isIPInNetwork { _1 = 1, _2 = 2, _3 = 3, _4 = 4 } n
+                generics.isIPInNetwork { _1 = 1, _2 = 2, _3 = 3, _4 = 4 } n
           , AnyNebulaHost = True
           , AnyExternalHost = False
           }
@@ -187,7 +143,7 @@ let getHostRules
                 ( List/filter
                     types.AdHocFirewallRule
                     ( \(rule : types.AdHocFirewallRule) ->
-                        areIPv4Equal rule.target.ip host.ip
+                        generics.areIPv4Equal rule.target.ip host.ip
                     )
                     network.ad_hoc_rules
                 )
@@ -228,4 +184,4 @@ let getRules
           )
           network.hosts
 
-in  { getHostRules, getRules, showIPv4Network, showIPv4, areIPv4Equal }
+in  { getHostRules, getRules }

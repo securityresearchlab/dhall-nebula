@@ -1,4 +1,6 @@
-let pure = ./pure.dhall
+let connection = ./connection.dhall
+
+let generics = ./generics.dhall
 
 let types = ../types.dhall
 
@@ -44,7 +46,7 @@ let rule_map
                 , Host =
                     \(t : types.Host) ->
                       types.Rule.HostRule
-                        (general_info // { host = pure.showIPv4 t.ip })
+                        (general_info // { host = generics.showIPv4 t.ip })
                 , Group =
                     \(g : types.Group) ->
                       types.Rule.GroupRule (general_info // { group = g.name })
@@ -61,7 +63,7 @@ let rule_map
                 , CIDR =
                     \(cidr : types.IPv4Network) ->
                       types.Rule.CIDRRule
-                        (general_info // { cidr = pure.showIPv4Network cidr })
+                        (general_info // { cidr = generics.showIPv4Network cidr })
                 }
                 rule.traffic_target
 
@@ -73,7 +75,7 @@ let generateHostConfig
       \(host : types.Host) ->
         let firewall_rules
             : List types.FirewallRule
-            = pure.getHostRules network host
+            = connection.getHostRules network host
 
         let inbound_rules
             : List types.Rule
@@ -109,7 +111,7 @@ let generateHostConfig
                 types.Host
                 (Map/Entry Text (List Text))
                 ( \(h : types.Host) ->
-                    { mapKey = pure.showIPv4 h.ip, mapValue = h.static_ips }
+                    { mapKey = generics.showIPv4 h.ip, mapValue = h.static_ips }
                 )
                 network.hosts
 
@@ -118,7 +120,7 @@ let generateHostConfig
             = List/map
                 types.Host
                 Text
-                (\(h : types.Host) -> pure.showIPv4 h.ip)
+                (\(h : types.Host) -> generics.showIPv4 h.ip)
                 ( List/filter
                     types.Host
                     ( \(host : types.Host) ->

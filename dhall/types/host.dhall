@@ -2,6 +2,8 @@ let IPv4
     : Type
     = { _1 : Natural, _2 : Natural, _3 : Natural, _4 : Natural }
 
+let IPv4WithPort : Type = IPv4 //\\ { port : Natural }
+
 let CAName
     : Type
     = Text
@@ -103,6 +105,7 @@ let Host
       }
 
 in  { IPv4
+, IPv4WithPort
     , CAName
     , Directory
     , HostName
