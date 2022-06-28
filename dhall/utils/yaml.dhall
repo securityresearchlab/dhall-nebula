@@ -115,9 +115,7 @@ let generateHostConfig
                       List/map
                         types.IPv4WithPort
                         Text
-                        ( \(ip : types.IPv4WithPort) ->
-                            generics.showIPv4WithPort ip
-                        )
+                        generics.showIPv4WithPort
                         h.static_ips
 
               in  List/map

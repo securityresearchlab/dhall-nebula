@@ -57,4 +57,10 @@ let isIPInNetwork
     : types.IPv4 -> types.IPv4Network -> Bool
     = \(ip : types.IPv4) -> \(network : types.IPv4Network) -> True
 
-in  { showIPv4Network, showIPv4, showIPv4WithPort, areIPv4Equal, isHostInGroup, isIPInNetwork }
+in  { showIPv4Network
+    , showIPv4
+    , showIPv4WithPort
+    , areIPv4Equal
+    , isHostInGroup
+    , isIPInNetwork
+    }

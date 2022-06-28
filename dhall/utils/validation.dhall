@@ -28,6 +28,9 @@ let Natural/equal = https://prelude.dhall-lang.org/v21.1.0/Natural/equal
 
 let Natural/lessThan = https://prelude.dhall-lang.org/v21.1.0/Natural/lessThan
 
+let Natural/lessThanEqual =
+      https://prelude.dhall-lang.org/v21.1.0/Natural/lessThanEqual
+
 let isLighthouse
     : types.Host -> Bool
     = \(host : types.Host) ->
@@ -56,15 +59,46 @@ let areIPsUnique
 
         in  Bool/and checks
 
+let validateIPv4
+    : types.IPv4 -> Bool
+    = \(ip : types.IPv4) ->
+        let isNAcceptable
+            : Natural -> Bool
+            = \(n : Natural) -> Natural/lessThanEqual n 255
+
+        in      isNAcceptable ip._1
+            &&  isNAcceptable ip._2
+            &&  isNAcceptable ip._3
+            &&  isNAcceptable ip._4
+
+let validateIPv4WithPort
+    : types.IPv4WithPort -> Bool
+    = \(ip : types.IPv4WithPort) -> validateIPv4 ip.{ _1, _2, _3, _4 }
+
 let validateHost
     : types.Host -> Bool
     = \(host : types.Host) ->
-        merge
-          { Some =
-              \(c : types.SSHDInfo) -> Bool/not (Natural/equal c.listen.port 22)
-          , None = True
-          }
-          host.sshd
+        let sshd_validity =
+              merge
+                { Some =
+                    \(c : types.SSHDInfo) ->
+                      Bool/not (Natural/equal c.listen.port 22)
+                , None = True
+                }
+                host.sshd
+
+        let ip_validity = validateIPv4 host.ip
+
+        let static_ips_validity =
+              Bool/and
+                ( List/map
+                    types.IPv4WithPort
+                    Bool
+                    validateIPv4WithPort
+                    host.static_ips
+                )
+
+        in  sshd_validity && ip_validity && static_ips_validity
 
 let validateHosts
     : List types.Host -> Bool
