@@ -73,10 +73,20 @@ let mkIPv4
       \(_4 : Natural) ->
         { _1, _2, _3, _4 }
 
+let mkIPv4WithPort
+    : Natural -> Natural -> Natural -> Natural -> Natural -> types.IPv4WithPort
+    = \(_1 : Natural) ->
+      \(_2 : Natural) ->
+      \(_3 : Natural) ->
+      \(_4 : Natural) ->
+      \(port : Natural) ->
+        { _1, _2, _3, _4, port }
+
 in  { mkPkiInfoWithBlocklist
     , mkPkiInfoWithoutBlocklist
     , mkBidirectionalConnection
     , mkUnidirectionalConnection
     , mkIntraGroupConnection
     , mkIPv4
+    , mkIPv4WithPort
     }

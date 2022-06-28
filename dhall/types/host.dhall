@@ -2,7 +2,9 @@ let IPv4
     : Type
     = { _1 : Natural, _2 : Natural, _3 : Natural, _4 : Natural }
 
-let IPv4WithPort : Type = IPv4 //\\ { port : Natural }
+let IPv4WithPort
+    : Type
+    = IPv4 //\\ { port : Natural }
 
 let CAName
     : Type
@@ -95,7 +97,7 @@ let Host
       , lighthouse_config : Optional IsLighthouseConfig
       , pki : PkiInfo
       , lighthouse : LighthouseInfo
-      , static_ips : List Text
+      , static_ips : List IPv4WithPort
       , listen_interface : ListenInfo
       , punchy : PunchyInfo
       , logging : LogInfo
@@ -105,7 +107,7 @@ let Host
       }
 
 in  { IPv4
-, IPv4WithPort
+    , IPv4WithPort
     , CAName
     , Directory
     , HostName

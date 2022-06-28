@@ -63,7 +63,9 @@ let rule_map
                 , CIDR =
                     \(cidr : types.IPv4Network) ->
                       types.Rule.CIDRRule
-                        (general_info // { cidr = generics.showIPv4Network cidr })
+                        (     general_info
+                          //  { cidr = generics.showIPv4Network cidr }
+                        )
                 }
                 rule.traffic_target
 
@@ -107,13 +109,26 @@ let generateHostConfig
 
         let static_hosts
             : Map Text (List Text)
-            = List/map
-                types.Host
-                (Map/Entry Text (List Text))
-                ( \(h : types.Host) ->
-                    { mapKey = generics.showIPv4 h.ip, mapValue = h.static_ips }
-                )
-                network.hosts
+            = let getStaticIPsAsText
+                  : types.Host -> List Text
+                  = \(h : types.Host) ->
+                      List/map
+                        types.IPv4WithPort
+                        Text
+                        ( \(ip : types.IPv4WithPort) ->
+                            generics.showIPv4WithPort ip
+                        )
+                        h.static_ips
+
+              in  List/map
+                    types.Host
+                    (Map/Entry Text (List Text))
+                    ( \(h : types.Host) ->
+                        { mapKey = generics.showIPv4 h.ip
+                        , mapValue = getStaticIPsAsText h
+                        }
+                    )
+                    network.hosts
 
         let lighthouses_ips
             : List Text

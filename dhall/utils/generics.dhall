@@ -20,6 +20,15 @@ let showIPv4
                                                          ip._3}.${Natural/show
                                                                     ip._4}"
 
+let showIPv4WithPort
+    : types.IPv4WithPort -> Text
+    = \(ip : types.IPv4WithPort) ->
+        let show_ip
+            : Text
+            = showIPv4 ip.{ _1, _2, _3, _4 }
+
+        in  "${show_ip}:${Natural/show ip.port}"
+
 let areIPv4Equal
     : types.IPv4 -> types.IPv4 -> Bool
     = \(ip1 : types.IPv4) ->
@@ -48,4 +57,4 @@ let isIPInNetwork
     : types.IPv4 -> types.IPv4Network -> Bool
     = \(ip : types.IPv4) -> \(network : types.IPv4Network) -> True
 
-in {showIPv4Network, showIPv4, areIPv4Equal, isHostInGroup, isIPInNetwork}
+in  { showIPv4Network, showIPv4, showIPv4WithPort, areIPv4Equal, isHostInGroup, isIPInNetwork }
