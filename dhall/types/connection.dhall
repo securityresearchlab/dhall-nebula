@@ -35,9 +35,9 @@ let NetworkConnection
 
 let ConnectionType
     : Type
-    = < GroupConnection : Group -- allows connectivity between all group hosts, inbound and outbound
-      | UnidirectionalConnection : UnidirectionalConnection -- allows connectivity from a ConnectionTarget to another
-      | NetworkConnection : NetworkConnection -- allows connectivity, in the specified direction, for all hosts, from/to the given traffic target
+    = < GroupConnection : Group
+      | UnidirectionalConnection : UnidirectionalConnection
+      | NetworkConnection : NetworkConnection
       >
 
 let PortRange
@@ -66,13 +66,21 @@ let FirewallRule
       , ca_sha : Optional Text
       }
 
+let AdHocFirewallRule
+    : Type
+    = { target : host.Host } //\\ FirewallRule
+
 let Cipher
     : Type
     = < aes | chachapoly >
 
 let Network
     : Type
-    = { hosts : List host.Host, connections : List Connection, cipher : Cipher }
+    = { hosts : List host.Host
+      , connections : List Connection
+      , ad_hoc_rules : List AdHocFirewallRule
+      , cipher : Cipher
+      }
 
 in  { GroupName
     , Group
@@ -89,4 +97,5 @@ in  { GroupName
     , TrafficTarget
     , Direction
     , FirewallRule
+    , AdHocFirewallRule
     }

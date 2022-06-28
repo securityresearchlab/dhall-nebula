@@ -116,13 +116,25 @@ let icmp_connection
             }
       }
 
+let laptop1_rule
+    : nebula.AdHocFirewallRule
+    = { port = nebula.Port.Any
+      , proto = nebula.Proto.any
+      , traffic_target = nebula.TrafficTarget.AnyHost
+      , direction = nebula.Direction.In
+      , ca_name = None Text
+      , ca_sha = None Text
+      , target = laptop1
+      }
+
 let network
     : nebula.Network
     = { hosts = hosts_list
       , connections = [ home_connection, outbound_connection, icmp_connection ]
+      , ad_hoc_rules = [ laptop1_rule ]
       , cipher = nebula.Cipher.aes
       }
 
 let _ = assert : nebula.validate network
 
-in  nebula.generateHostConfig network lighthouse
+in  nebula.generateHostConfig network laptop1

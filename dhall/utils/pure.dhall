@@ -160,8 +160,9 @@ let getHostRules
                 (\(c : types.Connection) -> generateRulesForConnection c host)
                 network.connections
 
-        let connection_rules =
-              List/fold
+        let connection_rules
+            : List types.FirewallRule
+            = List/fold
                 (List types.FirewallRule)
                 rules_lists
                 (List types.FirewallRule)
@@ -170,6 +171,28 @@ let getHostRules
                     l # a
                 )
                 ([] : List types.FirewallRule)
+
+        let ad_hoc_rules
+            : List types.FirewallRule
+            = List/map
+                types.AdHocFirewallRule
+                types.FirewallRule
+                ( \(rule : types.AdHocFirewallRule) ->
+                    rule.{ port
+                         , proto
+                         , traffic_target
+                         , direction
+                         , ca_name
+                         , ca_sha
+                         }
+                )
+                ( List/filter
+                    types.AdHocFirewallRule
+                    ( \(rule : types.AdHocFirewallRule) ->
+                        Natural/equal rule.target.id host.id
+                    )
+                    network.ad_hoc_rules
+                )
 
         let dns_rules
             : List types.FirewallRule
@@ -194,7 +217,7 @@ let getHostRules
                 }
                 host.lighthouse_config
 
-        in  connection_rules # dns_rules
+        in  connection_rules # ad_hoc_rules # dns_rules
 
 let getRules
     : types.Network -> Map types.Host (List types.FirewallRule)
