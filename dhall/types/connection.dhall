@@ -8,13 +8,16 @@ let Group
     : Type
     = { name : GroupName, hosts : List host.Host }
 
-let Direction
+let RuleDirection
     : Type
     = < In | Out >
 
+let IPv4Network =
+      { mask : Natural, _1 : Natural, _2 : Natural, _3 : Natural, _4 : Natural }
+
 let ConnectionTarget
     : Type
-    = < Group : Group | Host : host.Host >
+    = < Group : Group | Host : host.Host | CIDR : IPv4Network | AnyNebulaHost | AnyExternalHost >
 
 let TrafficTarget
     : Type
@@ -22,22 +25,7 @@ let TrafficTarget
       | Host : host.Host
       | Group : Group
       | Groups : List Group
-      | CIDR : Text
-      >
-
-let UnidirectionalConnection
-    : Type
-    = { from : ConnectionTarget, to : ConnectionTarget }
-
-let NetworkConnection
-    : Type
-    = { target : TrafficTarget, direction : Direction }
-
-let ConnectionType
-    : Type
-    = < GroupConnection : Group
-      | UnidirectionalConnection : UnidirectionalConnection
-      | NetworkConnection : NetworkConnection
+      | CIDR : IPv4Network
       >
 
 let PortRange
@@ -52,16 +40,24 @@ let Proto
     : Type
     = < any | tcp | udp | icmp >
 
+let UnidirectionalConnection
+    : Type
+    = { port : Port
+      , proto : Proto
+      , from : ConnectionTarget
+      , to : ConnectionTarget
+      }
+
 let Connection
     : Type
-    = { port : Port, proto : Proto, type : ConnectionType }
+    = List UnidirectionalConnection
 
 let FirewallRule
     : Type
     = { port : Port
       , proto : Proto
       , traffic_target : TrafficTarget
-      , direction : Direction
+      , direction : RuleDirection
       , ca_name : Optional Text
       , ca_sha : Optional Text
       }
@@ -84,18 +80,17 @@ let Network
 
 in  { GroupName
     , Group
-    , ConnectionType
+    , IPv4Network
     , UnidirectionalConnection
-    , NetworkConnection
+    , Connection
     , ConnectionTarget
     , Port
     , PortRange
     , Proto
-    , Connection
     , Cipher
     , Network
     , TrafficTarget
-    , Direction
+    , RuleDirection
     , FirewallRule
     , AdHocFirewallRule
     }

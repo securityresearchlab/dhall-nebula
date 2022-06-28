@@ -4,4 +4,6 @@ let yaml = ./utils/yaml.dhall
 
 let validation = ./utils/validation.dhall
 
-in  pure // yaml // validation
+let makes = ./utils/makes.dhall
+
+in  pure // yaml // makes // validation

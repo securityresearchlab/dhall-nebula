@@ -78,60 +78,32 @@ let home_group
 
 let home_connection
     : nebula.Connection
-    = { port = nebula.Port.Any
-      , proto = nebula.Proto.tcp
-      , type = nebula.ConnectionType.GroupConnection home_group
-      }
+    = nebula.mkIntraGroupConnection nebula.Port.Any nebula.Proto.tcp home_group
 
 let outbound_connection
     : nebula.Connection
-    = { port = nebula.Port.Any
-      , proto = nebula.Proto.any
-      , type =
-          nebula.ConnectionType.NetworkConnection
-            { target = nebula.TrafficTarget.AnyHost
-            , direction = nebula.Direction.Out
-            }
-      }
-
-let outbound_connection
-    : nebula.Connection
-    = { port = nebula.Port.Any
-      , proto = nebula.Proto.any
-      , type =
-          nebula.ConnectionType.NetworkConnection
-            { target = nebula.TrafficTarget.AnyHost
-            , direction = nebula.Direction.Out
-            }
-      }
+    = nebula.mkUnidirectionalConnection nebula.Port.Any nebula.Proto.any nebula.ConnectionTarget.AnyNebulaHost nebula.ConnectionTarget.AnyExternalHost
 
 let icmp_connection
     : nebula.Connection
-    = { port = nebula.Port.Port 22
-      , proto = nebula.Proto.icmp
-      , type =
-          nebula.ConnectionType.NetworkConnection
-            { target = nebula.TrafficTarget.AnyHost
-            , direction = nebula.Direction.In
-            }
-      }
+    = nebula.mkUnidirectionalConnection (nebula.Port.Port 22) nebula.Proto.icmp nebula.ConnectionTarget.AnyExternalHost nebula.ConnectionTarget.AnyNebulaHost
 
-let laptop1_rule
-    : nebula.AdHocFirewallRule
-    = { port = nebula.Port.Any
-      , proto = nebula.Proto.any
-      , traffic_target = nebula.TrafficTarget.AnyHost
-      , direction = nebula.Direction.In
-      , ca_name = None Text
-      , ca_sha = None Text
-      , target = laptop1
-      }
+-- let laptop1_rule
+--     : nebula.AdHocFirewallRule
+--     = { port = nebula.Port.Any
+--       , proto = nebula.Proto.any
+--       , traffic_target = nebula.TrafficTarget.AnyHost
+--       , direction = nebula.RuleDirection.In
+--       , ca_name = None Text
+--       , ca_sha = None Text
+--       , target = laptop1
+--       }
 
 let network
     : nebula.Network
     = { hosts = hosts_list
       , connections = [ home_connection, outbound_connection, icmp_connection ]
-      , ad_hoc_rules = [ laptop1_rule ]
+      , ad_hoc_rules = [] : List nebula.AdHocFirewallRule
       , cipher = nebula.Cipher.aes
       }
 

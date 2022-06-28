@@ -1,8 +1,12 @@
+let makes = ./makes.dhall
+
 let types = ../types.dhall
 
 let schemas = ../schemas.dhall
 
 let List/any = https://prelude.dhall-lang.org/v21.1.0/List/any
+
+let List/concat = https://prelude.dhall-lang.org/v21.1.0/List/concat
 
 let List/filter = https://prelude.dhall-lang.org/v21.1.0/List/filter
 
@@ -16,32 +20,13 @@ let Map/Entry = https://prelude.dhall-lang.org/v21.1.0/Map/Entry
 
 let Natural/equal = https://prelude.dhall-lang.org/v21.1.0/Natural/equal
 
-let mkPkiInfoWithBlocklist
-    : types.Directory ->
-      types.CAName ->
-      types.HostName ->
-      List Text ->
-        types.PkiInfo
-    = \(dir : types.Directory) ->
-      \(ca : types.CAName) ->
-      \(name : types.HostName) ->
-      \(blocklist : List Text) ->
-        { ca = dir ++ "/" ++ ca ++ ".crt"
-        , cert = dir ++ "/" ++ name ++ ".crt"
-        , key = dir ++ "/" ++ name ++ ".key"
-        , blocklist = Some blocklist
-        }
+let showIPv4Network
+    : types.IPv4Network -> Text
+    = \(n : types.IPv4Network) -> "${Natural/show n._1}.${Natural/show n._2}.${Natural/show n._3}.${Natural/show n._4}/${Natural/show n.mask}"
 
-let mkPkiInfoWithoutBlocklist
-    : types.Directory -> types.CAName -> types.HostName -> types.PkiInfo
-    = \(dir : types.Directory) ->
-      \(ca : types.CAName) ->
-      \(name : types.HostName) ->
-        { ca = dir ++ "/" ++ ca ++ ".crt"
-        , cert = dir ++ "/" ++ name ++ ".crt"
-        , key = dir ++ "/" ++ name ++ ".key"
-        , blocklist = None (List Text)
-        }
+let showIPv4
+    : types.IPv4 -> Text
+    = \(ip : types.IPv4) -> "${Natural/show ip._1}.${Natural/show ip._2}.${Natural/show ip._3}.${Natural/show ip._4}"
 
 let isHostInList
     : types.Host -> List types.Host -> Bool
@@ -58,6 +43,10 @@ let isHostInGroup
       \(group : types.Group) ->
         isHostInList host group.hosts
 
+let isIPInNetwork
+    : types.IPv4 -> types.IPv4Network -> Bool
+    = \(ip : types.IPv4) -> \(network : types.IPv4Network) -> True
+
 let isTarget
     : types.Host -> types.ConnectionTarget -> Bool
     = \(host : types.Host) ->
@@ -65,86 +54,84 @@ let isTarget
         merge
           { Group = \(g : types.Group) -> isHostInGroup host g
           , Host = \(h : types.Host) -> Natural/equal host.id h.id
+          , CIDR = \(n : types.IPv4Network) -> isIPInNetwork {- host.ip -} { _1 = 1, _2 = 2, _3 = 3, _4 = 4} n
+          , AnyNebulaHost = True
+          , AnyExternalHost = False
           }
           target
 
-let getTrafficTarget
-    : types.ConnectionType -> types.Direction -> types.TrafficTarget
-    = \(type : types.ConnectionType) ->
-      \(dir : types.Direction) ->
-        merge
-          { GroupConnection = \(g : types.Group) -> types.TrafficTarget.Group g
-          , UnidirectionalConnection =
-              \(c : types.UnidirectionalConnection) ->
-                merge
-                  { Group = \(g : types.Group) -> types.TrafficTarget.Group g
-                  , Host = \(h : types.Host) -> types.TrafficTarget.Host h
-                  }
-                  (merge { In = c.from, Out = c.to } dir)
-          , NetworkConnection = \(c : types.NetworkConnection) -> c.target
-          }
-          type
+let generateOutboundRule
+    : types.UnidirectionalConnection -> types.FirewallRule
+    = \(connection : types.UnidirectionalConnection) ->
+        let target =
+              merge
+                { Group = \(g : types.Group) -> types.TrafficTarget.Group g
+                , Host = \(h : types.Host) -> types.TrafficTarget.Host h
+                , CIDR = \(n : types.IPv4Network) -> types.TrafficTarget.CIDR n
+                , AnyNebulaHost = types.TrafficTarget.AnyHost
+                , AnyExternalHost = types.TrafficTarget.AnyHost
+                }
+                connection.from
+
+        in  { port = connection.port
+            , proto = connection.proto
+            , traffic_target = target
+            , direction = types.RuleDirection.Out
+            , ca_name = None Text
+            , ca_sha = None Text
+            }
+
+let generateInboundRule
+    : types.UnidirectionalConnection -> types.FirewallRule
+    = \(connection : types.UnidirectionalConnection) ->
+        let target =
+              merge
+                { Group = \(g : types.Group) -> types.TrafficTarget.Group g
+                , Host = \(h : types.Host) -> types.TrafficTarget.Host h
+                , CIDR = \(n : types.IPv4Network) -> types.TrafficTarget.CIDR n
+                , AnyNebulaHost = types.TrafficTarget.AnyHost
+                , AnyExternalHost = types.TrafficTarget.AnyHost
+                }
+                connection.to
+
+        in  { port = connection.port
+            , proto = connection.proto
+            , traffic_target = target
+            , direction = types.RuleDirection.In
+            , ca_name = None Text
+            , ca_sha = None Text
+            }
+
+let generateRulesForUnidirectionalConnection
+    : types.UnidirectionalConnection -> types.Host -> List types.FirewallRule
+    = \(connection : types.UnidirectionalConnection) ->
+      \(host : types.Host) ->
+        let inbound_rule =
+              if    isTarget host connection.to
+              then  [ generateInboundRule connection ]
+              else  [] : List types.FirewallRule
+
+        let outbound_rule =
+              if    isTarget host connection.from
+              then  [ generateOutboundRule connection ]
+              else  [] : List types.FirewallRule
+
+        in  inbound_rule # outbound_rule
 
 let generateRulesForConnection
     : types.Connection -> types.Host -> List types.FirewallRule
     = \(connection : types.Connection) ->
       \(host : types.Host) ->
-        merge
-          { GroupConnection =
-              \(group : types.Group) ->
-                if    isHostInGroup host group
-                then  [ { port = connection.port
-                        , proto = connection.proto
-                        , traffic_target = types.TrafficTarget.Group group
-                        , direction = types.Direction.In
-                        , ca_name = None Text
-                        , ca_sha = None Text
-                        }
-                      , { port = connection.port
-                        , proto = connection.proto
-                        , traffic_target = types.TrafficTarget.Group group
-                        , direction = types.Direction.Out
-                        , ca_name = None Text
-                        , ca_sha = None Text
-                        }
-                      ]
-                else  [] : List types.FirewallRule
-          , UnidirectionalConnection =
-              -- TODO: there is the possibility of an host being both the from target and the to target, add a case for this
-              \(c : types.UnidirectionalConnection) ->
-                if    isTarget host c.from
-                then  [ { port = connection.port
-                        , proto = connection.proto
-                        , traffic_target =
-                            getTrafficTarget connection.type types.Direction.Out
-                        , direction = types.Direction.Out
-                        , ca_name = None Text
-                        , ca_sha = None Text
-                        }
-                      ]
-                else  if isTarget host c.to
-                then  [ { port = connection.port
-                        , proto = connection.proto
-                        , traffic_target =
-                            getTrafficTarget connection.type types.Direction.In
-                        , direction = types.Direction.In
-                        , ca_name = None Text
-                        , ca_sha = None Text
-                        }
-                      ]
-                else  [] : List types.FirewallRule
-          , NetworkConnection =
-              \(c : types.NetworkConnection) ->
-                [ { port = connection.port
-                  , proto = connection.proto
-                  , traffic_target = c.target
-                  , direction = c.direction
-                  , ca_name = None Text
-                  , ca_sha = None Text
-                  }
-                ]
-          }
-          connection.type
+        List/concat
+          types.FirewallRule
+          ( List/map
+              types.UnidirectionalConnection
+              (List types.FirewallRule)
+              ( \(uc : types.UnidirectionalConnection) ->
+                  generateRulesForUnidirectionalConnection uc host
+              )
+              connection
+          )
 
 let getHostRules
     : types.Network -> types.Host -> List types.FirewallRule
@@ -162,15 +149,7 @@ let getHostRules
 
         let connection_rules
             : List types.FirewallRule
-            = List/fold
-                (List types.FirewallRule)
-                rules_lists
-                (List types.FirewallRule)
-                ( \(l : List types.FirewallRule) ->
-                  \(a : List types.FirewallRule) ->
-                    l # a
-                )
-                ([] : List types.FirewallRule)
+            = List/concat types.FirewallRule rules_lists
 
         let ad_hoc_rules
             : List types.FirewallRule
@@ -205,7 +184,7 @@ let getHostRules
                               [ { port = types.Port.Port d.dns_interface.port
                                 , proto = types.Proto.any
                                 , traffic_target = types.TrafficTarget.AnyHost
-                                , direction = types.Direction.In
+                                , direction = types.RuleDirection.In
                                 , ca_name = None Text
                                 , ca_sha = None Text
                                 }
@@ -232,6 +211,6 @@ let getRules
 
 in  { getHostRules
     , getRules
-    , mkPkiInfoWithBlocklist
-    , mkPkiInfoWithoutBlocklist
+    , showIPv4Network
+    , showIPv4
     }
