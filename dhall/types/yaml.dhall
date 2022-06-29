@@ -10,13 +10,17 @@ let LocalAllowListConfig
     : Type
     = Map Text LocalAllowListElement
 
+let ListenConfig
+    : Type
+    = { host : Text, port : Natural }
+
 let LighthouseConfig
     : Type
     = { am_lighthouse : Bool
       , interval : Natural
       , hosts : List Text
       , serve_dns : Optional Bool
-      , dns : Optional types.InterfaceInfo
+      , dns : Optional ListenConfig
       , remote_allow_list : Optional (Map Text Bool)
       , local_allow_list : Optional LocalAllowListConfig
       }
@@ -63,10 +67,6 @@ let SSHDConfig
       , host_key : Text
       , authorized_users : List types.SSHDUsers
       }
-
-let ListenConfig
-    : Type
-    = { host : Text, port : Natural }
 
 let HostConfig
     : Type

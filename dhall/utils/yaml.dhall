@@ -208,11 +208,16 @@ let generateHostConfig
                                 { Some =
                                     \(d : types.DNSConfig) ->
                                       { serve_dns = Some True
-                                      , dns = Some d.dns_interface
+                                      , dns = Some
+                                        { host =
+                                            generics.showIPv4
+                                              d.dns_interface.host
+                                        , port = d.dns_interface.port
+                                        }
                                       }
                                 , None =
                                   { serve_dns = None Bool
-                                  , dns = None types.InterfaceInfo
+                                  , dns = None types.ListenConfig
                                   }
                                 }
                                 c.dns
@@ -221,7 +226,7 @@ let generateHostConfig
                       , interval = host.lighthouse.interval
                       , hosts = lighthouses_ips
                       , serve_dns = None Bool
-                      , dns = None types.InterfaceInfo
+                      , dns = None types.ListenConfig
                       }
                     }
                     host.lighthouse_config

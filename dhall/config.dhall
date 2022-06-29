@@ -15,16 +15,13 @@ let lighthouse
     = nebula.Host::{
       , name = lighthouse_name
       , ip = lighthouse_ip
-      , lighthouse_config = Some
-        { dns = Some
-          { dns_interface = { host = nebula.mkIPv4 0 0 0 0, port = 53 } }
-        }
+      , lighthouse_config = Some { dns = None nebula.DNSConfig }
       , pki =
           nebula.mkPkiInfoWithoutBlocklist
             inputs.lighthouse_dir
             "ca"
             lighthouse_name
-      , static_ips = [ nebula.mkIPv4WithPort 20 20 20 20 4242 ]
+      , static_ips = [ nebula.mkIPv4WithPort 20 90 142 142 4242 ]
       }
 
 let laptop1
@@ -109,4 +106,4 @@ let network
 
 let _ = assert : nebula.validate network
 
-in  nebula.generateHostConfig network laptop2
+in  nebula.generateHostConfig network lighthouse
