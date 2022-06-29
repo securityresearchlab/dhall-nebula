@@ -75,6 +75,28 @@ let validateIPv4WithPort
     : types.IPv4WithPort -> Bool
     = \(ip : types.IPv4WithPort) -> validateIPv4 ip.{ _1, _2, _3, _4 }
 
+let validateHostInterfaces
+    : types.Host -> Bool
+    = \(host : types.Host) ->
+        let listen_validity = validateIPv4 host.listen_interface.host
+
+        let dns_interface_validity =
+              merge
+                { Some =
+                    \(c : types.IsLighthouseConfig) ->
+                      merge
+                        { Some =
+                            \(d : types.DNSConfig) ->
+                              validateIPv4 d.dns_interface.host
+                        , None
+                        }
+                        c.dns
+                , None = True
+                }
+                host.lighthouse_config
+
+        in  listen_validity && dns_interface_validity
+
 let validateHost
     : types.Host -> Bool
     = \(host : types.Host) ->
@@ -98,7 +120,12 @@ let validateHost
                     host.static_ips
                 )
 
-        in  sshd_validity && ip_validity && static_ips_validity
+        let interfaces_validity = validateHostInterfaces host
+
+        in      sshd_validity
+            &&  ip_validity
+            &&  static_ips_validity
+            &&  interfaces_validity
 
 let validateHosts
     : List types.Host -> Bool
