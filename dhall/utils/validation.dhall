@@ -88,7 +88,7 @@ let validateHostInterfaces
                         { Some =
                             \(d : types.DNSConfig) ->
                               validateIPv4 d.dns_interface.host
-                        , None
+                        , None = True
                         }
                         c.dns
                 , None = True
