@@ -35,6 +35,25 @@ let Natural/lessThan = https://prelude.dhall-lang.org/v21.1.0/Natural/lessThan
 let Natural/lessThanEqual =
       https://prelude.dhall-lang.org/v21.1.0/Natural/lessThanEqual
 
+let LocalAllowListChecks
+    : Type
+    = { cidrs_validites : Bool, interfaces_validities : Bool }
+
+let LighthouseAllowListsChecks
+    : Type
+    = { remote_list_validities : Bool
+      , local_list_validities : LocalAllowListChecks
+      }
+
+let HostChecks
+    : Type
+    = { sshd_validities : Bool
+      , ip_validities : Bool
+      , static_ips_validity : Bool
+      , interfaces_validities : Bool
+      , lighthouse_allow_lists_validities : LighthouseAllowListsChecks
+      }
+
 let isLighthouse
     : types.Host -> Bool
     = \(host : types.Host) ->
@@ -79,6 +98,11 @@ let validateIPv4WithPort
     : types.IPv4WithPort -> Bool
     = \(ip : types.IPv4WithPort) -> validateIPv4 ip.{ _1, _2, _3, _4 }
 
+let validateIPv4Network
+    : types.IPv4Network -> Bool
+    = \(n : types.IPv4Network) ->
+        validateIPv4 n.{ _1, _2, _3, _4 } && Natural/lessThan n.mask 32
+
 let validateHostInterfaces
     : types.Host -> Bool
     = \(host : types.Host) ->
@@ -101,146 +125,162 @@ let validateHostInterfaces
 
         in  listen_validity && dns_interface_validity
 
-let validateLighthouseAllowLists
+let listValidation
+    : Map types.IPv4Network Bool -> Bool
+    = \(m : Map types.IPv4Network Bool) ->
+        let isDefaultNetwork
+            : types.IPv4Network -> Bool
+            = \(n : types.IPv4Network) ->
+                    Natural/equal n._1 0
+                &&  Natural/equal n._2 0
+                &&  Natural/equal n._3 0
+                &&  Natural/equal n._4 0
+                &&  Natural/equal n.mask 0
+
+        let values = Map/values types.IPv4Network Bool m
+
+        let keys = Map/keys types.IPv4Network Bool m
+
+        let cidrs_validities =
+              Bool/and
+                (List/map types.IPv4Network Bool validateIPv4Network keys)
+
+        in  if        Bool/and values
+                  ||  Bool/and (List/map Bool Bool Bool/not values)
+            then  cidrs_validities
+            else      cidrs_validities
+                  &&  Bool/not
+                        ( List/null
+                            types.IPv4Network
+                            ( List/filter
+                                types.IPv4Network
+                                isDefaultNetwork
+                                keys
+                            )
+                        )
+
+let validateRemoteAllowList
     : types.Host -> Bool
     = \(host : types.Host) ->
-        let listValidation
-            : Map types.IPv4Network Bool -> Bool
-            = \(m : Map types.IPv4Network Bool) ->
-                let isDefaultNetwork
-                    : types.IPv4Network -> Bool
-                    = \(n : types.IPv4Network) ->
-                            Natural/equal n._1 0
-                        &&  Natural/equal n._2 0
-                        &&  Natural/equal n._3 0
-                        &&  Natural/equal n._4 0
-                        &&  Natural/equal n.mask 0
+        merge
+          { Some = \(list : Map types.IPv4Network Bool) -> listValidation list
+          , None = True
+          }
+          host.lighthouse.remote_allow_list
 
-                let values = Map/values types.IPv4Network Bool m
+let validateLocalCIDRAllowLists
+    : types.Host -> Bool
+    = \(host : types.Host) ->
+        let cidrs =
+              merge
+                { Some =
+                    \(info : types.LocalAllowListInfo) ->
+                      merge
+                        { Some = \(c : Map types.IPv4Network Bool) -> Some c
+                        , None = None (Map types.IPv4Network Bool)
+                        }
+                        info.cidrs
+                , None = None (Map types.IPv4Network Bool)
+                }
+                host.lighthouse.local_allow_list
 
-                let keys = Map/keys types.IPv4Network Bool m
-
-                in  if        Bool/and values
-                          ||  Bool/and (List/map Bool Bool Bool/not values)
-                    then  True
-                    else  Bool/not
-                            ( List/null
-                                types.IPv4Network
-                                ( List/filter
-                                    types.IPv4Network
-                                    isDefaultNetwork
-                                    keys
-                                )
-                            )
-
-        let remote_list_validity =
+        let cidrs_validity =
               merge
                 { Some =
                     \(list : Map types.IPv4Network Bool) -> listValidation list
                 , None = True
                 }
-                host.lighthouse.remote_allow_list
+                cidrs
 
-        let local_list_validity =
-              let cidrs =
-                    merge
-                      { Some =
-                          \(info : types.LocalAllowListInfo) ->
-                            merge
-                              { Some =
-                                  \(c : Map types.IPv4Network Bool) -> Some c
-                              , None = None (Map types.IPv4Network Bool)
-                              }
-                              info.cidrs
-                      , None = None (Map types.IPv4Network Bool)
-                      }
-                      host.lighthouse.local_allow_list
+        in  cidrs_validity
 
-              let interfaces =
-                    merge
-                      { Some =
-                          \(info : types.LocalAllowListInfo) ->
-                            merge
-                              { Some = \(i : Map Text Bool) -> Some i
-                              , None = None (Map Text Bool)
-                              }
-                              info.interfaces
-                      , None = None (Map Text Bool)
-                      }
-                      host.lighthouse.local_allow_list
-
-              let cidrs_validity =
-                    merge
-                      { Some =
-                          \(list : Map types.IPv4Network Bool) ->
-                            listValidation list
-                      , None = True
-                      }
-                      cidrs
-
-              let interfaces_validity =
-                    merge
-                      { Some =
-                          \(list : Map Text Bool) ->
-                            let values = Map/values Text Bool list
-
-                            in      Bool/and values
-                                ||  Bool/and
-                                      (List/map Bool Bool Bool/not values)
-                      , None = True
-                      }
-                      interfaces
-
-              in  cidrs_validity && interfaces_validity
-
-        in  remote_list_validity && local_list_validity
-
-let validateHost
+let validateLocalInterfacesAllowLists
     : types.Host -> Bool
     = \(host : types.Host) ->
-        let sshd_validity =
+        let interfaces =
               merge
                 { Some =
-                    \(c : types.SSHDInfo) ->
-                      Bool/not (Natural/equal c.listen.port 22)
-                , None = True
+                    \(info : types.LocalAllowListInfo) ->
+                      merge
+                        { Some = \(i : Map Text Bool) -> Some i
+                        , None = None (Map Text Bool)
+                        }
+                        info.interfaces
+                , None = None (Map Text Bool)
                 }
-                host.sshd
+                host.lighthouse.local_allow_list
 
-        let ip_validity = validateIPv4 host.ip
+        in  merge
+              { Some =
+                  \(list : Map Text Bool) ->
+                    let values = Map/values Text Bool list
 
-        let static_ips_validity =
-              Bool/and
-                ( List/map
-                    types.IPv4WithPort
-                    Bool
-                    validateIPv4WithPort
-                    host.static_ips
-                )
+                    in      Bool/and values
+                        ||  Bool/and (List/map Bool Bool Bool/not values)
+              , None = True
+              }
+              interfaces
 
-        let interfaces_validity = validateHostInterfaces host
+let validateHostSSHD
+    : types.Host -> Bool
+    = \(host : types.Host) ->
+        merge
+          { Some =
+              \(c : types.SSHDInfo) -> Bool/not (Natural/equal c.listen.port 22)
+          , None = True
+          }
+          host.sshd
 
-        let lighthouse_allow_lists_validity = validateLighthouseAllowLists host
+let validateHostIPv4
+    : types.Host -> Bool
+    = \(host : types.Host) -> validateIPv4 host.ip
 
-        in      sshd_validity
-            &&  ip_validity
-            &&  static_ips_validity
-            &&  interfaces_validity
-            &&  lighthouse_allow_lists_validity
+let validateHostStaticIPv4s
+    : types.Host -> Bool
+    = \(host : types.Host) ->
+        Bool/and
+          ( List/map
+              types.IPv4WithPort
+              Bool
+              validateIPv4WithPort
+              host.static_ips
+          )
 
-let validateHosts
+let validateHostsAsNetwork
     : List types.Host -> Bool
     = \(hs : List types.Host) ->
-        let single_hosts_validity
-            : Bool
-            = Bool/and (List/map types.Host Bool validateHost hs)
+        areIPsUnique
+          (List/map types.Host types.IPv4 (\(h : types.Host) -> h.ip) hs)
 
-        let hosts_validity
-            : Bool
-            = areIPsUnique
-                (List/map types.Host types.IPv4 (\(h : types.Host) -> h.ip) hs)
-
-        in  single_hosts_validity && hosts_validity
+let validateSingleHosts
+    : List types.Host -> HostChecks
+    = \(hs : List types.Host) ->
+        { sshd_validities =
+            Bool/and (List/map types.Host Bool validateHostSSHD hs)
+        , ip_validities =
+            Bool/and (List/map types.Host Bool validateHostIPv4 hs)
+        , static_ips_validity =
+            Bool/and (List/map types.Host Bool validateHostStaticIPv4s hs)
+        , interfaces_validities =
+            Bool/and (List/map types.Host Bool validateHostInterfaces hs)
+        , lighthouse_allow_lists_validities =
+          { remote_list_validities =
+              Bool/and (List/map types.Host Bool validateRemoteAllowList hs)
+          , local_list_validities =
+            { cidrs_validites =
+                Bool/and
+                  (List/map types.Host Bool validateLocalCIDRAllowLists hs)
+            , interfaces_validities =
+                Bool/and
+                  ( List/map
+                      types.Host
+                      Bool
+                      validateLocalInterfacesAllowLists
+                      hs
+                  )
+            }
+          }
+        }
 
 let validateRules
     : List types.FirewallRule -> Bool
@@ -266,12 +306,6 @@ let validateRules
 let validate
     : types.Network -> Type
     = \(network : types.Network) ->
-        let expected =
-              { hosts_check = True
-              , lighthouse_present_check = True
-              , rules_check = True
-              }
-
         let rules_lists
             : List (List types.FirewallRule)
             = Map/values
@@ -281,11 +315,33 @@ let validate
 
         let rules = List/concat types.FirewallRule rules_lists
 
+        let expected =
+              { hosts_checks =
+                { single_hosts_validity =
+                  { sshd_validities = True
+                  , ip_validities = True
+                  , static_ips_validity = True
+                  , interfaces_validities = True
+                  , lighthouse_allow_lists_validities =
+                    { remote_list_validities = True
+                    , local_list_validities =
+                      { cidrs_validites = True, interfaces_validities = True }
+                    }
+                  }
+                , network_hosts_validity = True
+                , lighthouse_present_check = True
+                }
+              , rules_checks.rules_check = True
+              }
+
         let actual =
-              { hosts_check = validateHosts network.hosts
-              , lighthouse_present_check =
-                  List/any types.Host isLighthouse network.hosts
-              , rules_check = validateRules rules
+              { hosts_checks =
+                { single_hosts_validity = validateSingleHosts network.hosts
+                , network_hosts_validity = validateHostsAsNetwork network.hosts
+                , lighthouse_present_check =
+                    List/any types.Host isLighthouse network.hosts
+                }
+              , rules_checks.rules_check = validateRules rules
               }
 
         in  expected === actual
