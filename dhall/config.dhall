@@ -45,7 +45,7 @@ let home_group
 
 let home_connection
     : nebula.Connection
-    = nebula.mkIntraGroupConnection nebula.Port.Any nebula.Proto.tcp home_group
+    = nebula.mkIntraGroupConnection nebula.Port.Any nebula.Proto.tcp home_group (None Text) (None Text)
 
 let outbound_connection
     : nebula.Connection
@@ -54,6 +54,8 @@ let outbound_connection
         nebula.Proto.any
         nebula.ConnectionTarget.AnyNebulaHost
         nebula.ConnectionTarget.AnyExternalHost
+        (None Text)
+        (None Text)
 
 let icmp_connection
     : nebula.Connection
@@ -62,6 +64,8 @@ let icmp_connection
         nebula.Proto.icmp
         nebula.ConnectionTarget.AnyExternalHost
         nebula.ConnectionTarget.AnyNebulaHost
+        (None Text)
+        (None Text)
 
 let network
     : nebula.Network

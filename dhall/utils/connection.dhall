@@ -52,8 +52,8 @@ let generateOutboundRule
             , proto = connection.proto
             , traffic_target = target
             , direction = types.RuleDirection.Out
-            , ca_name = None Text
-            , ca_sha = None Text
+            , ca_name = connection.ca_name
+            , ca_sha = connection.ca_sha
             }
 
 let generateInboundRule
@@ -73,8 +73,8 @@ let generateInboundRule
             , proto = connection.proto
             , traffic_target = target
             , direction = types.RuleDirection.In
-            , ca_name = None Text
-            , ca_sha = None Text
+            , ca_name = connection.ca_name
+            , ca_sha = connection.ca_sha
             }
 
 let generateRulesForUnidirectionalConnection

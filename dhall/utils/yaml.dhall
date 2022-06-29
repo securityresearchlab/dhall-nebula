@@ -34,8 +34,8 @@ let rule_map
         let general_info =
               { port
               , proto = rule.proto
-              , ca_sha = None Text
-              , ca_name = None Text
+              , ca_sha = rule.ca_sha
+              , ca_name = rule.ca_name
               }
 
         let result_rule

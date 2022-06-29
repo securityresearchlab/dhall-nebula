@@ -51,6 +51,8 @@ let UnidirectionalConnection
       , proto : Proto
       , from : ConnectionTarget
       , to : ConnectionTarget
+      , ca_name : Optional Text
+      , ca_sha : Optional Text
       }
 
 let Connection

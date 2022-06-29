@@ -32,24 +32,37 @@ let mkBidirectionalConnection
       types.Proto ->
       types.ConnectionTarget ->
       types.ConnectionTarget ->
+      Optional Text ->
+      Optional Text ->
         types.Connection
     = \(port : types.Port) ->
       \(proto : types.Proto) ->
       \(c1 : types.ConnectionTarget) ->
       \(c2 : types.ConnectionTarget) ->
-        [ { port, proto, from = c1, to = c2 }
-        , { port, proto, from = c2, to = c1 }
+      \(ca_name : Optional Text) ->
+      \(ca_sha : Optional Text) ->
+        [ { port, proto, from = c1, to = c2, ca_name, ca_sha }
+        , { port, proto, from = c2, to = c1, ca_name, ca_sha }
         ]
 
 let mkIntraGroupConnection
-    : types.Port -> types.Proto -> types.Group -> types.Connection
+    : types.Port ->
+      types.Proto ->
+      types.Group ->
+      Optional Text ->
+      Optional Text ->
+        types.Connection
     = \(port : types.Port) ->
       \(proto : types.Proto) ->
       \(g : types.Group) ->
+      \(ca_name : Optional Text) ->
+      \(ca_sha : Optional Text) ->
         [ { port
           , proto
           , from = types.ConnectionTarget.Group g
           , to = types.ConnectionTarget.Group g
+          , ca_name
+          , ca_sha
           }
         ]
 
@@ -58,12 +71,16 @@ let mkUnidirectionalConnection
       types.Proto ->
       types.ConnectionTarget ->
       types.ConnectionTarget ->
+      Optional Text ->
+      Optional Text ->
         types.Connection
     = \(port : types.Port) ->
       \(proto : types.Proto) ->
       \(from : types.ConnectionTarget) ->
       \(to : types.ConnectionTarget) ->
-        [ { port, proto, from, to } ]
+      \(ca_name : Optional Text) ->
+      \(ca_sha : Optional Text) ->
+        [ { port, proto, from, to, ca_name, ca_sha } ]
 
 let mkIPv4
     : Natural -> Natural -> Natural -> Natural -> types.IPv4
