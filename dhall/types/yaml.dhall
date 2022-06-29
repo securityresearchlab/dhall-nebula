@@ -54,12 +54,16 @@ let SSHDConfig
       , authorized_users : List types.SSHDUsers
       }
 
+let ListenConfig
+    : Type
+    = { host : Text, port : Natural }
+
 let HostConfig
     : Type
     = { pki : types.PkiInfo
       , static_host_map : Map Text (List Text)
       , lighthouse : LighthouseConfig
-      , listen : types.ListenInfo
+      , listen : ListenConfig
       , punchy : types.PunchyInfo
       , tun : types.TunInfo
       , logging : types.LogInfo
@@ -71,6 +75,7 @@ let HostConfig
 
 in  { LighthouseConfig
     , SSHDConfig
+    , ListenConfig
     , HostConfig
     , FirewallConnectionConfig
     , FirewallConfig

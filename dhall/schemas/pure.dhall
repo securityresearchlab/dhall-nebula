@@ -16,18 +16,17 @@ let LighthouseInfo = { Type = types.LighthouseInfo, default.interval = 60 }
 
 let InterfaceInfo =
       { Type = types.InterfaceInfo
-      , default = { host = "0.0.0.0", port = 4242 }
+      , default = { host = makes.mkIPv4 0 0 0 0, port = 4242 }
       }
 
 let ListenInfo =
       { Type = types.ListenInfo
       , default =
-        { host = "0.0.0.0"
-        , port = 4242
-        , batch = None Natural
-        , read_buffer = None Natural
-        , write_buffer = None Natural
-        }
+              InterfaceInfo.default
+          //  { batch = None Natural
+              , read_buffer = None Natural
+              , write_buffer = None Natural
+              }
       }
 
 let TunInfo =

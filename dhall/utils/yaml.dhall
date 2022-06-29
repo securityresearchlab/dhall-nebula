@@ -188,7 +188,8 @@ let generateHostConfig
                       Some
                         { enabled = True
                         , listen =
-                            "${c.listen.host}:${Natural/show c.listen.port}"
+                            "${generics.showIPv4
+                                 c.listen.host}:${Natural/show c.listen.port}"
                         , host_key = c.host_key
                         , authorized_users = c.authorized_users
                         }
@@ -196,10 +197,16 @@ let generateHostConfig
                 }
                 host.sshd
 
+        let listen_config
+            : types.ListenConfig
+            = { host = generics.showIPv4 host.listen_interface.host
+              , port = host.listen_interface.port
+              }
+
         in  { pki = host.pki
             , static_host_map = static_hosts
             , lighthouse = lighthouse_config
-            , listen = host.listen_interface
+            , listen = listen_config
             , punchy = host.punchy
             , tun = host.tun
             , logging = host.logging

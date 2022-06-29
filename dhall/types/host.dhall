@@ -24,16 +24,15 @@ let PkiInfo
 
 let InterfaceInfo
     : Type
-    = { host : Text, port : Natural }
+    = { host : IPv4, port : Natural }
 
 let ListenInfo
     : Type
-    = { host : Text
-      , port : Natural
-      , batch : Optional Natural
-      , read_buffer : Optional Natural
-      , write_buffer : Optional Natural
-      }
+    =     InterfaceInfo
+      //\\  { batch : Optional Natural
+            , read_buffer : Optional Natural
+            , write_buffer : Optional Natural
+            }
 
 let DNSConfig
     : Type

@@ -14,7 +14,9 @@ let lighthouse
       , name = lighthouse_name
       , ip = lighthouse_ip
       , lighthouse_config = Some
-        { dns = Some { dns_interface = { host = "0.0.0.0", port = 53 } } }
+        { dns = Some
+          { dns_interface = { host = nebula.mkIPv4 0 0 0 0, port = 53 } }
+        }
       , pki =
           nebula.mkPkiInfoWithoutBlocklist
             inputs.lighthouse_dir
@@ -45,7 +47,12 @@ let home_group
 
 let home_connection
     : nebula.Connection
-    = nebula.mkIntraGroupConnection nebula.Port.Any nebula.Proto.tcp home_group (None Text) (None Text)
+    = nebula.mkIntraGroupConnection
+        nebula.Port.Any
+        nebula.Proto.tcp
+        home_group
+        (None Text)
+        (None Text)
 
 let outbound_connection
     : nebula.Connection
