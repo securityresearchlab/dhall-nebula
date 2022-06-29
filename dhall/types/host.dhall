@@ -51,10 +51,16 @@ let PunchyInfo
     : Type
     = { punch : Bool, respond : Optional Bool, delay : Optional Text }
 
+let LocalAllowListInfo : Type = {
+    interfaces : Optional (Map Text Bool)
+    , cidrs : Optional (Map IPv4Network Bool)
+}
+
 let LighthouseInfo
     : Type
     = { interval : Natural
       , remote_allow_list : Optional (Map IPv4Network Bool)
+      , local_allow_list : Optional LocalAllowListInfo
       }
 
 let SSHDUsers
@@ -122,6 +128,7 @@ in  { IPv4
     , DNSConfig
     , IsLighthouseConfig
     , PunchyInfo
+    , LocalAllowListInfo
     , LighthouseInfo
     , SSHDUsers
     , SSHDInfo

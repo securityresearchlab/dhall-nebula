@@ -17,7 +17,7 @@ let PkiInfo =
 let LighthouseInfo =
       { Type = types.LighthouseInfo
       , default =
-        { interval = 60, remote_allow_list = None (Map types.IPv4Network Bool) }
+        { interval = 60, remote_allow_list = None (Map types.IPv4Network Bool), local_allow_list = None types.LocalAllowListInfo }
       }
 
 let InterfaceInfo =
