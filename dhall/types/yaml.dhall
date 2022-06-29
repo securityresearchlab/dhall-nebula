@@ -2,6 +2,14 @@ let types = ./pure.dhall
 
 let Map = https://prelude.dhall-lang.org/v21.1.0/Map/Type
 
+let LocalAllowListElement
+    : Type
+    = < InterfacesInfo : Map Text Bool | CIDR : Bool >
+
+let LocalAllowListConfig
+    : Type
+    = Map Text LocalAllowListElement
+
 let LighthouseConfig
     : Type
     = { am_lighthouse : Bool
@@ -10,6 +18,7 @@ let LighthouseConfig
       , serve_dns : Optional Bool
       , dns : Optional types.InterfaceInfo
       , remote_allow_list : Optional (Map Text Bool)
+      , local_allow_list : Optional LocalAllowListConfig
       }
 
 let FirewallConnectionConfig
@@ -82,4 +91,6 @@ in  { LighthouseConfig
     , FirewallConfig
     , Rule
     , PortConfig
+    , LocalAllowListConfig
+    , LocalAllowListElement
     }

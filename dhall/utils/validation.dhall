@@ -179,11 +179,13 @@ let validateHost
 let validateHosts
     : List types.Host -> Bool
     = \(hs : List types.Host) ->
-        let single_hosts_validity : Bool =
-              Bool/and (List/map types.Host Bool validateHost hs)
+        let single_hosts_validity
+            : Bool
+            = Bool/and (List/map types.Host Bool validateHost hs)
 
-        let hosts_validity : Bool =
-              areIPsUnique
+        let hosts_validity
+            : Bool
+            = areIPsUnique
                 (List/map types.Host types.IPv4 (\(h : types.Host) -> h.ip) hs)
 
         in  single_hosts_validity && hosts_validity

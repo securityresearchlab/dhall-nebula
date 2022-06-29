@@ -4,7 +4,7 @@ let inputs = ./config-input.dhall
 
 let Map/empty = https://prelude.dhall-lang.org/v21.1.0/Map/empty
 
-let Map/Type = https://prelude.dhall-lang.org/v21.1.0/Map/Type
+let Map = https://prelude.dhall-lang.org/v21.1.0/Map/Type
 
 let lighthouse_ip = inputs.lighthouse_ip
 
@@ -43,7 +43,20 @@ let laptop1
 
 let laptop2
     : nebula.Host.Type
-    = nebula.Host::{ name = "laptop2", ip = nebula.mkIPv4 192 168 100 3 }
+    = nebula.Host::{
+      , name = "laptop2"
+      , ip = nebula.mkIPv4 192 168 100 3
+      , lighthouse = nebula.LighthouseInfo::{
+        , local_allow_list = Some
+          { interfaces = Some [ { mapKey = "tun0", mapValue = True } ]
+          , cidrs = Some
+            [ { mapKey = nebula.mkIPv4Network 192 168 1 18 24
+              , mapValue = False
+              }
+            ]
+          }
+        }
+      }
 
 let hosts_list
     : List nebula.Host.Type
@@ -96,4 +109,4 @@ let network
 
 let _ = assert : nebula.validate network
 
-in  nebula.generateHostConfig network laptop1
+in  nebula.generateHostConfig network laptop2

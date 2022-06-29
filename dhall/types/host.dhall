@@ -51,10 +51,11 @@ let PunchyInfo
     : Type
     = { punch : Bool, respond : Optional Bool, delay : Optional Text }
 
-let LocalAllowListInfo : Type = {
-    interfaces : Optional (Map Text Bool)
-    , cidrs : Optional (Map IPv4Network Bool)
-}
+let LocalAllowListInfo
+    : Type
+    = { interfaces : Optional (Map Text Bool)
+      , cidrs : Optional (Map IPv4Network Bool)
+      }
 
 let LighthouseInfo
     : Type

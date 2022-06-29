@@ -14,7 +14,13 @@ let List/filter = https://prelude.dhall-lang.org/v21.1.0/List/filter
 
 let Map = https://prelude.dhall-lang.org/v21.1.0/Map/Type
 
+let Map/empty = https://prelude.dhall-lang.org/v21.1.0/Map/empty
+
 let Map/Entry = https://prelude.dhall-lang.org/v21.1.0/Map/Entry
+
+let Optional/map = https://prelude.dhall-lang.org/v21.1.0/Optional/map
+
+let Optional/toList = https://prelude.dhall-lang.org/v21.1.0/Optional/toList
 
 let rule_map
     : types.FirewallRule -> types.Rule
@@ -70,6 +76,47 @@ let rule_map
                 rule.traffic_target
 
         in  result_rule
+
+let generateLocalAllowListConfig
+    : types.LocalAllowListInfo -> types.LocalAllowListConfig
+    = \(i : types.LocalAllowListInfo) ->
+        let interface_value =
+              Optional/map
+                (Map Text Bool)
+                (Map/Entry Text types.LocalAllowListElement)
+                ( \(map : Map Text Bool) ->
+                    { mapKey = "interfaces"
+                    , mapValue = types.LocalAllowListElement.InterfacesInfo map
+                    }
+                )
+                i.interfaces
+
+        let interface_elem
+            : Map Text types.LocalAllowListElement
+            = Optional/toList
+                (Map/Entry Text types.LocalAllowListElement)
+                interface_value
+
+        let cidr_elems
+            : Map Text types.LocalAllowListElement
+            = merge
+                { Some =
+                    \(map : Map types.IPv4Network Bool) ->
+                      List/map
+                        (Map/Entry types.IPv4Network Bool)
+                        (Map/Entry Text types.LocalAllowListElement)
+                        ( \(entry : Map/Entry types.IPv4Network Bool) ->
+                            { mapKey = generics.showIPv4Network entry.mapKey
+                            , mapValue =
+                                types.LocalAllowListElement.CIDR entry.mapValue
+                            }
+                        )
+                        map
+                , None = Map/empty Text types.LocalAllowListElement
+                }
+                i.cidrs
+
+        in  interface_elem # cidr_elems
 
 let generateHostConfig
     : types.Network -> types.Host -> types.HostConfig
@@ -179,7 +226,7 @@ let generateHostConfig
                     }
                     host.lighthouse_config
 
-        let optional_lighthouse_config =
+        let remote_allow_lighthouse_config =
               merge
                 { Some =
                     \(map : Map types.IPv4Network Bool) ->
@@ -199,9 +246,20 @@ let generateHostConfig
                 }
                 host.lighthouse.remote_allow_list
 
+        let local_allow_lighthouse_config =
+              { local_allow_list =
+                  Optional/map
+                    types.LocalAllowListInfo
+                    types.LocalAllowListConfig
+                    generateLocalAllowListConfig
+                    host.lighthouse.local_allow_list
+              }
+
         let lighthouse_config
             : types.LighthouseConfig
-            = basic_lighthouse_config // optional_lighthouse_config
+            =     basic_lighthouse_config
+              //  remote_allow_lighthouse_config
+              //  local_allow_lighthouse_config
 
         let sshd_config
             : Optional types.SSHDConfig
