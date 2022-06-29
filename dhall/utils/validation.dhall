@@ -141,7 +141,59 @@ let validateLighthouseAllowLists
                 }
                 host.lighthouse.remote_allow_list
 
-        in  remote_list_validity
+        let local_list_validity =
+              let cidrs =
+                    merge
+                      { Some =
+                          \(info : types.LocalAllowListInfo) ->
+                            merge
+                              { Some =
+                                  \(c : Map types.IPv4Network Bool) -> Some c
+                              , None = None (Map types.IPv4Network Bool)
+                              }
+                              info.cidrs
+                      , None = None (Map types.IPv4Network Bool)
+                      }
+                      host.lighthouse.local_allow_list
+
+              let interfaces =
+                    merge
+                      { Some =
+                          \(info : types.LocalAllowListInfo) ->
+                            merge
+                              { Some = \(i : Map Text Bool) -> Some i
+                              , None = None (Map Text Bool)
+                              }
+                              info.interfaces
+                      , None = None (Map Text Bool)
+                      }
+                      host.lighthouse.local_allow_list
+
+              let cidrs_validity =
+                    merge
+                      { Some =
+                          \(list : Map types.IPv4Network Bool) ->
+                            listValidation list
+                      , None = True
+                      }
+                      cidrs
+
+              let interfaces_validity =
+                    merge
+                      { Some =
+                          \(list : Map Text Bool) ->
+                            let values = Map/values Text Bool list
+
+                            in      Bool/and values
+                                ||  Bool/and
+                                      (List/map Bool Bool Bool/not values)
+                      , None = True
+                      }
+                      interfaces
+
+              in  cidrs_validity && interfaces_validity
+
+        in  remote_list_validity && local_list_validity
 
 let validateHost
     : types.Host -> Bool
