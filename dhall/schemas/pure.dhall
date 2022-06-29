@@ -1,3 +1,5 @@
+let Map = https://prelude.dhall-lang.org/v21.1.0/Map/Type
+
 let types = ../types.dhall
 
 let makes = ../utils/makes.dhall
@@ -12,7 +14,11 @@ let PkiInfo =
         }
       }
 
-let LighthouseInfo = { Type = types.LighthouseInfo, default.interval = 60 }
+let LighthouseInfo =
+      { Type = types.LighthouseInfo
+      , default =
+        { interval = 60, remote_allow_list = None (Map types.IPv4Network Bool) }
+      }
 
 let InterfaceInfo =
       { Type = types.InterfaceInfo

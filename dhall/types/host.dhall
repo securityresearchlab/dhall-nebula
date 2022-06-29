@@ -1,3 +1,5 @@
+let Map = https://prelude.dhall-lang.org/v21.1.0/Map/Type
+
 let IPv4
     : Type
     = { _1 : Natural, _2 : Natural, _3 : Natural, _4 : Natural }
@@ -5,6 +7,9 @@ let IPv4
 let IPv4WithPort
     : Type
     = IPv4 //\\ { port : Natural }
+
+let IPv4Network =
+      { mask : Natural, _1 : Natural, _2 : Natural, _3 : Natural, _4 : Natural }
 
 let CAName
     : Type
@@ -48,7 +53,9 @@ let PunchyInfo
 
 let LighthouseInfo
     : Type
-    = { interval : Natural }
+    = { interval : Natural
+      , remote_allow_list : Optional (Map IPv4Network Bool)
+      }
 
 let SSHDUsers
     : Type
@@ -107,6 +114,7 @@ let Host
 
 in  { IPv4
     , IPv4WithPort
+    , IPv4Network
     , CAName
     , Directory
     , HostName

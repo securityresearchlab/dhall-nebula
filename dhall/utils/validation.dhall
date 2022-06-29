@@ -22,7 +22,11 @@ let List/null = https://prelude.dhall-lang.org/v21.1.0/List/null
 
 let List/partition = https://prelude.dhall-lang.org/v21.1.0/List/partition
 
+let Map = https://prelude.dhall-lang.org/v21.1.0/Map/Type
+
 let Map/values = https://prelude.dhall-lang.org/v21.1.0/Map/values
+
+let Map/keys = https://prelude.dhall-lang.org/v21.1.0/Map/keys
 
 let Natural/equal = https://prelude.dhall-lang.org/v21.1.0/Natural/equal
 
@@ -97,6 +101,48 @@ let validateHostInterfaces
 
         in  listen_validity && dns_interface_validity
 
+let validateLighthouseAllowLists
+    : types.Host -> Bool
+    = \(host : types.Host) ->
+        let listValidation
+            : Map types.IPv4Network Bool -> Bool
+            = \(m : Map types.IPv4Network Bool) ->
+                let isDefaultNetwork
+                    : types.IPv4Network -> Bool
+                    = \(n : types.IPv4Network) ->
+                            Natural/equal n._1 0
+                        &&  Natural/equal n._2 0
+                        &&  Natural/equal n._3 0
+                        &&  Natural/equal n._4 0
+                        &&  Natural/equal n.mask 0
+
+                let values = Map/values types.IPv4Network Bool m
+
+                let keys = Map/keys types.IPv4Network Bool m
+
+                in  if        Bool/and values
+                          ||  Bool/and (List/map Bool Bool Bool/not values)
+                    then  True
+                    else  Bool/not
+                            ( List/null
+                                types.IPv4Network
+                                ( List/filter
+                                    types.IPv4Network
+                                    isDefaultNetwork
+                                    keys
+                                )
+                            )
+
+        let remote_list_validity =
+              merge
+                { Some =
+                    \(list : Map types.IPv4Network Bool) -> listValidation list
+                , None = True
+                }
+                host.lighthouse.remote_allow_list
+
+        in  remote_list_validity
+
 let validateHost
     : types.Host -> Bool
     = \(host : types.Host) ->
@@ -122,10 +168,13 @@ let validateHost
 
         let interfaces_validity = validateHostInterfaces host
 
+        let lighthouse_allow_lists_validity = validateLighthouseAllowLists host
+
         in      sshd_validity
             &&  ip_validity
             &&  static_ips_validity
             &&  interfaces_validity
+            &&  lighthouse_allow_lists_validity
 
 let validateHosts
     : List types.Host -> Bool

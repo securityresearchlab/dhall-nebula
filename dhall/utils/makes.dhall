@@ -99,6 +99,15 @@ let mkIPv4WithPort
       \(port : Natural) ->
         { _1, _2, _3, _4, port }
 
+let mkIPv4Network
+    : Natural -> Natural -> Natural -> Natural -> Natural -> types.IPv4Network
+    = \(_1 : Natural) ->
+      \(_2 : Natural) ->
+      \(_3 : Natural) ->
+      \(_4 : Natural) ->
+      \(mask : Natural) ->
+        { _1, _2, _3, _4, mask }
+
 in  { mkPkiInfoWithBlocklist
     , mkPkiInfoWithoutBlocklist
     , mkBidirectionalConnection
@@ -106,4 +115,5 @@ in  { mkPkiInfoWithBlocklist
     , mkIntraGroupConnection
     , mkIPv4
     , mkIPv4WithPort
+    , mkIPv4Network
     }

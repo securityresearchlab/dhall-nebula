@@ -12,14 +12,11 @@ let RuleDirection
     : Type
     = < In | Out >
 
-let IPv4Network =
-      { mask : Natural, _1 : Natural, _2 : Natural, _3 : Natural, _4 : Natural }
-
 let ConnectionTarget
     : Type
     = < Group : Group
       | Host : host.Host
-      | CIDR : IPv4Network
+      | CIDR : host.IPv4Network
       | AnyNebulaHost
       | AnyExternalHost
       >
@@ -30,7 +27,7 @@ let TrafficTarget
       | Host : host.Host
       | Group : Group
       | Groups : List Group
-      | CIDR : IPv4Network
+      | CIDR : host.IPv4Network
       >
 
 let PortRange
@@ -87,7 +84,6 @@ let Network
 
 in  { GroupName
     , Group
-    , IPv4Network
     , UnidirectionalConnection
     , Connection
     , ConnectionTarget

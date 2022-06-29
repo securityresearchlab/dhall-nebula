@@ -9,6 +9,7 @@ let LighthouseConfig
       , hosts : List Text
       , serve_dns : Optional Bool
       , dns : Optional types.InterfaceInfo
+      , remote_allow_list : Optional (Map Text Bool)
       }
 
 let FirewallConnectionConfig

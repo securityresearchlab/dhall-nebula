@@ -146,9 +146,8 @@ let generateHostConfig
                     network.hosts
                 )
 
-        let lighthouse_config
-            : types.LighthouseConfig
-            = let lighthouse_base_config =
+        let basic_lighthouse_config =
+              let lighthouse_base_config =
                     { am_lighthouse = True
                     , interval = host.lighthouse.interval
                     , hosts = [] : List Text
@@ -179,6 +178,30 @@ let generateHostConfig
                       }
                     }
                     host.lighthouse_config
+
+        let optional_lighthouse_config =
+              merge
+                { Some =
+                    \(map : Map types.IPv4Network Bool) ->
+                      let new_map =
+                            List/map
+                              (Map/Entry types.IPv4Network Bool)
+                              (Map/Entry Text Bool)
+                              ( \(e : Map/Entry types.IPv4Network Bool) ->
+                                  { mapKey = generics.showIPv4Network e.mapKey
+                                  , mapValue = e.mapValue
+                                  }
+                              )
+                              map
+
+                      in  { remote_allow_list = Some new_map }
+                , None.remote_allow_list = None (Map Text Bool)
+                }
+                host.lighthouse.remote_allow_list
+
+        let lighthouse_config
+            : types.LighthouseConfig
+            = basic_lighthouse_config // optional_lighthouse_config
 
         let sshd_config
             : Optional types.SSHDConfig
