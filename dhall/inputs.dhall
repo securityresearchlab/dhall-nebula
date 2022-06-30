@@ -4,8 +4,12 @@ let lighthouse_ip
     : nebula.IPv4
     = nebula.mkIPv4 192 168 100 1
 
-let lighthouse_dir
+let config_dir
     : Text
     = "/etc/nebula"
 
-in  { lighthouse_ip, lighthouse_dir }
+let ca_name
+    : Text
+    = "ca"
+
+in  { lighthouse_ip, config_dir, ca_name }
