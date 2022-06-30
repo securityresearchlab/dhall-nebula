@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       HaskellTypes
+      HaskellTypesTest
       Lib
   other-modules:
       Paths_tool
@@ -34,6 +35,7 @@ library
   build-depends:
       base >=4.7 && <5
     , dhall ==1.40.2
+    , prettyprinter ==1.7.1
     , template-haskell ==2.17.0.0
   default-language: Haskell2010
 
@@ -47,6 +49,7 @@ executable tool-exe
   build-depends:
       base >=4.7 && <5
     , dhall ==1.40.2
+    , prettyprinter ==1.7.1
     , template-haskell ==2.17.0.0
     , tool
   default-language: Haskell2010
@@ -62,6 +65,7 @@ test-suite tool-test
   build-depends:
       base >=4.7 && <5
     , dhall ==1.40.2
+    , prettyprinter ==1.7.1
     , template-haskell ==2.17.0.0
     , tool
   default-language: Haskell2010
