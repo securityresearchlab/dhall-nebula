@@ -62,11 +62,11 @@ let hosts_list
 
 let all_group
     : nebula.Group
-    = { name = "all", hosts = hosts_list }
+    = { group_name = "all", group_hosts = hosts_list }
 
 let home_group
     : nebula.Group
-    = { name = "home", hosts = [ laptop1, laptop2 ] }
+    = { group_name = "home", group_hosts = [ laptop1, laptop2 ] }
 
 let home_connection
     : nebula.Connection
@@ -102,7 +102,7 @@ let network
     = { hosts = hosts_list
       , connections = [ home_connection, outbound_connection, icmp_connection ]
       , ad_hoc_rules = [] : List nebula.AdHocFirewallRule
-      , cipher = nebula.Cipher.aes
+      , cipher = nebula.Cipher.AES
       }
 
 let _ = assert : nebula.validate network

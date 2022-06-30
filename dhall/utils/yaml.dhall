@@ -29,19 +29,27 @@ let rule_map
             : types.PortConfig
             = merge
                 { Port = \(n : Natural) -> types.PortConfig.Port n
-                , Any = types.PortConfig.Description "any"
+                , AnyPort = types.PortConfig.Description "any"
                 , Range =
                     \(r : types.PortRange) ->
                       types.PortConfig.Description
-                        "${Natural/show r.from}-${Natural/show r.to}"
+                        "${Natural/show r.r_from}-${Natural/show r.r_to}"
                 }
-                rule.port
+                rule.fr_port
+
+        let proto : types.ProtoValues =
+          merge {
+            AnyProto = types.ProtoValues.any
+            , ICMP = types.ProtoValues.icmp
+            , TCP = types.ProtoValues.tcp
+            , UDP = types.ProtoValues.udp
+          } rule.fr_proto
 
         let general_info =
               { port
-              , proto = rule.proto
-              , ca_sha = rule.ca_sha
-              , ca_name = rule.ca_name
+              , proto
+              , ca_sha = rule.fr_ca_sha
+              , ca_name = rule.fr_ca_name
               }
 
         let result_rule
@@ -49,11 +57,11 @@ let rule_map
             = merge
                 { AnyHost =
                     types.Rule.HostRule (general_info // { host = "any" })
-                , Host =
+                , TTHost =
                     \(t : types.Host) ->
                       types.Rule.HostRule
                         (general_info // { host = generics.showIPv4 t.ip })
-                , Group =
+                , TTGroup =
                     \(g : types.Group) ->
                       types.Rule.GroupRule (general_info // { group = g.name })
                 , Groups =
@@ -62,11 +70,11 @@ let rule_map
                             List/map
                               types.Group
                               Text
-                              (\(g : types.Group) -> g.name)
+                              (\(g : types.Group) -> g.group_name)
                               l
 
                       in  types.Rule.GroupsRule (general_info // { groups })
-                , CIDR =
+                , TTCidr =
                     \(cidr : types.IPv4Network) ->
                       types.Rule.CIDRRule
                         (     general_info
@@ -289,6 +297,11 @@ let generateHostConfig
               , port = host.listen_interface.l_port
               }
 
+        let cipher = merge {
+          AES = types.CipherValues.aes
+          , Chachapoly = types.CipherValues.chachapoly
+        } network.cipher
+
         in  { pki = host.pki
             , static_host_map = static_hosts
             , lighthouse = lighthouse_config
@@ -301,7 +314,7 @@ let generateHostConfig
               , outbound = outbound_rules
               , inbound = inbound_rules
               }
-            , cipher = network.cipher
+            , cipher = cipher
             , local_range = host.local_range
             , sshd = sshd_config
             }

@@ -56,6 +56,24 @@ hostTypes = [
   , TypeInfo { name = "Host", t = Record }
   ]
 
+connectionTypes :: [ TypeInfo ]
+connectionTypes = [
+    TypeInfo { name = "GroupName", t = Record }
+  , TypeInfo { name = "Group", t = Record }
+  , TypeInfo { name = "RuleDirection", t = Union }
+  , TypeInfo { name = "ConnectionTarget", t = Union }
+  , TypeInfo { name = "TrafficTarget", t = Union }
+  , TypeInfo { name = "PortRange", t = Record }
+  , TypeInfo { name = "Port", t = Union }
+  , TypeInfo { name = "Proto", t = Union }
+  , TypeInfo { name = "UnidirectionalConnection", t = Record }
+  , TypeInfo { name = "Connection", t = Record }
+  , TypeInfo { name = "Cipher", t = Union }
+  , TypeInfo { name = "FirewallRule", t = Record }
+  , TypeInfo { name = "AdHocFirewallRule", t = Record }
+  , TypeInfo { name = "Network", t = Record }
+  ]
+
 extraTypesList :: [HaskellType Text]
 extraTypesList = [
     -- TH.SingleConstructor "IPv4" "MakeIPv4" "../dhall/types/host/IPv4.dhall"
@@ -65,8 +83,11 @@ extraTypesList = [
 hostTypesList :: [ HaskellType Text ]
 hostTypesList = map (fromInfoToHaskellType typesFile) hostTypes
 
+connectionTypesList :: [ HaskellType Text ]
+connectionTypesList = map (fromInfoToHaskellType typesFile) connectionTypes
+
 typesList :: [HaskellType Text]
-typesList = extraTypesList <> hostTypesList
+typesList = extraTypesList <> hostTypesList <> connectionTypesList
 
 makeTypes :: Q [Dec]
 makeTypes = TH.makeHaskellTypes typesList

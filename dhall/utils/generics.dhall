@@ -57,7 +57,7 @@ let isHostInGroup
     : types.Host -> types.Group -> Bool
     = \(host : types.Host) ->
       \(group : types.Group) ->
-        isHostInList host group.hosts
+        isHostInList host group.group_hosts
 
 let isIPInNetwork
     : types.IPv4 -> types.IPv4Network -> Bool

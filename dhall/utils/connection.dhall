@@ -25,9 +25,9 @@ let isTarget
     = \(host : types.Host) ->
       \(target : types.ConnectionTarget) ->
         merge
-          { Group = \(g : types.Group) -> generics.isHostInGroup host g
-          , Host = \(h : types.Host) -> generics.areIPv4Equal host.ip h.ip
-          , CIDR =
+          { CTGroup = \(g : types.Group) -> generics.isHostInGroup host g
+          , CTHost = \(h : types.Host) -> generics.areIPv4Equal host.ip h.ip
+          , CTCidr =
               \(n : types.IPv4Network) ->
                 generics.isIPInNetwork host.ip n
           , AnyNebulaHost = True
@@ -40,20 +40,20 @@ let generateOutboundRule
     = \(connection : types.UnidirectionalConnection) ->
         let target =
               merge
-                { Group = \(g : types.Group) -> types.TrafficTarget.Group g
-                , Host = \(h : types.Host) -> types.TrafficTarget.Host h
-                , CIDR = \(n : types.IPv4Network) -> types.TrafficTarget.CIDR n
+                { CTGroup = \(g : types.Group) -> types.TrafficTarget.TTGroup g
+                , CTHost = \(h : types.Host) -> types.TrafficTarget.TTHost h
+                , CTCidr = \(n : types.IPv4Network) -> types.TrafficTarget.TTCidr n
                 , AnyNebulaHost = types.TrafficTarget.AnyHost
                 , AnyExternalHost = types.TrafficTarget.AnyHost
                 }
                 connection.from
 
-        in  { port = connection.port
-            , proto = connection.proto
+        in  { fr_port = connection.uc_port
+            , fr_proto = connection.uc_proto
             , traffic_target = target
             , direction = types.RuleDirection.Out
-            , ca_name = connection.ca_name
-            , ca_sha = connection.ca_sha
+            , fr_ca_name = connection.ca_name
+            , fr_ca_sha = connection.ca_sha
             }
 
 let generateInboundRule
@@ -61,20 +61,20 @@ let generateInboundRule
     = \(connection : types.UnidirectionalConnection) ->
         let target =
               merge
-                { Group = \(g : types.Group) -> types.TrafficTarget.Group g
-                , Host = \(h : types.Host) -> types.TrafficTarget.Host h
-                , CIDR = \(n : types.IPv4Network) -> types.TrafficTarget.CIDR n
+                { CTGroup = \(g : types.Group) -> types.TrafficTarget.TTGroup g
+                , CTHost = \(h : types.Host) -> types.TrafficTarget.TTHost h
+                , CTCidr = \(n : types.IPv4Network) -> types.TrafficTarget.TTCidr n
                 , AnyNebulaHost = types.TrafficTarget.AnyHost
                 , AnyExternalHost = types.TrafficTarget.AnyHost
                 }
                 connection.to
 
-        in  { port = connection.port
-            , proto = connection.proto
+        in  { fr_port = connection.uc_port
+            , fr_proto = connection.uc_proto
             , traffic_target = target
             , direction = types.RuleDirection.In
-            , ca_name = connection.ca_name
-            , ca_sha = connection.ca_sha
+            , fr_ca_name = connection.ca_name
+            , fr_ca_sha = connection.ca_sha
             }
 
 let generateRulesForUnidirectionalConnection
@@ -132,12 +132,12 @@ let getHostRules
                 types.AdHocFirewallRule
                 types.FirewallRule
                 ( \(rule : types.AdHocFirewallRule) ->
-                    rule.{ port
-                         , proto
-                         , traffic_target
-                         , direction
-                         , ca_name
-                         , ca_sha
+                    { fr_port = rule.ah_port
+                         , fr_proto = rule.ah_proto
+                         , traffic_target = rule.ah_traffic_target
+                         , direction = rule.ah_direction
+                         , fr_ca_name = rule.ah_ca_name
+                         , fr_ca_sha = rule.ah_ca_sha
                          }
                 )
                 ( List/filter
@@ -156,12 +156,12 @@ let getHostRules
                       merge
                         { Some =
                             \(d : types.DNSConfig) ->
-                              [ { port = types.Port.Port d.dns_interface.port
-                                , proto = types.Proto.any
+                              [ { fr_port = types.Port.Port d.dns_interface.port
+                                , fr_proto = types.Proto.AnyProto
                                 , traffic_target = types.TrafficTarget.AnyHost
                                 , direction = types.RuleDirection.In
-                                , ca_name = None Text
-                                , ca_sha = None Text
+                                , fr_ca_name = None Text
+                                , fr_ca_sha = None Text
                                 }
                               ]
                         , None = [] : List types.FirewallRule

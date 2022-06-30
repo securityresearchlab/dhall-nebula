@@ -6,7 +6,7 @@ let GroupName
 
 let Group
     : Type
-    = { name : GroupName, hosts : List host.Host }
+    = { group_name : GroupName, group_hosts : List host.Host }
 
 let RuleDirection
     : Type
@@ -14,9 +14,9 @@ let RuleDirection
 
 let ConnectionTarget
     : Type
-    = < Group : Group
-      | Host : host.Host
-      | CIDR : host.IPv4Network
+    = < CTGroup : Group
+      | CTHost : host.Host
+      | CTCidr : host.IPv4Network
       | AnyNebulaHost
       | AnyExternalHost
       >
@@ -24,28 +24,28 @@ let ConnectionTarget
 let TrafficTarget
     : Type
     = < AnyHost
-      | Host : host.Host
-      | Group : Group
+      | TTHost : host.Host
+      | TTGroup : Group
       | Groups : List Group
-      | CIDR : host.IPv4Network
+      | TTCidr : host.IPv4Network
       >
 
 let PortRange
     : Type
-    = { from : Natural, to : Natural }
+    = { r_from : Natural, r_to : Natural }
 
 let Port
     : Type
-    = < Port : Natural | Range : PortRange | Any >
+    = < Port : Natural | Range : PortRange | AnyPort >
 
 let Proto
     : Type
-    = < any | tcp | udp | icmp >
+    = < AnyProto | TCP | UDP | ICMP >
 
 let UnidirectionalConnection
     : Type
-    = { port : Port
-      , proto : Proto
+    = { uc_port : Port
+      , uc_proto : Proto
       , from : ConnectionTarget
       , to : ConnectionTarget
       , ca_name : Optional Text
@@ -58,21 +58,28 @@ let Connection
 
 let FirewallRule
     : Type
-    = { port : Port
-      , proto : Proto
+    = { fr_port : Port
+      , fr_proto : Proto
       , traffic_target : TrafficTarget
       , direction : RuleDirection
-      , ca_name : Optional Text
-      , ca_sha : Optional Text
+      , fr_ca_name : Optional Text
+      , fr_ca_sha : Optional Text
       }
 
 let AdHocFirewallRule
     : Type
-    = { target : host.Host } //\\ FirewallRule
+    = { target : host.Host
+      , ah_port : Port
+      , ah_proto : Proto
+      , ah_traffic_target : TrafficTarget
+      , ah_direction : RuleDirection
+      , ah_ca_name : Optional Text
+      , ah_ca_sha : Optional Text
+      }
 
 let Cipher
     : Type
-    = < aes | chachapoly >
+    = < AES | Chachapoly >
 
 let Network
     : Type

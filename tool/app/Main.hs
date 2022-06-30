@@ -10,7 +10,6 @@
 
 import Lib
 import HaskellTypes
-import HaskellTypesTest
 import Language.Haskell.TH
 import Language.Haskell.TH.Syntax
 import System.IO
@@ -41,3 +40,18 @@ deriving instance Show TunRoute
 deriving instance Show TunUnsafeRoute
 deriving instance Show LogInfo
 deriving instance Show Host
+
+deriving instance Show GroupName
+deriving instance Show Group
+deriving instance Show RuleDirection
+deriving instance Show ConnectionTarget
+deriving instance Show TrafficTarget
+deriving instance Show PortRange
+deriving instance Show Port
+deriving instance Show Proto
+deriving instance Show UnidirectionalConnection
+deriving instance Show Connection
+deriving instance Show Cipher
+deriving instance Show FirewallRule
+deriving instance Show AdHocFirewallRule
+deriving instance Show Network

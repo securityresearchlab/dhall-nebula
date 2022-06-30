@@ -37,13 +37,19 @@ let PortConfig
     : Type
     = < Port : Natural | Description : Text >
 
+let ProtoValues : Type = < any | icmp | tcp | udp >
+
 let BaseRule
     : Type
     = { port : PortConfig
-      , proto : types.Proto
+      , proto : ProtoValues
       , ca_name : Optional Text
       , ca_sha : Optional Text
       }
+
+let CipherValues
+    : Type
+    = < aes | chachapoly >
 
 let Rule
     : Type
@@ -78,7 +84,7 @@ let HostConfig
       , tun : types.TunInfo
       , logging : types.LogInfo
       , firewall : FirewallConfig
-      , cipher : types.Cipher
+      , cipher : CipherValues
       , local_range : Optional Text
       , sshd : Optional SSHDConfig
       }
@@ -91,6 +97,8 @@ in  { LighthouseConfig
     , FirewallConfig
     , Rule
     , PortConfig
+    , ProtoValues
     , LocalAllowListConfig
     , LocalAllowListElement
+    , CipherValues
     }
