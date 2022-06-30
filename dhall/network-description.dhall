@@ -31,9 +31,9 @@ let laptop1
       , pki = nebula.mkPkiInfoWithoutBlocklist inputs.config_dir ca "laptop1"
       , lighthouse = nebula.LighthouseInfo::{
         , remote_allow_list = Some
-          [ { mapKey = nebula.mkIPv4Network 192 168 1 18 24, mapValue = False }
-          , { mapKey = nebula.mkIPv4Network 192 168 1 18 26, mapValue = True }
-          , { mapKey = nebula.mkIPv4Network 0 0 0 0 0, mapValue = True }
+          [ { mapKeyIB = nebula.mkIPv4Network 192 168 1 18 24, mapValueIB = False }
+          , { mapKeyIB = nebula.mkIPv4Network 192 168 1 18 26, mapValueIB = True }
+          , { mapKeyIB = nebula.mkIPv4Network 0 0 0 0 0, mapValueIB = True }
           ]
         }
       }
@@ -46,10 +46,10 @@ let laptop2
       , pki = nebula.mkPkiInfoWithoutBlocklist inputs.config_dir ca "laptop2"
       , lighthouse = nebula.LighthouseInfo::{
         , local_allow_list = Some
-          { interfaces = Some [ { mapKey = "tun0", mapValue = True } ]
+          { interfaces = Some [ { mapKeyTB = "tun0", mapValueTB = True } ]
           , cidrs = Some
-            [ { mapKey = nebula.mkIPv4Network 192 168 1 18 24
-              , mapValue = False
+            [ { mapKeyIB = nebula.mkIPv4Network 192 168 1 18 24
+              , mapValueIB = False
               }
             ]
           }

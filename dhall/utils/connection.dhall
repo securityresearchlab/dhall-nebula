@@ -29,7 +29,7 @@ let isTarget
           , Host = \(h : types.Host) -> generics.areIPv4Equal host.ip h.ip
           , CIDR =
               \(n : types.IPv4Network) ->
-                generics.isIPInNetwork { _1 = 1, _2 = 2, _3 = 3, _4 = 4 } n
+                generics.isIPInNetwork host.ip n
           , AnyNebulaHost = True
           , AnyExternalHost = False
           }

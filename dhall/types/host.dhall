@@ -2,14 +2,18 @@ let Map = https://prelude.dhall-lang.org/v21.1.0/Map/Type
 
 let IPv4
     : Type
-    = { _1 : Natural, _2 : Natural, _3 : Natural, _4 : Natural }
+    = { i1 : Natural, i2 : Natural, i3 : Natural, i4 : Natural }
 
 let IPv4WithPort
     : Type
-    = IPv4 //\\ { port : Natural }
+    = { ip1 : Natural, ip2 : Natural, ip3 : Natural, ip4 : Natural, i_port : Natural }
 
 let IPv4Network =
-      { mask : Natural, _1 : Natural, _2 : Natural, _3 : Natural, _4 : Natural }
+      { mask : Natural, in1 : Natural, in2 : Natural, in3 : Natural, in4 : Natural }
+
+let IPv4NetworkBoolMapEntry : Type = { mapKeyIB : IPv4Network, mapValueIB : Bool }
+
+let TextBoolMapEntry : Type = { mapKeyTB : Text, mapValueTB : Bool }
 
 let CAName
     : Type
@@ -33,8 +37,7 @@ let InterfaceInfo
 
 let ListenInfo
     : Type
-    =     InterfaceInfo
-      //\\  { batch : Optional Natural
+    =    { l_host : IPv4, l_port : Natural, batch : Optional Natural
             , read_buffer : Optional Natural
             , write_buffer : Optional Natural
             }
@@ -53,14 +56,14 @@ let PunchyInfo
 
 let LocalAllowListInfo
     : Type
-    = { interfaces : Optional (Map Text Bool)
-      , cidrs : Optional (Map IPv4Network Bool)
+    = { interfaces : Optional (List TextBoolMapEntry)
+      , cidrs : Optional (List IPv4NetworkBoolMapEntry)
       }
 
 let LighthouseInfo
     : Type
     = { interval : Natural
-      , remote_allow_list : Optional (Map IPv4Network Bool)
+      , remote_allow_list : Optional (List IPv4NetworkBoolMapEntry)
       , local_allow_list : Optional LocalAllowListInfo
       }
 
@@ -77,11 +80,11 @@ let SSHDInfo
 
 let TunRoute
     : Type
-    = { mtu : Natural, route : Text }
+    = { s_mtu : Natural, s_route : Text }
 
 let TunUnsafeRoute
     : Type
-    = { mtu : Natural, route : Text, via : Text }
+    = { u_mtu : Natural, u_route : Text, via : Text }
 
 let TunInfo
     : Type
@@ -122,6 +125,8 @@ let Host
 in  { IPv4
     , IPv4WithPort
     , IPv4Network
+    , IPv4NetworkBoolMapEntry
+    , TextBoolMapEntry
     , CAName
     , Directory
     , HostName

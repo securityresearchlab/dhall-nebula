@@ -84,29 +84,29 @@ let mkUnidirectionalConnection
 
 let mkIPv4
     : Natural -> Natural -> Natural -> Natural -> types.IPv4
-    = \(_1 : Natural) ->
-      \(_2 : Natural) ->
-      \(_3 : Natural) ->
-      \(_4 : Natural) ->
-        { _1, _2, _3, _4 }
+    = \(i1 : Natural) ->
+      \(i2 : Natural) ->
+      \(i3 : Natural) ->
+      \(i4 : Natural) ->
+        { i1, i2, i3, i4 }
 
 let mkIPv4WithPort
     : Natural -> Natural -> Natural -> Natural -> Natural -> types.IPv4WithPort
-    = \(_1 : Natural) ->
-      \(_2 : Natural) ->
-      \(_3 : Natural) ->
-      \(_4 : Natural) ->
-      \(port : Natural) ->
-        { _1, _2, _3, _4, port }
+    = \(ip1 : Natural) ->
+      \(ip2 : Natural) ->
+      \(ip3 : Natural) ->
+      \(ip4 : Natural) ->
+      \(i_port : Natural) ->
+        { ip1, ip2, ip3, ip4, i_port }
 
 let mkIPv4Network
     : Natural -> Natural -> Natural -> Natural -> Natural -> types.IPv4Network
-    = \(_1 : Natural) ->
-      \(_2 : Natural) ->
-      \(_3 : Natural) ->
-      \(_4 : Natural) ->
+    = \(in1 : Natural) ->
+      \(in2 : Natural) ->
+      \(in3 : Natural) ->
+      \(in4 : Natural) ->
       \(mask : Natural) ->
-        { _1, _2, _3, _4, mask }
+        { in1, in2, in3, in4, mask }
 
 in  { mkPkiInfoWithBlocklist
     , mkPkiInfoWithoutBlocklist

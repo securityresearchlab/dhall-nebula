@@ -89,24 +89,24 @@ let validateIPv4
             : Natural -> Bool
             = \(n : Natural) -> Natural/lessThanEqual n 255
 
-        in      isNAcceptable ip._1
-            &&  isNAcceptable ip._2
-            &&  isNAcceptable ip._3
-            &&  isNAcceptable ip._4
+        in      isNAcceptable ip.i1
+            &&  isNAcceptable ip.i2
+            &&  isNAcceptable ip.i3
+            &&  isNAcceptable ip.i4
 
 let validateIPv4WithPort
     : types.IPv4WithPort -> Bool
-    = \(ip : types.IPv4WithPort) -> validateIPv4 ip.{ _1, _2, _3, _4 }
+    = \(ip : types.IPv4WithPort) -> validateIPv4 { i1 = ip.ip1, i2 = ip.ip2, i3 = ip.ip3, i4 = ip.ip4 }
 
 let validateIPv4Network
     : types.IPv4Network -> Bool
     = \(n : types.IPv4Network) ->
-        validateIPv4 n.{ _1, _2, _3, _4 } && Natural/lessThan n.mask 32
+        validateIPv4 { i1 = n.in1, i2 = n.in2, i3 = n.in3, i4 = n.in4 } && Natural/lessThan n.mask 32
 
 let validateHostInterfaces
     : types.Host -> Bool
     = \(host : types.Host) ->
-        let listen_validity = validateIPv4 host.listen_interface.host
+        let listen_validity = validateIPv4 host.listen_interface.l_host
 
         let dns_interface_validity =
               merge
@@ -131,10 +131,10 @@ let listValidation
         let isDefaultNetwork
             : types.IPv4Network -> Bool
             = \(n : types.IPv4Network) ->
-                    Natural/equal n._1 0
-                &&  Natural/equal n._2 0
-                &&  Natural/equal n._3 0
-                &&  Natural/equal n._4 0
+                    Natural/equal n.in1 0
+                &&  Natural/equal n.in2 0
+                &&  Natural/equal n.in3 0
+                &&  Natural/equal n.in4 0
                 &&  Natural/equal n.mask 0
 
         let values = Map/values types.IPv4Network Bool m
@@ -163,7 +163,7 @@ let validateRemoteAllowList
     : types.Host -> Bool
     = \(host : types.Host) ->
         merge
-          { Some = \(list : Map types.IPv4Network Bool) -> listValidation list
+          { Some = \(list : List types.IPv4NetworkBoolMapEntry) -> listValidation (generics.fromIPv4NetworkBoolMapToMap list)
           , None = True
           }
           host.lighthouse.remote_allow_list
@@ -176,18 +176,18 @@ let validateLocalCIDRAllowLists
                 { Some =
                     \(info : types.LocalAllowListInfo) ->
                       merge
-                        { Some = \(c : Map types.IPv4Network Bool) -> Some c
-                        , None = None (Map types.IPv4Network Bool)
+                        { Some = \(c : List types.IPv4NetworkBoolMapEntry) -> Some c
+                        , None = None (List types.IPv4NetworkBoolMapEntry)
                         }
                         info.cidrs
-                , None = None (Map types.IPv4Network Bool)
+                , None = None (List types.IPv4NetworkBoolMapEntry)
                 }
                 host.lighthouse.local_allow_list
 
         let cidrs_validity =
               merge
                 { Some =
-                    \(list : Map types.IPv4Network Bool) -> listValidation list
+                    \(list : List types.IPv4NetworkBoolMapEntry) -> listValidation (generics.fromIPv4NetworkBoolMapToMap list)
                 , None = True
                 }
                 cidrs
@@ -202,18 +202,18 @@ let validateLocalInterfacesAllowLists
                 { Some =
                     \(info : types.LocalAllowListInfo) ->
                       merge
-                        { Some = \(i : Map Text Bool) -> Some i
-                        , None = None (Map Text Bool)
+                        { Some = \(i : List types.TextBoolMapEntry) -> Some i
+                        , None = None (List types.TextBoolMapEntry)
                         }
                         info.interfaces
-                , None = None (Map Text Bool)
+                , None = None (List types.TextBoolMapEntry)
                 }
                 host.lighthouse.local_allow_list
 
         in  merge
               { Some =
-                  \(list : Map Text Bool) ->
-                    let values = Map/values Text Bool list
+                  \(list : List types.TextBoolMapEntry) ->
+                    let values = List/map types.TextBoolMapEntry Bool (\(e : types.TextBoolMapEntry) -> e.mapValueTB) list
 
                     in      Bool/and values
                         ||  Bool/and (List/map Bool Bool Bool/not values)

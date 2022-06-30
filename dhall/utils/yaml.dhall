@@ -89,7 +89,7 @@ let generateLocalAllowListConfig
                     , mapValue = types.LocalAllowListElement.InterfacesInfo map
                     }
                 )
-                i.interfaces
+                (Optional/map (List types.TextBoolMapEntry) (Map Text Bool) generics.fromTextBoolMapToMap i.interfaces)
 
         let interface_elem
             : Map Text types.LocalAllowListElement
@@ -101,14 +101,14 @@ let generateLocalAllowListConfig
             : Map Text types.LocalAllowListElement
             = merge
                 { Some =
-                    \(map : Map types.IPv4Network Bool) ->
+                    \(map : List types.IPv4NetworkBoolMapEntry) ->
                       List/map
-                        (Map/Entry types.IPv4Network Bool)
+                        (types.IPv4NetworkBoolMapEntry)
                         (Map/Entry Text types.LocalAllowListElement)
-                        ( \(entry : Map/Entry types.IPv4Network Bool) ->
-                            { mapKey = generics.showIPv4Network entry.mapKey
+                        ( \(entry : types.IPv4NetworkBoolMapEntry) ->
+                            { mapKey = generics.showIPv4Network entry.mapKeyIB
                             , mapValue =
-                                types.LocalAllowListElement.CIDR entry.mapValue
+                                types.LocalAllowListElement.CIDR entry.mapValueIB
                             }
                         )
                         map
@@ -234,14 +234,14 @@ let generateHostConfig
         let remote_allow_lighthouse_config =
               merge
                 { Some =
-                    \(map : Map types.IPv4Network Bool) ->
+                    \(map : List types.IPv4NetworkBoolMapEntry) ->
                       let new_map =
                             List/map
-                              (Map/Entry types.IPv4Network Bool)
+                              (types.IPv4NetworkBoolMapEntry)
                               (Map/Entry Text Bool)
-                              ( \(e : Map/Entry types.IPv4Network Bool) ->
-                                  { mapKey = generics.showIPv4Network e.mapKey
-                                  , mapValue = e.mapValue
+                              ( \(e : types.IPv4NetworkBoolMapEntry) ->
+                                  { mapKey = generics.showIPv4Network e.mapKeyIB
+                                  , mapValue = e.mapValueIB
                                   }
                               )
                               map
@@ -285,8 +285,8 @@ let generateHostConfig
 
         let listen_config
             : types.ListenConfig
-            = { host = generics.showIPv4 host.listen_interface.host
-              , port = host.listen_interface.port
+            = { host = generics.showIPv4 host.listen_interface.l_host
+              , port = host.listen_interface.l_port
               }
 
         in  { pki = host.pki

@@ -18,7 +18,7 @@ let LighthouseInfo =
       { Type = types.LighthouseInfo
       , default =
         { interval = 60
-        , remote_allow_list = None (Map types.IPv4Network Bool)
+        , remote_allow_list = None (List types.IPv4NetworkBoolMapEntry)
         , local_allow_list = None types.LocalAllowListInfo
         }
       }
@@ -31,8 +31,9 @@ let InterfaceInfo =
 let ListenInfo =
       { Type = types.ListenInfo
       , default =
-              InterfaceInfo.default
-          //  { batch = None Natural
+              { l_host = makes.mkIPv4 0 0 0 0
+              , l_port = 4242
+              , batch = None Natural
               , read_buffer = None Natural
               , write_buffer = None Natural
               }
