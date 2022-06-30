@@ -4,11 +4,11 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 
-name:           nebula-dhall
+name:           tool
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/nebula-dhall#readme>
-homepage:       https://github.com/githubuser/nebula-dhall#readme
-bug-reports:    https://github.com/githubuser/nebula-dhall/issues
+description:    Please see the README on GitHub at <https://github.com/githubuser/tool#readme>
+homepage:       https://github.com/githubuser/tool#readme
+bug-reports:    https://github.com/githubuser/tool/issues
 author:         Author name here
 maintainer:     example@example.com
 copyright:      2022 Author name here
@@ -21,52 +21,47 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/nebula-dhall
+  location: https://github.com/githubuser/tool
 
 library
   exposed-modules:
+      HaskellTypes
       Lib
   other-modules:
-      Paths_nebula_dhall
+      Paths_tool
   hs-source-dirs:
       src
   build-depends:
       base >=4.7 && <5
-    , containers ==0.6.4.1
     , dhall ==1.40.2
-    , either ==5.0.2
-    , text ==1.2.5.0
+    , template-haskell ==2.17.0.0
   default-language: Haskell2010
 
-executable nebula-dhall-exe
+executable tool-exe
   main-is: Main.hs
   other-modules:
-      Paths_nebula_dhall
+      Paths_tool
   hs-source-dirs:
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
-    , containers ==0.6.4.1
     , dhall ==1.40.2
-    , either ==5.0.2
-    , nebula-dhall
-    , text ==1.2.5.0
+    , template-haskell ==2.17.0.0
+    , tool
   default-language: Haskell2010
 
-test-suite nebula-dhall-test
+test-suite tool-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Paths_nebula_dhall
+      Paths_tool
   hs-source-dirs:
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
-    , containers ==0.6.4.1
     , dhall ==1.40.2
-    , either ==5.0.2
-    , nebula-dhall
-    , text ==1.2.5.0
+    , template-haskell ==2.17.0.0
+    , tool
   default-language: Haskell2010

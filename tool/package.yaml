@@ -1,6 +1,6 @@
-name:                nebula-dhall
+name:                tool
 version:             0.1.0.0
-github:              "githubuser/nebula-dhall"
+github:              "githubuser/tool"
 license:             BSD3
 author:              "Author name here"
 maintainer:          "example@example.com"
@@ -17,20 +17,18 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/nebula-dhall#readme>
+description:         Please see the README on GitHub at <https://github.com/githubuser/tool#readme>
 
 dependencies:
 - base >= 4.7 && < 5
 - dhall == 1.40.2
-- containers == 0.6.4.1
-- text == 1.2.5.0
-- either == 5.0.2
+- template-haskell == 2.17.0.0
 
 library:
   source-dirs: src
 
 executables:
-  nebula-dhall-exe:
+  tool-exe:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
@@ -38,10 +36,10 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - nebula-dhall
+    - tool
 
 tests:
-  nebula-dhall-test:
+  tool-test:
     main:                Spec.hs
     source-dirs:         test
     ghc-options:
@@ -49,4 +47,4 @@ tests:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - nebula-dhall
+    - tool
