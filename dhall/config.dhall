@@ -21,7 +21,7 @@ let lighthouse
             inputs.lighthouse_dir
             "ca"
             lighthouse_name
-      , static_ips = [ nebula.mkIPv4WithPort 20 90 142 142 4242 ]
+      , static_ips = [ nebula.mkIPv4WithPort 20 63 142 142 4242 ]
       }
 
 let laptop1
@@ -29,6 +29,11 @@ let laptop1
     = nebula.Host::{
       , name = "laptop1"
       , ip = nebula.mkIPv4 192 168 100 2
+      , pki =
+          nebula.mkPkiInfoWithoutBlocklist
+            inputs.lighthouse_dir
+            "ca"
+            "laptop1"
       , lighthouse = nebula.LighthouseInfo::{
         , remote_allow_list = Some
           [ { mapKey = nebula.mkIPv4Network 192 168 1 18 24, mapValue = False }
@@ -43,6 +48,11 @@ let laptop2
     = nebula.Host::{
       , name = "laptop2"
       , ip = nebula.mkIPv4 192 168 100 3
+      , pki =
+          nebula.mkPkiInfoWithoutBlocklist
+            inputs.lighthouse_dir
+            "ca"
+            "laptop2"
       , lighthouse = nebula.LighthouseInfo::{
         , local_allow_list = Some
           { interfaces = Some [ { mapKey = "tun0", mapValue = True } ]
@@ -89,7 +99,7 @@ let outbound_connection
 let icmp_connection
     : nebula.Connection
     = nebula.mkUnidirectionalConnection
-        (nebula.Port.Port 22)
+        nebula.Port.Any
         nebula.Proto.icmp
         nebula.ConnectionTarget.AnyExternalHost
         nebula.ConnectionTarget.AnyNebulaHost
