@@ -37,7 +37,9 @@ let PortConfig
     : Type
     = < Port : Natural | Description : Text >
 
-let ProtoValues : Type = < any | icmp | tcp | udp >
+let ProtoValues
+    : Type
+    = < any | icmp | tcp | udp >
 
 let BaseRule
     : Type

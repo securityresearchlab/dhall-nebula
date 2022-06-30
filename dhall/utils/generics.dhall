@@ -14,10 +14,10 @@ let showIPv4Network
     : types.IPv4Network -> Text
     = \(n : types.IPv4Network) ->
         "${Natural/show n.in1}.${Natural/show
-                                  n.in2}.${Natural/show
-                                            n.in3}.${Natural/show
-                                                      n.in4}/${Natural/show
-                                                                n.mask}"
+                                   n.in2}.${Natural/show
+                                              n.in3}.${Natural/show
+                                                         n.in4}/${Natural/show
+                                                                    n.mask}"
 
 let showIPv4
     : types.IPv4 -> Text
@@ -61,23 +61,29 @@ let isHostInGroup
 
 let isIPInNetwork
     : types.IPv4 -> types.IPv4Network -> Bool
-    = \(ip : types.IPv4) -> \(network : types.IPv4Network) -> True -- TODO
+    = \(ip : types.IPv4) -> \(network : types.IPv4Network) -> True
 
-let fromIPv4NetworkBoolMapToMap : List types.IPv4NetworkBoolMapEntry -> Map types.IPv4Network Bool =
-    \(entries : List types.IPv4NetworkBoolMapEntry) ->
+let fromIPv4NetworkBoolMapToMap
+    : List types.IPv4NetworkBoolMapEntry -> Map types.IPv4Network Bool
+    = \(entries : List types.IPv4NetworkBoolMapEntry) ->
         List/map
-        types.IPv4NetworkBoolMapEntry
-        (Map/Entry types.IPv4Network Bool)
-        (\(e : types.IPv4NetworkBoolMapEntry) -> { mapKey = e.mapKeyIB, mapValue = e.mapValueIB })
-        entries
+          types.IPv4NetworkBoolMapEntry
+          (Map/Entry types.IPv4Network Bool)
+          ( \(e : types.IPv4NetworkBoolMapEntry) ->
+              { mapKey = e.mapKeyIB, mapValue = e.mapValueIB }
+          )
+          entries
 
-let fromTextBoolMapToMap : List types.TextBoolMapEntry -> Map Text Bool =
-    \(entries : List types.TextBoolMapEntry) ->
+let fromTextBoolMapToMap
+    : List types.TextBoolMapEntry -> Map Text Bool
+    = \(entries : List types.TextBoolMapEntry) ->
         List/map
-        types.TextBoolMapEntry
-        (Map/Entry Text Bool)
-        (\(e : types.TextBoolMapEntry) -> { mapKey = e.mapKeyTB, mapValue = e.mapValueTB })
-        entries
+          types.TextBoolMapEntry
+          (Map/Entry Text Bool)
+          ( \(e : types.TextBoolMapEntry) ->
+              { mapKey = e.mapKeyTB, mapValue = e.mapValueTB }
+          )
+          entries
 
 in  { showIPv4Network
     , showIPv4

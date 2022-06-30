@@ -96,12 +96,14 @@ let validateIPv4
 
 let validateIPv4WithPort
     : types.IPv4WithPort -> Bool
-    = \(ip : types.IPv4WithPort) -> validateIPv4 { i1 = ip.ip1, i2 = ip.ip2, i3 = ip.ip3, i4 = ip.ip4 }
+    = \(ip : types.IPv4WithPort) ->
+        validateIPv4 { i1 = ip.ip1, i2 = ip.ip2, i3 = ip.ip3, i4 = ip.ip4 }
 
 let validateIPv4Network
     : types.IPv4Network -> Bool
     = \(n : types.IPv4Network) ->
-        validateIPv4 { i1 = n.in1, i2 = n.in2, i3 = n.in3, i4 = n.in4 } && Natural/lessThan n.mask 32
+            validateIPv4 { i1 = n.in1, i2 = n.in2, i3 = n.in3, i4 = n.in4 }
+        &&  Natural/lessThan n.mask 32
 
 let validateHostInterfaces
     : types.Host -> Bool
@@ -163,7 +165,9 @@ let validateRemoteAllowList
     : types.Host -> Bool
     = \(host : types.Host) ->
         merge
-          { Some = \(list : List types.IPv4NetworkBoolMapEntry) -> listValidation (generics.fromIPv4NetworkBoolMapToMap list)
+          { Some =
+              \(list : List types.IPv4NetworkBoolMapEntry) ->
+                listValidation (generics.fromIPv4NetworkBoolMapToMap list)
           , None = True
           }
           host.lighthouse.remote_allow_list
@@ -176,7 +180,8 @@ let validateLocalCIDRAllowLists
                 { Some =
                     \(info : types.LocalAllowListInfo) ->
                       merge
-                        { Some = \(c : List types.IPv4NetworkBoolMapEntry) -> Some c
+                        { Some =
+                            \(c : List types.IPv4NetworkBoolMapEntry) -> Some c
                         , None = None (List types.IPv4NetworkBoolMapEntry)
                         }
                         info.cidrs
@@ -187,7 +192,8 @@ let validateLocalCIDRAllowLists
         let cidrs_validity =
               merge
                 { Some =
-                    \(list : List types.IPv4NetworkBoolMapEntry) -> listValidation (generics.fromIPv4NetworkBoolMapToMap list)
+                    \(list : List types.IPv4NetworkBoolMapEntry) ->
+                      listValidation (generics.fromIPv4NetworkBoolMapToMap list)
                 , None = True
                 }
                 cidrs
@@ -213,7 +219,12 @@ let validateLocalInterfacesAllowLists
         in  merge
               { Some =
                   \(list : List types.TextBoolMapEntry) ->
-                    let values = List/map types.TextBoolMapEntry Bool (\(e : types.TextBoolMapEntry) -> e.mapValueTB) list
+                    let values =
+                          List/map
+                            types.TextBoolMapEntry
+                            Bool
+                            (\(e : types.TextBoolMapEntry) -> e.mapValueTB)
+                            list
 
                     in      Bool/and values
                         ||  Bool/and (List/map Bool Bool Bool/not values)
@@ -295,10 +306,11 @@ let validateRules
                   merge
                     { Port = \(n : Natural) -> True
                     , Range =
-                        \(r : types.PortRange) -> Natural/lessThan r.from r.to
-                    , Any = True
+                        \(r : types.PortRange) ->
+                          Natural/lessThan r.r_from r.r_to
+                    , AnyPort = True
                     }
-                    rule.port
+                    rule.fr_port
               )
               rules
           )

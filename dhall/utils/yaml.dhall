@@ -37,13 +37,15 @@ let rule_map
                 }
                 rule.fr_port
 
-        let proto : types.ProtoValues =
-          merge {
-            AnyProto = types.ProtoValues.any
-            , ICMP = types.ProtoValues.icmp
-            , TCP = types.ProtoValues.tcp
-            , UDP = types.ProtoValues.udp
-          } rule.fr_proto
+        let proto
+            : types.ProtoValues
+            = merge
+                { AnyProto = types.ProtoValues.any
+                , ICMP = types.ProtoValues.icmp
+                , TCP = types.ProtoValues.tcp
+                , UDP = types.ProtoValues.udp
+                }
+                rule.fr_proto
 
         let general_info =
               { port
@@ -63,7 +65,8 @@ let rule_map
                         (general_info // { host = generics.showIPv4 t.ip })
                 , TTGroup =
                     \(g : types.Group) ->
-                      types.Rule.GroupRule (general_info // { group = g.name })
+                      types.Rule.GroupRule
+                        (general_info // { group = g.group_name })
                 , Groups =
                     \(l : List types.Group) ->
                       let groups =
@@ -97,7 +100,12 @@ let generateLocalAllowListConfig
                     , mapValue = types.LocalAllowListElement.InterfacesInfo map
                     }
                 )
-                (Optional/map (List types.TextBoolMapEntry) (Map Text Bool) generics.fromTextBoolMapToMap i.interfaces)
+                ( Optional/map
+                    (List types.TextBoolMapEntry)
+                    (Map Text Bool)
+                    generics.fromTextBoolMapToMap
+                    i.interfaces
+                )
 
         let interface_elem
             : Map Text types.LocalAllowListElement
@@ -111,12 +119,13 @@ let generateLocalAllowListConfig
                 { Some =
                     \(map : List types.IPv4NetworkBoolMapEntry) ->
                       List/map
-                        (types.IPv4NetworkBoolMapEntry)
+                        types.IPv4NetworkBoolMapEntry
                         (Map/Entry Text types.LocalAllowListElement)
                         ( \(entry : types.IPv4NetworkBoolMapEntry) ->
                             { mapKey = generics.showIPv4Network entry.mapKeyIB
                             , mapValue =
-                                types.LocalAllowListElement.CIDR entry.mapValueIB
+                                types.LocalAllowListElement.CIDR
+                                  entry.mapValueIB
                             }
                         )
                         map
@@ -245,7 +254,7 @@ let generateHostConfig
                     \(map : List types.IPv4NetworkBoolMapEntry) ->
                       let new_map =
                             List/map
-                              (types.IPv4NetworkBoolMapEntry)
+                              types.IPv4NetworkBoolMapEntry
                               (Map/Entry Text Bool)
                               ( \(e : types.IPv4NetworkBoolMapEntry) ->
                                   { mapKey = generics.showIPv4Network e.mapKeyIB
@@ -297,10 +306,12 @@ let generateHostConfig
               , port = host.listen_interface.l_port
               }
 
-        let cipher = merge {
-          AES = types.CipherValues.aes
-          , Chachapoly = types.CipherValues.chachapoly
-        } network.cipher
+        let cipher =
+              merge
+                { AES = types.CipherValues.aes
+                , Chachapoly = types.CipherValues.chachapoly
+                }
+                network.cipher
 
         in  { pki = host.pki
             , static_host_map = static_hosts
@@ -314,7 +325,7 @@ let generateHostConfig
               , outbound = outbound_rules
               , inbound = inbound_rules
               }
-            , cipher = cipher
+            , cipher
             , local_range = host.local_range
             , sshd = sshd_config
             }

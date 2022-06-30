@@ -6,14 +6,28 @@ let IPv4
 
 let IPv4WithPort
     : Type
-    = { ip1 : Natural, ip2 : Natural, ip3 : Natural, ip4 : Natural, i_port : Natural }
+    = { ip1 : Natural
+      , ip2 : Natural
+      , ip3 : Natural
+      , ip4 : Natural
+      , i_port : Natural
+      }
 
 let IPv4Network =
-      { mask : Natural, in1 : Natural, in2 : Natural, in3 : Natural, in4 : Natural }
+      { mask : Natural
+      , in1 : Natural
+      , in2 : Natural
+      , in3 : Natural
+      , in4 : Natural
+      }
 
-let IPv4NetworkBoolMapEntry : Type = { mapKeyIB : IPv4Network, mapValueIB : Bool }
+let IPv4NetworkBoolMapEntry
+    : Type
+    = { mapKeyIB : IPv4Network, mapValueIB : Bool }
 
-let TextBoolMapEntry : Type = { mapKeyTB : Text, mapValueTB : Bool }
+let TextBoolMapEntry
+    : Type
+    = { mapKeyTB : Text, mapValueTB : Bool }
 
 let CAName
     : Type
@@ -37,10 +51,12 @@ let InterfaceInfo
 
 let ListenInfo
     : Type
-    =    { l_host : IPv4, l_port : Natural, batch : Optional Natural
-            , read_buffer : Optional Natural
-            , write_buffer : Optional Natural
-            }
+    = { l_host : IPv4
+      , l_port : Natural
+      , batch : Optional Natural
+      , read_buffer : Optional Natural
+      , write_buffer : Optional Natural
+      }
 
 let DNSConfig
     : Type

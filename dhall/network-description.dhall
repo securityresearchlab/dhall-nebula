@@ -31,8 +31,12 @@ let laptop1
       , pki = nebula.mkPkiInfoWithoutBlocklist inputs.config_dir ca "laptop1"
       , lighthouse = nebula.LighthouseInfo::{
         , remote_allow_list = Some
-          [ { mapKeyIB = nebula.mkIPv4Network 192 168 1 18 24, mapValueIB = False }
-          , { mapKeyIB = nebula.mkIPv4Network 192 168 1 18 26, mapValueIB = True }
+          [ { mapKeyIB = nebula.mkIPv4Network 192 168 1 18 24
+            , mapValueIB = False
+            }
+          , { mapKeyIB = nebula.mkIPv4Network 192 168 1 18 26
+            , mapValueIB = True
+            }
           , { mapKeyIB = nebula.mkIPv4Network 0 0 0 0 0, mapValueIB = True }
           ]
         }
@@ -71,8 +75,8 @@ let home_group
 let home_connection
     : nebula.Connection
     = nebula.mkIntraGroupConnection
-        nebula.Port.Any
-        nebula.Proto.tcp
+        nebula.Port.AnyPort
+        nebula.Proto.TCP
         home_group
         (None Text)
         (None Text)
@@ -80,8 +84,8 @@ let home_connection
 let outbound_connection
     : nebula.Connection
     = nebula.mkUnidirectionalConnection
-        nebula.Port.Any
-        nebula.Proto.any
+        nebula.Port.AnyPort
+        nebula.Proto.AnyProto
         nebula.ConnectionTarget.AnyNebulaHost
         nebula.ConnectionTarget.AnyExternalHost
         (None Text)
@@ -90,8 +94,8 @@ let outbound_connection
 let icmp_connection
     : nebula.Connection
     = nebula.mkUnidirectionalConnection
-        nebula.Port.Any
-        nebula.Proto.icmp
+        nebula.Port.AnyPort
+        nebula.Proto.ICMP
         nebula.ConnectionTarget.AnyExternalHost
         nebula.ConnectionTarget.AnyNebulaHost
         (None Text)

@@ -28,8 +28,7 @@ let isTarget
           { CTGroup = \(g : types.Group) -> generics.isHostInGroup host g
           , CTHost = \(h : types.Host) -> generics.areIPv4Equal host.ip h.ip
           , CTCidr =
-              \(n : types.IPv4Network) ->
-                generics.isIPInNetwork host.ip n
+              \(n : types.IPv4Network) -> generics.isIPInNetwork host.ip n
           , AnyNebulaHost = True
           , AnyExternalHost = False
           }
@@ -42,7 +41,8 @@ let generateOutboundRule
               merge
                 { CTGroup = \(g : types.Group) -> types.TrafficTarget.TTGroup g
                 , CTHost = \(h : types.Host) -> types.TrafficTarget.TTHost h
-                , CTCidr = \(n : types.IPv4Network) -> types.TrafficTarget.TTCidr n
+                , CTCidr =
+                    \(n : types.IPv4Network) -> types.TrafficTarget.TTCidr n
                 , AnyNebulaHost = types.TrafficTarget.AnyHost
                 , AnyExternalHost = types.TrafficTarget.AnyHost
                 }
@@ -63,7 +63,8 @@ let generateInboundRule
               merge
                 { CTGroup = \(g : types.Group) -> types.TrafficTarget.TTGroup g
                 , CTHost = \(h : types.Host) -> types.TrafficTarget.TTHost h
-                , CTCidr = \(n : types.IPv4Network) -> types.TrafficTarget.TTCidr n
+                , CTCidr =
+                    \(n : types.IPv4Network) -> types.TrafficTarget.TTCidr n
                 , AnyNebulaHost = types.TrafficTarget.AnyHost
                 , AnyExternalHost = types.TrafficTarget.AnyHost
                 }
@@ -133,12 +134,12 @@ let getHostRules
                 types.FirewallRule
                 ( \(rule : types.AdHocFirewallRule) ->
                     { fr_port = rule.ah_port
-                         , fr_proto = rule.ah_proto
-                         , traffic_target = rule.ah_traffic_target
-                         , direction = rule.ah_direction
-                         , fr_ca_name = rule.ah_ca_name
-                         , fr_ca_sha = rule.ah_ca_sha
-                         }
+                    , fr_proto = rule.ah_proto
+                    , traffic_target = rule.ah_traffic_target
+                    , direction = rule.ah_direction
+                    , fr_ca_name = rule.ah_ca_name
+                    , fr_ca_sha = rule.ah_ca_sha
+                    }
                 )
                 ( List/filter
                     types.AdHocFirewallRule

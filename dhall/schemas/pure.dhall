@@ -31,12 +31,12 @@ let InterfaceInfo =
 let ListenInfo =
       { Type = types.ListenInfo
       , default =
-              { l_host = makes.mkIPv4 0 0 0 0
-              , l_port = 4242
-              , batch = None Natural
-              , read_buffer = None Natural
-              , write_buffer = None Natural
-              }
+        { l_host = makes.mkIPv4 0 0 0 0
+        , l_port = 4242
+        , batch = None Natural
+        , read_buffer = None Natural
+        , write_buffer = None Natural
+        }
       }
 
 let TunInfo =
