@@ -8,50 +8,63 @@
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TemplateHaskell #-}
 
-import Lib
-import HaskellTypes
+module Main where
+
+import TH
 import Language.Haskell.TH
 import Language.Haskell.TH.Syntax
 import System.IO
+import System.Process
 import Control.Monad
+import Dhall
+import Dhall.TH
+import Dhall.Yaml as DY
+import Dhall.Marshal.Decode
+import qualified Data.ByteString as B
+import qualified Data.Text as T
+import Data.String as S
 
-$makeTypes
+dhallBaseDir :: String
+dhallBaseDir = "../dhall"
 
-deriving instance Show IPv4
-deriving instance Show IPv4WithPort
-deriving instance Show IPv4Network
-deriving instance Show IPv4NetworkBoolMapEntry
-deriving instance Show TextBoolMapEntry
-deriving instance Show CAName
-deriving instance Show Directory
-deriving instance Show HostName
-deriving instance Show PkiInfo
-deriving instance Show DNSConfig
-deriving instance Show IsLighthouseConfig
-deriving instance Show PunchyInfo
-deriving instance Show LocalAllowListInfo
-deriving instance Show LighthouseInfo
-deriving instance Show SSHDUsers
-deriving instance Show SSHDInfo
-deriving instance Show InterfaceInfo
-deriving instance Show ListenInfo
-deriving instance Show TunInfo
-deriving instance Show TunRoute
-deriving instance Show TunUnsafeRoute
-deriving instance Show LogInfo
-deriving instance Show Host
+hostConfigFileName :: String -> String
+hostConfigFileName h = h <> "-config.dhall"
 
-deriving instance Show GroupName
-deriving instance Show Group
-deriving instance Show RuleDirection
-deriving instance Show ConnectionTarget
-deriving instance Show TrafficTarget
-deriving instance Show PortRange
-deriving instance Show Port
-deriving instance Show Proto
-deriving instance Show UnidirectionalConnection
-deriving instance Show Connection
-deriving instance Show Cipher
-deriving instance Show FirewallRule
-deriving instance Show AdHocFirewallRule
-deriving instance Show Network
+configFilePath :: String -> String
+configFilePath = (<>) dhallBaseDir
+
+genericConfigContent :: String
+genericConfigContent = "let config = ./network-description.dhall let nebula = ./package.dhall in  nebula.generateHostConfig config.network config."
+
+generateYamlExpression :: String -> String
+generateYamlExpression = (<>) genericConfigContent
+
+generateNodeDirectory :: String -> String
+generateNodeDirectory name = "./" <> name <> "/"
+
+generateYamlFilePath :: String -> String
+generateYamlFilePath name = (generateNodeDirectory name) <> name <> ".yaml"
+
+main :: IO ()
+main = do
+  putStrLn "Reading network configuration"
+  network <- input auto (T.pack ("(" <> dhallBaseDir <> "/network-description.dhall).network")) :: IO Network
+  putStrLn "Configuration read, writing yaml files"
+  let names = Prelude.map (T.unpack . name) (hosts network)
+  Control.Monad.mapM writeYamlFile names
+  putStrLn (show names)
+
+writeYamlFile :: String -> IO ()
+writeYamlFile node_name = do
+  putStrLn ("Generating yaml configuration for " <> node_name)
+  let dhallExpression = T.pack (generateYamlExpression node_name)
+  yamlContent <- DY.dhallToYaml DY.defaultOptions (Just "../dhall/") dhallExpression
+  let filePath = generateYamlFilePath node_name
+  B.writeFile filePath yamlContent
+
+
+verifyYamlFile :: FilePath -> IO Bool
+verifyYamlFile name = undefined
+
+generateCertKey :: Text -> IO ()
+generateCertKey name = undefined

@@ -26,16 +26,19 @@ source-repository head
 library
   exposed-modules:
       HaskellTypes
-      Lib
   other-modules:
       Paths_tool
   hs-source-dirs:
       src
   build-depends:
       base >=4.7 && <5
+    , bytestring ==0.10.12.1
     , dhall ==1.40.2
+    , dhall-yaml ==1.2.10
     , prettyprinter ==1.7.1
+    , process ==1.6.13.2
     , template-haskell ==2.17.0.0
+    , text ==1.2.5.0
   default-language: Haskell2010
 
 executable tool-exe
@@ -47,9 +50,13 @@ executable tool-exe
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , bytestring ==0.10.12.1
     , dhall ==1.40.2
+    , dhall-yaml ==1.2.10
     , prettyprinter ==1.7.1
+    , process ==1.6.13.2
     , template-haskell ==2.17.0.0
+    , text ==1.2.5.0
     , tool
   default-language: Haskell2010
 
@@ -63,8 +70,12 @@ test-suite tool-test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , bytestring ==0.10.12.1
     , dhall ==1.40.2
+    , dhall-yaml ==1.2.10
     , prettyprinter ==1.7.1
+    , process ==1.6.13.2
     , template-haskell ==2.17.0.0
+    , text ==1.2.5.0
     , tool
   default-language: Haskell2010

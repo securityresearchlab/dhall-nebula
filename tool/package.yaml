@@ -24,6 +24,10 @@ dependencies:
 - dhall == 1.40.2
 - template-haskell == 2.17.0.0
 - prettyprinter == 1.7.1
+- dhall-yaml == 1.2.10
+- bytestring == 0.10.12.1
+- process == 1.6.13.2
+- text == 1.2.5.0
 
 library:
   source-dirs: src
