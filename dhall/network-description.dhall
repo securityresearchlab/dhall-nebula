@@ -108,6 +108,7 @@ let network
       , connections = [ home_connection, outbound_connection, icmp_connection ]
       , ad_hoc_rules = [] : List nebula.AdHocFirewallRule
       , cipher = nebula.Cipher.AES
+      , ip_mask = 24
       }
 
 let _ = assert : nebula.validate network

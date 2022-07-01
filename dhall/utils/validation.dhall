@@ -344,6 +344,7 @@ let validate
                 , lighthouse_present_check = True
                 }
               , rules_checks.rules_check = True
+              , network_mask_check = True
               }
 
         let actual =
@@ -354,6 +355,7 @@ let validate
                     List/any types.Host isLighthouse network.hosts
                 }
               , rules_checks.rules_check = validateRules rules
+              , network_mask_check = Natural/lessThan 32 network.ip_mask
               }
 
         in  expected === actual

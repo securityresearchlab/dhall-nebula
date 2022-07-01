@@ -88,6 +88,7 @@ let Network
       , connections : List Connection
       , ad_hoc_rules : List AdHocFirewallRule
       , cipher : Cipher
+      , ip_mask : Natural
       }
 
 in  { GroupName
