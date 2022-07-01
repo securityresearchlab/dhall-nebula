@@ -23,9 +23,10 @@ import Dhall.Marshal.Decode
 import qualified Data.ByteString as B
 import qualified Data.Text as T
 import Data.String as S
+import System.Directory (createDirectoryIfMissing)
 
 dhallBaseDir :: String
-dhallBaseDir = "../dhall"
+dhallBaseDir = "../dhall/" -- the final slash is essential for the dhallToYaml method
 
 hostConfigFileName :: String -> String
 hostConfigFileName h = h <> "-config.dhall"
@@ -40,7 +41,7 @@ generateYamlExpression :: String -> String
 generateYamlExpression = (<>) genericConfigContent
 
 generateNodeDirectory :: String -> String
-generateNodeDirectory name = "./" <> name <> "/"
+generateNodeDirectory name = "./nebula_configs/" <> name <> "/"
 
 generateYamlFilePath :: String -> String
 generateYamlFilePath name = (generateNodeDirectory name) <> name <> ".yaml"
@@ -48,18 +49,19 @@ generateYamlFilePath name = (generateNodeDirectory name) <> name <> ".yaml"
 main :: IO ()
 main = do
   putStrLn "Reading network configuration"
-  network <- input auto (T.pack ("(" <> dhallBaseDir <> "/network-description.dhall).network")) :: IO Network
+  network <- input auto (T.pack ("(" <> dhallBaseDir <> "network-description.dhall).network")) :: IO Network
   putStrLn "Configuration read, writing yaml files"
   let names = Prelude.map (T.unpack . name) (hosts network)
   Control.Monad.mapM writeYamlFile names
-  putStrLn (show names)
+  putStrLn "Finished"
 
 writeYamlFile :: String -> IO ()
 writeYamlFile node_name = do
   putStrLn ("Generating yaml configuration for " <> node_name)
   let dhallExpression = T.pack (generateYamlExpression node_name)
-  yamlContent <- DY.dhallToYaml DY.defaultOptions (Just "../dhall/") dhallExpression
+  yamlContent <- DY.dhallToYaml DY.defaultOptions (Just dhallBaseDir) dhallExpression
   let filePath = generateYamlFilePath node_name
+  createDirectoryIfMissing True (generateNodeDirectory node_name)
   B.writeFile filePath yamlContent
 
 

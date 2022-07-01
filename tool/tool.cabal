@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       HaskellTypes
+      TH
   other-modules:
       Paths_tool
   hs-source-dirs:
@@ -35,6 +36,7 @@ library
     , bytestring ==0.10.12.1
     , dhall ==1.40.2
     , dhall-yaml ==1.2.10
+    , directory ==1.3.6.2
     , prettyprinter ==1.7.1
     , process ==1.6.13.2
     , template-haskell ==2.17.0.0
@@ -53,6 +55,7 @@ executable tool-exe
     , bytestring ==0.10.12.1
     , dhall ==1.40.2
     , dhall-yaml ==1.2.10
+    , directory ==1.3.6.2
     , prettyprinter ==1.7.1
     , process ==1.6.13.2
     , template-haskell ==2.17.0.0
@@ -73,6 +76,7 @@ test-suite tool-test
     , bytestring ==0.10.12.1
     , dhall ==1.40.2
     , dhall-yaml ==1.2.10
+    , directory ==1.3.6.2
     , prettyprinter ==1.7.1
     , process ==1.6.13.2
     , template-haskell ==2.17.0.0
