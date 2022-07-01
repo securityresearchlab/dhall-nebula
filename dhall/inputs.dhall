@@ -6,7 +6,7 @@ let lighthouse_ip
 
 let config_dir
     : Text
-    = "/etc/nebula"
+    = "C:\\Users\\Giorgia\\Documents\\Universita\\Magistrale-Ingegneria_informatica\\Tesi\\nebula-windows-amd64"
 
 let ca_name
     : Text

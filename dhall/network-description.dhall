@@ -104,6 +104,7 @@ let icmp_connection
 let network
     : nebula.Network
     = { hosts = hosts_list
+      , groups = [ all_group, home_group ]
       , connections = [ home_connection, outbound_connection, icmp_connection ]
       , ad_hoc_rules = [] : List nebula.AdHocFirewallRule
       , cipher = nebula.Cipher.AES

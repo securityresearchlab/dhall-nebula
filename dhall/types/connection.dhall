@@ -84,6 +84,7 @@ let Cipher
 let Network
     : Type
     = { hosts : List host.Host
+      , groups : List Group
       , connections : List Connection
       , ad_hoc_rules : List AdHocFirewallRule
       , cipher : Cipher
