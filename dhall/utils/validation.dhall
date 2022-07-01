@@ -355,7 +355,7 @@ let validate
                     List/any types.Host isLighthouse network.hosts
                 }
               , rules_checks.rules_check = validateRules rules
-              , network_mask_check = Natural/lessThan 32 network.ip_mask
+              , network_mask_check = Natural/lessThan network.ip_mask 32
               }
 
         in  expected === actual
