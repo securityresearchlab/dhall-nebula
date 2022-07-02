@@ -19,6 +19,7 @@ import System.Process
 import Control.Monad
 import Control.Monad.Parallel
 import Dhall
+import qualified Dhall.JSON
 import Dhall.TH
 import Dhall.Yaml as DY
 import Dhall.Marshal.Decode
@@ -69,7 +70,7 @@ main = do
       putStrLn "Configuration read, writing yaml files"
       let generateYamlFile = setupYamlGeneration dhallBaseDir nebulaPath nebulaCertPath caKeyPath caCrtPath
       results <- Control.Monad.Parallel.mapM (generateYamlFile network) (hosts network)
-      let prettyResults = Prelude.map (\(h, v) -> (T.unpack (name h)) <> " is " <> (if v then "" else "not ") <> "valid") results
+      let prettyResults = Prelude.map (\(h, v) -> (T.unpack (name h)) <> " is " <> (if v then "" else "not ") <> "valid on this machine") results
       Control.Monad.mapM putStrLn prettyResults
       putStrLn "Finished"
     _ -> putStrLn "Wrong number of arguments"
@@ -90,9 +91,10 @@ writeYamlFile :: String -> String -> IO ()
 writeYamlFile dhallBaseDir node_name = do
   putStrLn ("Generating yaml configuration for " <> node_name)
   let dhallExpression = T.pack (generateYamlExpression node_name)
-  yamlContent <- DY.dhallToYaml DY.defaultOptions (Just dhallBaseDir) dhallExpression
   let filePath = generateYamlFilePath node_name
   createDirectoryIfMissing True (generateNodeDirectory node_name)
+  let options = DY.defaultOptions { omission = (Dhall.JSON.omitNull . Dhall.JSON.omitEmpty) }
+  yamlContent <- DY.dhallToYaml options (Just dhallBaseDir) dhallExpression
   B.writeFile filePath yamlContent
 
 executeShellCommand :: String -> IO Bool

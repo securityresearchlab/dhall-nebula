@@ -30,6 +30,7 @@ dependencies:
 - text == 1.2.5.0
 - directory == 1.3.6.2
 - monad-parallel == 0.7.2.5
+- dhall-json == 1.7.9
 
 library:
   source-dirs: src
