@@ -1,9 +1,5 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingStrategies #-}
-{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TemplateHaskell #-}
 
 module GenerateYaml (setupYamlGeneration) where
 
@@ -40,15 +36,13 @@ generateNodeDirectory :: String -> String
 generateNodeDirectory name = "./nebula_configs/" <> name <> "/"
 
 generateYamlFilePath :: String -> String
-generateYamlFilePath name = (generateNodeDirectory name) <> name <> ".yaml"
-
+generateYamlFilePath name = generateNodeDirectory name <> name <> ".yaml"
 
 setupYamlGeneration :: String -> String -> String -> String -> String -> (Network -> Host -> IO Bool)
-setupYamlGeneration dhallBaseDir nebulaPath nebulaCertPath caKeyPath caCrtPath =
-  \network -> \host -> do
-    let node_name = T.unpack (name host)
-    writeYamlFile dhallBaseDir node_name
-    generateCertKey nebulaCertPath caCrtPath caKeyPath host network $ generateNodeDirectory node_name
+setupYamlGeneration dhallBaseDir nebulaPath nebulaCertPath caKeyPath caCrtPath network host = do
+  let node_name = T.unpack (name host)
+  writeYamlFile dhallBaseDir node_name
+  generateCertKey nebulaCertPath caCrtPath caKeyPath host network $ generateNodeDirectory node_name
 
 writeYamlFile :: String -> String -> IO ()
 writeYamlFile dhallBaseDir node_name = do
@@ -56,7 +50,7 @@ writeYamlFile dhallBaseDir node_name = do
   let dhallExpression = T.pack (generateYamlExpression node_name)
   let filePath = generateYamlFilePath node_name
   createDirectoryIfMissing True (generateNodeDirectory node_name)
-  let options = DY.defaultOptions {omission = (Dhall.JSON.omitNull . Dhall.JSON.omitEmpty)}
+  let options = DY.defaultOptions {omission = Dhall.JSON.omitNull . Dhall.JSON.omitEmpty}
   yamlContent <- DY.dhallToYaml options (Just dhallBaseDir) dhallExpression
   B.writeFile filePath yamlContent
 
@@ -77,11 +71,11 @@ verifyYamlFile nebulaPath path = do
 
 generateCertKey :: String -> String -> String -> Host -> Network -> String -> IO Bool
 generateCertKey nebulaCertPath caCrtPath caKeyPath host network dir = do
-  let isHostInGroup = (\g -> elem host (group_hosts g)) :: Group -> Bool
+  let isHostInGroup = elem host . group_hosts :: Group -> Bool
   let host_name = T.unpack $ name host
   let groups_names = Prelude.map (T.unpack . group_name) $ Prelude.filter isHostInGroup (groups network)
-  let host_ip = ((show . ip) host) <> "/" <> show (ip_mask network)
-  let groupsOption = if null groups_names then "" else (foldl (<>) "-groups \"" (intersperse "," groups_names)) <> "\""
+  let host_ip = (show . ip) host <> "/" <> show (ip_mask network)
+  let groupsOption = if null groups_names then "" else foldl (<>) "-groups \"" (intersperse "," groups_names) <> "\""
   let command =
         nebulaCertPath
           <> " sign -ca-key "

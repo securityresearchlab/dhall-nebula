@@ -1,22 +1,17 @@
-{-# LANGUAGE DeriveAnyClass #-}
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE StandaloneDeriving #-}
-{-# LANGUAGE TemplateHaskell #-}
 
 module Main where
 
 import Control.Monad
 import Control.Monad.Parallel
 import qualified Data.Text as T
-import System.Environment
 import Dhall
-import TH
 import GenerateYaml
+import System.Environment
+import TH
 
 main :: IO ()
 main = do
@@ -28,5 +23,5 @@ main = do
       putStrLn "Configuration read, writing yaml files"
       let generateYamlFile = setupYamlGeneration dhallBaseDir nebulaPath nebulaCertPath caKeyPath caCrtPath
       results <- Control.Monad.Parallel.mapM (generateYamlFile network) (hosts network)
-      putStrLn $ if all id results then "Done" else "Errors arised, please check the results"
+      putStrLn $ if and results then "Done" else "Errors arised, please check the results"
     _ -> putStrLn "Wrong number of arguments"
