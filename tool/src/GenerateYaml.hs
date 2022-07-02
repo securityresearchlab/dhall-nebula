@@ -43,17 +43,12 @@ generateYamlFilePath :: String -> String
 generateYamlFilePath name = (generateNodeDirectory name) <> name <> ".yaml"
 
 
-setupYamlGeneration :: String -> String -> String -> String -> String -> (Network -> Host -> IO (Host, Bool))
+setupYamlGeneration :: String -> String -> String -> String -> String -> (Network -> Host -> IO Bool)
 setupYamlGeneration dhallBaseDir nebulaPath nebulaCertPath caKeyPath caCrtPath =
   \network -> \host -> do
     let node_name = T.unpack (name host)
     writeYamlFile dhallBaseDir node_name
-    validity <- verifyYamlFile nebulaPath $ generateNodeDirectory node_name
-    if validity
-      then do
-        _ <- generateCertKey nebulaCertPath caCrtPath caKeyPath host network $ generateNodeDirectory node_name
-        pure (host, validity)
-      else pure (host, validity)
+    generateCertKey nebulaCertPath caCrtPath caKeyPath host network $ generateNodeDirectory node_name
 
 writeYamlFile :: String -> String -> IO ()
 writeYamlFile dhallBaseDir node_name = do

@@ -28,7 +28,5 @@ main = do
       putStrLn "Configuration read, writing yaml files"
       let generateYamlFile = setupYamlGeneration dhallBaseDir nebulaPath nebulaCertPath caKeyPath caCrtPath
       results <- Control.Monad.Parallel.mapM (generateYamlFile network) (hosts network)
-      let prettyResults = Prelude.map (\(h, v) -> (T.unpack (name h)) <> " is " <> (if v then "" else "not ") <> "valid on this machine") results
-      Control.Monad.mapM putStrLn prettyResults
-      putStrLn "Finished"
+      putStrLn $ if all id results then "Done" else "Errors arised, please check the results"
     _ -> putStrLn "Wrong number of arguments"
