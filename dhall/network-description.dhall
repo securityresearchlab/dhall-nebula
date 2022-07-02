@@ -18,8 +18,7 @@ let lighthouse
       , name = lighthouse_name
       , ip = lighthouse_ip
       , lighthouse_config = Some { dns = None nebula.DNSConfig }
-      , pki =
-          nebula.mkPkiInfoWithoutBlocklist "/etc/nebula" ca lighthouse_name
+      , pki = nebula.mkPkiInfoWithoutBlocklist "/etc/nebula" ca lighthouse_name
       , static_ips = [ nebula.mkIPv4WithPort 20 63 142 142 4242 ]
       }
 
