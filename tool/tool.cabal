@@ -37,6 +37,7 @@ library
     , dhall ==1.40.2
     , dhall-yaml ==1.2.10
     , directory ==1.3.6.2
+    , monad-parallel ==0.7.2.5
     , prettyprinter ==1.7.1
     , process ==1.6.13.2
     , template-haskell ==2.17.0.0
@@ -56,6 +57,7 @@ executable tool-exe
     , dhall ==1.40.2
     , dhall-yaml ==1.2.10
     , directory ==1.3.6.2
+    , monad-parallel ==0.7.2.5
     , prettyprinter ==1.7.1
     , process ==1.6.13.2
     , template-haskell ==2.17.0.0
@@ -77,6 +79,7 @@ test-suite tool-test
     , dhall ==1.40.2
     , dhall-yaml ==1.2.10
     , directory ==1.3.6.2
+    , monad-parallel ==0.7.2.5
     , prettyprinter ==1.7.1
     , process ==1.6.13.2
     , template-haskell ==2.17.0.0
