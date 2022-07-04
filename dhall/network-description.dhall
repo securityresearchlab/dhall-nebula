@@ -28,17 +28,7 @@ let laptop1
       , name = "laptop1"
       , ip = nebula.mkIPv4 192 168 100 2
       , pki = nebula.mkPkiInfoWithoutBlocklist "/home/user/tesi" ca "laptop1"
-      , lighthouse = nebula.LighthouseInfo::{
-        , remote_allow_list = Some
-          [ { mapKeyIB = nebula.mkIPv4Network 192 168 1 18 24
-            , mapValueIB = False
-            }
-          , { mapKeyIB = nebula.mkIPv4Network 192 168 1 18 26
-            , mapValueIB = True
-            }
-          , { mapKeyIB = nebula.mkIPv4Network 0 0 0 0 0, mapValueIB = True }
-          ]
-        }
+      , lighthouse = nebula.LighthouseInfo.default
       }
 
 let laptop2
@@ -47,16 +37,7 @@ let laptop2
       , name = "laptop2"
       , ip = nebula.mkIPv4 192 168 100 3
       , pki = nebula.mkPkiInfoWithoutBlocklist "/home/user/tesi" ca "laptop2"
-      , lighthouse = nebula.LighthouseInfo::{
-        , local_allow_list = Some
-          { interfaces = Some [ { mapKeyTB = "tun0", mapValueTB = True } ]
-          , cidrs = Some
-            [ { mapKeyIB = nebula.mkIPv4Network 192 168 1 18 24
-              , mapValueIB = False
-              }
-            ]
-          }
-        }
+      , lighthouse = nebula.LighthouseInfo.default
       }
 
 let hosts_list
