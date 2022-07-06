@@ -31,17 +31,15 @@ main = do
       network <- readConfig dir
       results <- Control.Monad.Parallel.mapM (\h -> generateCertKey nebulaCertPath caCrtPath caKeyPath h network configsPath) (hosts network)
       putStrLn $ "Done without errors: " <> show (and results)
-    SignKey keyPath caCrtPath caKeyPath nebulaCertPath -> do
+    SignKey keyPath hostName caCrtPath caKeyPath nebulaCertPath -> do
       network <- readConfig dir
-      -- signKey :: String -> String -> String -> Host -> Network -> String -> String -> IO Bool
-      let unixKeyPath = Prelude.map (\c -> if c == '\\' then '/' else c)
-      let pathPieces = splitOn "/" unixKeyPath
-      -- let name =
-      putStrLn "sign"
-    SignKey keysPath caCrtPath caKeyPath nebulaCertPath -> do
+      let matches = Prelude.filter (\h -> (T.unpack . name) h == hostName) (hosts network)
+      result <- signKey nebulaCertPath caCrtPath caKeyPath (head matches) network keyPath
+      putStrLn $ "signed: " <> show result
+    AutoSignKey keysPath caCrtPath caKeyPath nebulaCertPath -> do
       network <- readConfig dir
-      putStrLn "sign auto"
-    _ -> return ()
+      result <- autoSignKeys nebulaCertPath caCrtPath caKeyPath network keysPath
+      putStrLn $ "Done without errors: " <> show result
 
 readConfig :: String -> IO Network
 readConfig dhallBaseDir = do

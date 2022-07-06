@@ -1,7 +1,7 @@
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module GenerateYaml (writeYamlFile, generateCertKey, prepareDhallDirString, signKey) where
+module GenerateYaml (writeYamlFile, generateCertKey, prepareDhallDirString, signKey, autoSignKeys) where
 
 import Control.Monad
 import Control.Monad.Parallel
@@ -35,8 +35,11 @@ generateYamlExpression = (<>) genericConfigContent
 generateNodeDirectory :: String -> String -> String
 generateNodeDirectory baseDir name = baseDir <> "/" <> name <> "/"
 
+generateFilePathNoExt :: String -> String -> String
+generateFilePathNoExt baseDir name = generateNodeDirectory baseDir name <> name
+
 generateYamlFilePath :: String -> String -> String
-generateYamlFilePath baseDir name = generateNodeDirectory baseDir name <> name <> ".yaml"
+generateYamlFilePath baseDir name = generateFilePathNoExt baseDir name <> ".yaml"
 
 prepareDhallDirString :: String -> String
 prepareDhallDirString dir = if last dir == '/' || last dir == '\\' then dir else dir <> "/"
@@ -65,8 +68,8 @@ executeShellCommand command = do
     ExitSuccess -> True
     ExitFailure _ -> False
 
-signKey :: String -> String -> String -> Host -> Network -> String -> String -> IO Bool
-signKey nebulaCertPath caCrtPath caKeyPath host network keyPath crtPath = do
+signKey :: String -> String -> String -> Host -> Network -> String -> IO Bool
+signKey nebulaCertPath caCrtPath caKeyPath host network keyPath = do
   let host_name = T.unpack $ name host
   let groups_names = Prelude.map (T.unpack . group_name) $ Prelude.filter (isHostInGroup host) (groups network)
   let host_ip = (show . ip) host <> "/" <> show (ip_mask network)
@@ -85,6 +88,14 @@ signKey nebulaCertPath caCrtPath caKeyPath host network keyPath crtPath = do
           <> "\" "
           <> groupsOption
   executeShellCommand command
+
+autoSignKeys :: String -> String -> String -> Network -> String -> IO Bool
+autoSignKeys nebulaCertPath caCrtPath caKeyPath network keyPath = do
+  let pairs = Prelude.map (\h -> (h, prepareCrtName h)) (hosts network)
+  results <- Control.Monad.Parallel.mapM (\(h, path) -> signKey nebulaCertPath caCrtPath caKeyPath h network path) pairs
+  pure (and results)
+  where prepareCrtName :: Host -> String
+        prepareCrtName host = generateFilePathNoExt keyPath ((T.unpack . name) host) <> ".crt"
 
 generateCertKey :: String -> String -> String -> Host -> Network -> String -> IO Bool
 generateCertKey nebulaCertPath caCrtPath caKeyPath host network baseDir = do

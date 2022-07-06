@@ -19,6 +19,7 @@ data Command
       }
   | SignKey
       { keyPath :: String,
+        hostName :: String,
         caCrtPath :: String,
         caKeyPath :: String,
         nebulaCertPath :: String
@@ -39,6 +40,10 @@ signInput = info signCommand (fullDesc <> progDesc "Sign an already existing key
         <$> strOption
           ( long "keyPath"
               <> help "The path of the key to sign"
+          )
+        <*> strOption
+          ( long "hostName"
+              <> help "The name of the host that will use the generated certificate"
           )
         <*> strOption
           ( long "caCrtPath"
