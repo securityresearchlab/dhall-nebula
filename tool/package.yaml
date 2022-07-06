@@ -32,6 +32,7 @@ dependencies:
 - monad-parallel == 0.7.2.5
 - dhall-json == 1.7.9
 - optparse-applicative == 0.16.1.0
+- Unique == 0.4.7.9
 
 library:
   source-dirs: src

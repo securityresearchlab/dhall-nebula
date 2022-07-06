@@ -14,32 +14,32 @@ import GenerateYaml
 import Options.Applicative
 import System.Environment
 import TH
+import Data.List.Unique
 
 main :: IO ()
 main = do
   runOptions <- customExecParser (prefs showHelpOnEmpty) opts :: IO Options
   let dir = dhallDir runOptions
   let c = optCommand runOptions
-  print c
-  case c of
-    GenerateConfig configsPath -> do
-      network <- readConfig dir
-      let hostNames = Prelude.map (T.unpack . name) (hosts network)
-      Control.Monad.Parallel.mapM_ (writeYamlFile dir configsPath) hostNames
-      putStrLn "Done"
-    GenerateCertificates configsPath caCrtPath caKeyPath nebulaCertPath -> do
-      network <- readConfig dir
-      results <- Control.Monad.Parallel.mapM (\h -> generateCertKey nebulaCertPath caCrtPath caKeyPath h network configsPath) (hosts network)
-      putStrLn $ "Done without errors: " <> show (and results)
-    SignKey keyPath hostName caCrtPath caKeyPath nebulaCertPath -> do
-      network <- readConfig dir
-      let matches = Prelude.filter (\h -> (T.unpack . name) h == hostName) (hosts network)
-      result <- signKey nebulaCertPath caCrtPath caKeyPath (head matches) network keyPath
-      putStrLn $ "signed: " <> show result
-    AutoSignKey keysPath caCrtPath caKeyPath nebulaCertPath -> do
-      network <- readConfig dir
-      result <- autoSignKeys nebulaCertPath caCrtPath caKeyPath network keysPath
-      putStrLn $ "Done without errors: " <> show result
+  network <- readConfig dir
+  let networkHosts = hosts network
+  if allUnique networkHosts
+    then case c of
+      GenerateConfig configsPath -> do
+        let hostNames = Prelude.map (T.unpack . name) networkHosts
+        Control.Monad.Parallel.mapM_ (writeYamlFile dir configsPath) hostNames
+        putStrLn "Done"
+      GenerateCertificates configsPath caCrtPath caKeyPath nebulaCertPath -> do
+        results <- Control.Monad.Parallel.mapM (\h -> generateCertKey nebulaCertPath caCrtPath caKeyPath h network configsPath) networkHosts
+        putStrLn $ "Done without errors: " <> show (and results)
+      SignKey keyPath hostName caCrtPath caKeyPath nebulaCertPath -> do
+        let matches = Prelude.filter (\h -> (T.unpack . name) h == hostName) networkHosts
+        result <- signKey nebulaCertPath caCrtPath caKeyPath (head matches) network keyPath
+        putStrLn $ "Signed: " <> show result
+      AutoSignKey keysPath caCrtPath caKeyPath nebulaCertPath -> do
+        result <- autoSignKeys nebulaCertPath caCrtPath caKeyPath network keysPath
+        putStrLn $ "Done without errors: " <> show result
+    else putStrLn "Illegal configuration: there are hosts with the same name"
 
 readConfig :: String -> IO Network
 readConfig dhallBaseDir = do
