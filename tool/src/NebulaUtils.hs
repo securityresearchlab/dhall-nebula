@@ -1,7 +1,7 @@
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module GenerateYaml (writeYamlFile, generateCertKey, prepareDhallDirString, signKey, autoSignKeys) where
+module NebulaUtils (writeYamlFile, generateCertKey, prepareDhallDirString, signKey, autoSignKeys) where
 
 import Control.Monad
 import Control.Monad.Parallel
@@ -19,6 +19,7 @@ import Language.Haskell.TH.Syntax
 import System.Directory (createDirectoryIfMissing)
 import System.Environment
 import System.Exit
+import System.FilePath
 import System.IO
 import System.Process
 import TH
@@ -74,13 +75,16 @@ signKey nebulaCertPath caCrtPath caKeyPath host network keyPath = do
   let groups_names = Prelude.map (T.unpack . group_name) $ Prelude.filter (isHostInGroup host) (groups network)
   let host_ip = (show . ip) host <> "/" <> show (ip_mask network)
   let groupsOption = if null groups_names then "" else foldl (<>) "-groups \"" (intersperse "," groups_names) <> "\""
+  let generatedCrtPath = replaceExtension keyPath "crt"
   let command = nebulaCertPath
-          <> " sign -ca-key "
+          <> " sign -ca-key \""
           <> caKeyPath
-          <> " -ca-crt "
+          <> "\" -ca-crt \""
           <> caCrtPath
-          <> " -in-pub "
+          <> "\" -in-pub \""
           <> keyPath
+          <> "\" -out-crt "
+          <> generatedCrtPath
           <> " -name \""
           <> host_name
           <> "\" -ip \""
@@ -95,7 +99,7 @@ autoSignKeys nebulaCertPath caCrtPath caKeyPath network keyPath = do
   results <- Control.Monad.Parallel.mapM (\(h, path) -> signKey nebulaCertPath caCrtPath caKeyPath h network path) pairs
   pure (and results)
   where prepareCrtName :: Host -> String
-        prepareCrtName host = generateFilePathNoExt keyPath ((T.unpack . name) host) <> ".crt"
+        prepareCrtName host = generateFilePathNoExt keyPath ((T.unpack . name) host) <> ".pub"
 
 generateCertKey :: String -> String -> String -> Host -> Network -> String -> IO Bool
 generateCertKey nebulaCertPath caCrtPath caKeyPath host network baseDir = do

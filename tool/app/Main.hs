@@ -10,7 +10,7 @@ import Control.Monad
 import Control.Monad.Parallel
 import qualified Data.Text as T
 import qualified Dhall
-import GenerateYaml
+import NebulaUtils
 import Options.Applicative
 import System.Environment
 import TH

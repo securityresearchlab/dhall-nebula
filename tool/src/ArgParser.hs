@@ -1,4 +1,4 @@
-module ArgParser (opts, Options(..), Command(..)) where
+module ArgParser (opts, Options (..), Command (..)) where
 
 import Options.Applicative
 
