@@ -1,7 +1,7 @@
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module GenerateYaml (writeYamlFile, generateCertKey, prepareDhallDirString) where
+module GenerateYaml (writeYamlFile, generateCertKey, prepareDhallDirString, signKey) where
 
 import Control.Monad
 import Control.Monad.Parallel
@@ -41,11 +41,8 @@ generateYamlFilePath baseDir name = generateNodeDirectory baseDir name <> name <
 prepareDhallDirString :: String -> String
 prepareDhallDirString dir = if last dir == '/' || last dir == '\\' then dir else dir <> "/"
 
--- setupYamlGeneration :: String -> String -> String -> String -> String -> (Network -> Host -> IO Bool)
--- setupYamlGeneration dhallBaseDir nebulaPath nebulaCertPath caKeyPath caCrtPath network host = do
---   let node_name = T.unpack (name host)
---   writeYamlFile dhallBaseDir node_name
---   generateCertKey nebulaCertPath caCrtPath caKeyPath host network $ generateNodeDirectory node_name
+isHostInGroup :: Host -> Group -> Bool
+isHostInGroup host = elem host . group_hosts
 
 writeYamlFile :: String -> String -> String -> IO ()
 writeYamlFile dhallBaseDir configDir node_name = do
@@ -68,13 +65,33 @@ executeShellCommand command = do
     ExitSuccess -> True
     ExitFailure _ -> False
 
+signKey :: String -> String -> String -> Host -> Network -> String -> String -> IO Bool
+signKey nebulaCertPath caCrtPath caKeyPath host network keyPath crtPath = do
+  let host_name = T.unpack $ name host
+  let groups_names = Prelude.map (T.unpack . group_name) $ Prelude.filter (isHostInGroup host) (groups network)
+  let host_ip = (show . ip) host <> "/" <> show (ip_mask network)
+  let groupsOption = if null groups_names then "" else foldl (<>) "-groups \"" (intersperse "," groups_names) <> "\""
+  let command = nebulaCertPath
+          <> " sign -ca-key "
+          <> caKeyPath
+          <> " -ca-crt "
+          <> caCrtPath
+          <> " -in-pub "
+          <> keyPath
+          <> " -name \""
+          <> host_name
+          <> "\" -ip \""
+          <> host_ip
+          <> "\" "
+          <> groupsOption
+  executeShellCommand command
+
 generateCertKey :: String -> String -> String -> Host -> Network -> String -> IO Bool
-generateCertKey nebulaCertPath caCrtPath caKeyPath host network baseDir= do
-  let isHostInGroup = elem host . group_hosts :: Group -> Bool
+generateCertKey nebulaCertPath caCrtPath caKeyPath host network baseDir = do
   let host_name = T.unpack $ name host
   let dir = generateNodeDirectory baseDir host_name
   createDirectoryIfMissing True dir
-  let groups_names = Prelude.map (T.unpack . group_name) $ Prelude.filter isHostInGroup (groups network)
+  let groups_names = Prelude.map (T.unpack . group_name) $ Prelude.filter (isHostInGroup host) (groups network)
   let host_ip = (show . ip) host <> "/" <> show (ip_mask network)
   let groupsOption = if null groups_names then "" else foldl (<>) "-groups \"" (intersperse "," groups_names) <> "\""
   let command =
