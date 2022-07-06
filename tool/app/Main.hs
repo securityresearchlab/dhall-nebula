@@ -54,7 +54,7 @@ signInput =
       )
     <*> strOption
       ( long "crtPath"
-          <> help "The path of the certificate to sign"
+          <> help "The path of the certificate to sign, or, if in auto mode, the base dir where all the certificates are"
       )
     <*> strOption
       ( long "caCrtPath"
@@ -123,7 +123,8 @@ main = do
       putStrLn "Done"
     GenerateCertificates True dhallDir configsPath caCrtPath caKeyPath nebulaCertPath -> do
       network <- readConfig dhallDir
-      putStrLn "g certificates"
+      results <- Control.Monad.Parallel.mapM (\h -> generateCertKey nebulaCertPath caCrtPath caKeyPath h network configsPath) (hosts network)
+      putStrLn $ "Done without errors: " <> show (and results)
     SignCertificate True False dhallDir crtPath caCrtPath caKeyPath nebulaCertPath -> do
       network <- readConfig dhallDir
       putStrLn "sign"
@@ -134,7 +135,7 @@ main = do
 
 readConfig :: String -> IO Network
 readConfig dhallBaseDir = do
-  let dir = map (\c -> if c == '\\' then '/' else c) dhallBaseDir
+  let dir = prepareDhallDirString (map (\c -> if c == '\\' then '/' else c) dhallBaseDir)
   putStrLn "Reading network configuration"
   Dhall.input Dhall.auto (T.pack ("(" <> dir <> "network-description.dhall).network")) :: IO Network
 
