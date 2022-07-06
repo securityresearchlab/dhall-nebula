@@ -116,11 +116,28 @@ main :: IO ()
 main = do
   options <- execParser opts
   case options of
-    GenerateConfig True dhallDir configsPath -> putStrLn "config"
-    GenerateCertificates True dhallDir configsPath caCrtPath caKeyPath nebulaCertPath -> putStrLn "g certificates"
-    SignCertificate True False dhallDir crtPath caCrtPath caKeyPath nebulaCertPath -> putStrLn "sign"
-    SignCertificate True True dhallDir crtPath caCrtPath caKeyPath nebulaCertPath -> putStrLn "sign auto"
+    GenerateConfig True dhallDir configsPath -> do
+      network <- readConfig dhallDir
+      let hostNames = Prelude.map (T.unpack . name) (hosts network)
+      Control.Monad.Parallel.mapM_ (writeYamlFile dhallDir configsPath) hostNames
+      putStrLn "Done"
+    GenerateCertificates True dhallDir configsPath caCrtPath caKeyPath nebulaCertPath -> do
+      network <- readConfig dhallDir
+      putStrLn "g certificates"
+    SignCertificate True False dhallDir crtPath caCrtPath caKeyPath nebulaCertPath -> do
+      network <- readConfig dhallDir
+      putStrLn "sign"
+    SignCertificate True True dhallDir crtPath caCrtPath caKeyPath nebulaCertPath -> do
+      network <- readConfig dhallDir
+      putStrLn "sign auto"
     _ -> return ()
+
+readConfig :: String -> IO Network
+readConfig dhallBaseDir = do
+  let dir = map (\c -> if c == '\\' then '/' else c) dhallBaseDir
+  putStrLn "Reading network configuration"
+  Dhall.input Dhall.auto (T.pack ("(" <> dir <> "network-description.dhall).network")) :: IO Network
+
 -- case args of
 --   [dhallBaseDir, nebulaPath, nebulaCertPath, caKeyPath, caCrtPath] -> do
 --     putStrLn "Reading network configuration"

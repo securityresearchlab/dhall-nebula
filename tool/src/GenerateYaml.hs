@@ -1,7 +1,7 @@
 {-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module GenerateYaml (setupYamlGeneration) where
+module GenerateYaml (writeYamlFile) where
 
 import Control.Monad
 import Control.Monad.Parallel
@@ -32,26 +32,30 @@ hostConfigFileName h = h <> "-config.dhall"
 generateYamlExpression :: String -> String
 generateYamlExpression = (<>) genericConfigContent
 
-generateNodeDirectory :: String -> String
-generateNodeDirectory name = "./nebula_configs/" <> name <> "/"
+generateNodeDirectory :: String -> String -> String
+generateNodeDirectory baseDir name = baseDir <> "/" <> name <> "/"
 
-generateYamlFilePath :: String -> String
-generateYamlFilePath name = generateNodeDirectory name <> name <> ".yaml"
+generateYamlFilePath :: String -> String -> String
+generateYamlFilePath baseDir name = generateNodeDirectory baseDir name <> name <> ".yaml"
 
-setupYamlGeneration :: String -> String -> String -> String -> String -> (Network -> Host -> IO Bool)
-setupYamlGeneration dhallBaseDir nebulaPath nebulaCertPath caKeyPath caCrtPath network host = do
-  let node_name = T.unpack (name host)
-  writeYamlFile dhallBaseDir node_name
-  generateCertKey nebulaCertPath caCrtPath caKeyPath host network $ generateNodeDirectory node_name
+prepareDhallDirString :: String -> String
+prepareDhallDirString dir = if last dir == '/' || last dir == '\\' then dir else dir <> "/"
 
-writeYamlFile :: String -> String -> IO ()
-writeYamlFile dhallBaseDir node_name = do
+-- setupYamlGeneration :: String -> String -> String -> String -> String -> (Network -> Host -> IO Bool)
+-- setupYamlGeneration dhallBaseDir nebulaPath nebulaCertPath caKeyPath caCrtPath network host = do
+--   let node_name = T.unpack (name host)
+--   writeYamlFile dhallBaseDir node_name
+--   generateCertKey nebulaCertPath caCrtPath caKeyPath host network $ generateNodeDirectory node_name
+
+writeYamlFile :: String -> String -> String -> IO ()
+writeYamlFile dhallBaseDir configDir node_name = do
+  let dhallDir = prepareDhallDirString dhallBaseDir
   putStrLn ("Generating yaml configuration for " <> node_name)
   let dhallExpression = T.pack (generateYamlExpression node_name)
-  let filePath = generateYamlFilePath node_name
-  createDirectoryIfMissing True (generateNodeDirectory node_name)
+  let filePath = generateYamlFilePath configDir node_name
+  createDirectoryIfMissing True (generateNodeDirectory configDir node_name)
   let options = DY.defaultOptions {omission = Dhall.JSON.omitNull . Dhall.JSON.omitEmpty}
-  yamlContent <- DY.dhallToYaml options (Just dhallBaseDir) dhallExpression
+  yamlContent <- DY.dhallToYaml options (Just dhallDir) dhallExpression
   B.writeFile filePath yamlContent
 
 executeShellCommand :: String -> IO Bool
@@ -63,11 +67,6 @@ executeShellCommand command = do
   pure $ case result of
     ExitSuccess -> True
     ExitFailure _ -> False
-
-verifyYamlFile :: String -> FilePath -> IO Bool
-verifyYamlFile nebulaPath path = do
-  let command = nebulaPath <> " -test -config " <> path
-  executeShellCommand command
 
 generateCertKey :: String -> String -> String -> Host -> Network -> String -> IO Bool
 generateCertKey nebulaCertPath caCrtPath caKeyPath host network dir = do
