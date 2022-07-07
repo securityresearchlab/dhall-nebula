@@ -26,6 +26,7 @@ data Command
       }
   | AutoSignKey
       { keysDir :: String,
+        keysExt :: String,
         caCrtPath :: String,
         caKeyPath :: String,
         nebulaCertPath :: String
@@ -64,8 +65,12 @@ autoSignInput = info autoSignCommand (fullDesc <> progDesc "Sign already existin
     autoSignCommand =
       AutoSignKey
         <$> strOption
-          ( long "keyPath"
+          ( long "keysDir"
               <> help "The base dir where all the keys are; assumes the name of the file is the name of the host"
+          )
+        <*> strOption
+          ( long "keysExt"
+              <> help "The extensions of the public key files"
           )
         <*> strOption
           ( long "caCrtPath"

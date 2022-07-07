@@ -36,8 +36,8 @@ main = do
         let matches = Prelude.filter (\h -> (T.unpack . name) h == hostName) networkHosts
         result <- signKey nebulaCertPath caCrtPath caKeyPath (head matches) network keyPath
         putStrLn $ "Signed: " <> show result
-      AutoSignKey keysPath caCrtPath caKeyPath nebulaCertPath -> do
-        result <- autoSignKeys nebulaCertPath caCrtPath caKeyPath network keysPath
+      AutoSignKey keysDir keysExt caCrtPath caKeyPath nebulaCertPath -> do
+        result <- autoSignKeys nebulaCertPath caCrtPath caKeyPath network keysDir keysExt
         putStrLn $ "Done without errors: " <> show result
     else putStrLn "Illegal configuration: there are hosts with the same name"
 

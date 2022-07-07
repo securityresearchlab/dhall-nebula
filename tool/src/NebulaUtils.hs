@@ -83,9 +83,9 @@ signKey nebulaCertPath caCrtPath caKeyPath host network keyPath = do
           <> caCrtPath
           <> "\" -in-pub \""
           <> keyPath
-          <> "\" -out-crt "
+          <> "\" -out-crt \""
           <> generatedCrtPath
-          <> " -name \""
+          <> "\" -name \""
           <> host_name
           <> "\" -ip \""
           <> host_ip
@@ -93,13 +93,19 @@ signKey nebulaCertPath caCrtPath caKeyPath host network keyPath = do
           <> groupsOption
   executeShellCommand command
 
-autoSignKeys :: String -> String -> String -> Network -> String -> IO Bool
-autoSignKeys nebulaCertPath caCrtPath caKeyPath network keyPath = do
+autoSignKeys :: String -> String -> String -> Network -> String -> String -> IO Bool
+autoSignKeys nebulaCertPath caCrtPath caKeyPath network keyPath keysExt = do
   let pairs = Prelude.map (\h -> (h, prepareCrtName h)) (hosts network)
   results <- Control.Monad.Parallel.mapM (\(h, path) -> signKey nebulaCertPath caCrtPath caKeyPath h network path) pairs
   pure (and results)
-  where prepareCrtName :: Host -> String
-        prepareCrtName host = generateFilePathNoExt keyPath ((T.unpack . name) host) <> ".pub"
+  where ext :: String
+        ext
+          | keysExt == "" = keysExt
+          | head keysExt == '.' = keysExt
+          | otherwise = "." <> keysExt
+        prepareCrtName :: Host -> String
+        prepareCrtName host = generateFilePathNoExt keyPath ((T.unpack . name) host) <> ext
+
 
 generateCertKey :: String -> String -> String -> Host -> Network -> String -> IO Bool
 generateCertKey nebulaCertPath caCrtPath caKeyPath host network baseDir = do
