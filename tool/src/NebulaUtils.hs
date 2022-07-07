@@ -34,7 +34,7 @@ generateYamlExpression :: String -> String
 generateYamlExpression = (<>) genericConfigContent
 
 generateNodeDirectory :: String -> String -> String
-generateNodeDirectory baseDir name = baseDir <> "/" <> name <> "/"
+generateNodeDirectory baseDir name = baseDir <> if last baseDir == '/' then "" else "/" <> name <> "/"
 
 generateFilePathNoExt :: String -> String -> String
 generateFilePathNoExt baseDir name = generateNodeDirectory baseDir name <> name
@@ -43,7 +43,7 @@ generateYamlFilePath :: String -> String -> String
 generateYamlFilePath baseDir name = generateFilePathNoExt baseDir name <> ".yaml"
 
 prepareDhallDirString :: String -> String
-prepareDhallDirString dir = if last dir == '/' || last dir == '\\' then dir else dir <> "/"
+prepareDhallDirString dir = if last dir == '/' then dir else dir <> "/"
 
 isHostInGroup :: Host -> Group -> Bool
 isHostInGroup host = elem host . group_hosts
