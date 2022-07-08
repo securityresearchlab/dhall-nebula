@@ -47,6 +47,10 @@ let laptop2
             , u_route = nebula.mkIPv4Network 10 0 3 0 24
             , via = nebula.mkIPv4 192 168 100 2
             }
+            , { u_mtu = 8880
+            , u_route = nebula.mkIPv4Network 10 0 4 0 24
+            , via = nebula.mkIPv4 192 168 100 3
+            }
           ]
         }
       }

@@ -15,19 +15,21 @@ import HaskellTypes
 $makeTypes
 
 instance Show IPv4 where
-  show (MakeIPv4 {i1 = i, i2 = j, i3 = k, i4 = l}) = foldl (<>) "" $ intersperse "." $ Prelude.map show [i, j, k, l]
+  show MakeIPv4 {i1 = i, i2 = j, i3 = k, i4 = l} = foldl (<>) "" $ intersperse "." (Prelude.map show [i, j, k, l])
 
 deriving instance Eq IPv4
 
 deriving instance Ord IPv4
 
-deriving instance Show IPv4WithPort
+instance Show IPv4WithPort where
+  show MakeIPv4WithPort {ip1 = i, ip2 = j, ip3 = k, ip4 = l, i_port = p} = foldl (<>) "" $ intersperse "." (Prelude.map show [i, j, k, l]) <> ":" <> show p
 
 deriving instance Eq IPv4WithPort
 
 deriving instance Ord IPv4WithPort
 
-deriving instance Show IPv4Network
+instance Show IPv4Network where
+  show MakeIPv4Network {in1 = i, in2 = j, in3 = k, in4 = l, mask = m} = foldl (<>) "" $ intersperse "." (Prelude.map show [i, j, k, l]) <> "/" <> show m
 
 deriving instance Eq IPv4Network
 

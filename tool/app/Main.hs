@@ -8,13 +8,13 @@ module Main where
 import ArgParser
 import Control.Monad
 import Control.Monad.Parallel
+import Data.List.Unique
 import qualified Data.Text as T
 import qualified Dhall
 import NebulaUtils
 import Options.Applicative
 import System.Environment
 import TH
-import Data.List.Unique
 
 main :: IO ()
 main = do

@@ -20,6 +20,7 @@ import System.Directory (createDirectoryIfMissing)
 import System.Environment
 import System.Exit
 import System.FilePath
+import System.FilePath (replaceExtension)
 import System.IO
 import System.Process
 import TH
@@ -69,16 +70,30 @@ executeShellCommand command = do
     ExitSuccess -> True
     ExitFailure _ -> False
 
+generateSignOptions :: Host -> Network -> String
+generateSignOptions host network =
+  "-name \""
+    <> host_name
+    <> "\" -ip \""
+    <> host_ip
+    <> "\" "
+    <> groupsOption
+    <> "\" "
+    <> subnetOptions
+  where
+    host_name = T.unpack $ name host
+    groups_names = Prelude.map (T.unpack . group_name) $ Prelude.filter (isHostInGroup host) (groups network)
+    host_ip = (show . ip) host <> "/" <> show (ip_mask network)
+    groupsOption = if null groups_names then "" else foldl (<>) "-groups \"" (intersperse "," groups_names) <> "\""
+    unsafeRoutes = concatMap (unsafe_routes . tun) (hosts network)
+    relevant_unsafe_routes = filter (\ur -> via ur == ip host) unsafeRoutes
+    subnets = Prelude.map (show . u_route) relevant_unsafe_routes
+    subnetOptions = if null subnets then "" else foldl (<>) "-subnets \"" (intersperse "," subnets) <> "\""
+
 signKey :: String -> String -> String -> Host -> Network -> String -> IO Bool
 signKey nebulaCertPath caCrtPath caKeyPath host network keyPath = do
-  let host_name = T.unpack $ name host
-  let groups_names = Prelude.map (T.unpack . group_name) $ Prelude.filter (isHostInGroup host) (groups network)
-  let host_ip = (show . ip) host <> "/" <> show (ip_mask network)
-  let groupsOption = if null groups_names then "" else foldl (<>) "-groups \"" (intersperse "," groups_names) <> "\""
-  -- let subnets = (unsafe_routes (tun host))
-  -- let subnetOptions = if null subnets then "" else foldl (<>) "-subnets \"" (intersperse "," subnets) <> "\""
-  let generatedCrtPath = replaceExtension keyPath "crt"
-  let command = nebulaCertPath
+  let command =
+        nebulaCertPath
           <> " sign -ca-key \""
           <> caKeyPath
           <> "\" -ca-crt \""
@@ -86,13 +101,9 @@ signKey nebulaCertPath caCrtPath caKeyPath host network keyPath = do
           <> "\" -in-pub \""
           <> keyPath
           <> "\" -out-crt \""
-          <> generatedCrtPath
-          <> "\" -name \""
-          <> host_name
-          <> "\" -ip \""
-          <> host_ip
+          <> replaceExtension keyPath "crt"
           <> "\" "
-          <> groupsOption
+          <> generateSignOptions host network
   executeShellCommand command
 
 autoSignKeys :: String -> String -> String -> Network -> String -> String -> IO Bool
@@ -100,35 +111,28 @@ autoSignKeys nebulaCertPath caCrtPath caKeyPath network keyPath keysExt = do
   let pairs = Prelude.map (\h -> (h, prepareCrtName h)) (hosts network)
   results <- Control.Monad.Parallel.mapM (\(h, path) -> signKey nebulaCertPath caCrtPath caKeyPath h network path) pairs
   pure (and results)
-  where ext :: String
-        ext
-          | keysExt == "" = keysExt
-          | head keysExt == '.' = keysExt
-          | otherwise = "." <> keysExt
-        prepareCrtName :: Host -> String
-        prepareCrtName host = generateFilePathNoExt keyPath ((T.unpack . name) host) <> ext
-
+  where
+    ext :: String
+    ext
+      | keysExt == "" = keysExt
+      | head keysExt == '.' = keysExt
+      | otherwise = "." <> keysExt
+    prepareCrtName :: Host -> String
+    prepareCrtName host = generateFilePathNoExt keyPath ((T.unpack . name) host) <> ext
 
 generateCertKey :: String -> String -> String -> Host -> Network -> String -> IO Bool
 generateCertKey nebulaCertPath caCrtPath caKeyPath host network baseDir = do
   let host_name = T.unpack $ name host
   let dir = generateNodeDirectory baseDir host_name
   createDirectoryIfMissing True dir
-  let groups_names = Prelude.map (T.unpack . group_name) $ Prelude.filter (isHostInGroup host) (groups network)
-  let host_ip = (show . ip) host <> "/" <> show (ip_mask network)
-  let groupsOption = if null groups_names then "" else foldl (<>) "-groups \"" (intersperse "," groups_names) <> "\""
   let command =
         nebulaCertPath
           <> " sign -ca-key "
           <> caKeyPath
           <> " -ca-crt "
           <> caCrtPath
-          <> " -name \""
-          <> host_name
-          <> "\" -ip \""
-          <> host_ip
-          <> "\" "
-          <> groupsOption
+          <> " "
+          <> generateSignOptions host network
           <> " -out-key "
           <> dir
           <> host_name
