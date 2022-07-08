@@ -313,12 +313,45 @@ let generateHostConfig
                 }
                 network.cipher
 
+        let tun_config =
+              let c_routes =
+                    List/map
+                      types.TunRoute
+                      types.TunConfigRoute
+                      ( \(r : types.TunRoute) ->
+                          { mtu = r.s_mtu
+                          , route = generics.showIPv4Network r.s_route
+                          }
+                      )
+                      host.tun.routes
+
+              let c_unsafe_routes =
+                    List/map
+                      types.TunUnsafeRoute
+                      types.TunConfigUnsafeRoute
+                      ( \(r : types.TunUnsafeRoute) ->
+                          { mtu = r.u_mtu
+                          , route = generics.showIPv4Network r.u_route
+                          , via = generics.showIPv4 r.via
+                          }
+                      )
+                      host.tun.unsafe_routes
+
+              in      host.tun.{ disabled
+                               , dev
+                               , drop_local_broadcast
+                               , drop_multicast
+                               , tx_queue
+                               , mtu
+                               }
+                  //  { routes = c_routes, unsafe_routes = c_unsafe_routes }
+
         in  { pki = host.pki
             , static_host_map = static_hosts
             , lighthouse = lighthouse_config
             , listen = listen_config
             , punchy = host.punchy
-            , tun = host.tun
+            , tun = tun_config
             , logging = host.logging
             , firewall =
               { conntrack = schemas.FirewallConnectionConfig.default

@@ -76,6 +76,26 @@ let SSHDConfig
       , authorized_users : List types.SSHDUsers
       }
 
+let TunConfigRoute
+    : Type
+    = { mtu : Natural, route : Text }
+
+let TunConfigUnsafeRoute
+    : Type
+    = { mtu : Natural, route : Text, via : Text }
+
+let TunConfig
+    : Type
+    = { disabled : Bool
+      , dev : Text
+      , drop_local_broadcast : Bool
+      , drop_multicast : Bool
+      , tx_queue : Natural
+      , mtu : Natural
+      , routes : List TunConfigRoute
+      , unsafe_routes : List TunConfigUnsafeRoute
+      }
+
 let HostConfig
     : Type
     = { pki : types.PkiInfo
@@ -83,7 +103,7 @@ let HostConfig
       , lighthouse : LighthouseConfig
       , listen : ListenConfig
       , punchy : types.PunchyInfo
-      , tun : types.TunInfo
+      , tun : TunConfig
       , logging : types.LogInfo
       , firewall : FirewallConfig
       , cipher : CipherValues
@@ -103,4 +123,7 @@ in  { LighthouseConfig
     , LocalAllowListConfig
     , LocalAllowListElement
     , CipherValues
+    , TunConfig
+    , TunConfigUnsafeRoute
+    , TunConfigRoute
     }

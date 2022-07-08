@@ -45,6 +45,10 @@ let LighthouseAllowListsChecks
       , local_list_validities : LocalAllowListChecks
       }
 
+let TunRoutesChecks
+    : Type
+    = { unsafe_routes_validities : Bool, routes_validities : Bool }
+
 let HostChecks
     : Type
     = { sshd_validities : Bool
@@ -52,6 +56,7 @@ let HostChecks
       , static_ips_validity : Bool
       , interfaces_validities : Bool
       , lighthouse_allow_lists_validities : LighthouseAllowListsChecks
+      , tun_routes_validites : TunRoutesChecks
       }
 
 let isLighthouse
@@ -263,6 +268,42 @@ let validateHostsAsNetwork
         areIPsUnique
           (List/map types.Host types.IPv4 (\(h : types.Host) -> h.ip) hs)
 
+let validateTunUnsafeRoutes
+    : types.Host -> Bool
+    = \(host : types.Host) ->
+        let routes_validities =
+              Bool/and
+                ( List/map
+                    types.TunUnsafeRoute
+                    Bool
+                    ( \(h : types.TunUnsafeRoute) ->
+                        validateIPv4Network h.u_route
+                    )
+                    host.tun.unsafe_routes
+                )
+
+        let vias_validities =
+              Bool/and
+                ( List/map
+                    types.TunUnsafeRoute
+                    Bool
+                    (\(h : types.TunUnsafeRoute) -> validateIPv4 h.via)
+                    host.tun.unsafe_routes
+                )
+
+        in  routes_validities && vias_validities
+
+let validateTunRoutes
+    : types.Host -> Bool
+    = \(host : types.Host) ->
+        Bool/and
+          ( List/map
+              types.TunRoute
+              Bool
+              (\(h : types.TunRoute) -> validateIPv4Network h.s_route)
+              host.tun.routes
+          )
+
 let validateSingleHosts
     : List types.Host -> HostChecks
     = \(hs : List types.Host) ->
@@ -290,6 +331,12 @@ let validateSingleHosts
                       hs
                   )
             }
+          }
+        , tun_routes_validites =
+          { unsafe_routes_validities =
+              Bool/and (List/map types.Host Bool validateTunUnsafeRoutes hs)
+          , routes_validities =
+              Bool/and (List/map types.Host Bool validateTunRoutes hs)
           }
         }
 
@@ -338,6 +385,10 @@ let validate
                     { remote_list_validities = True
                     , local_list_validities =
                       { cidrs_validites = True, interfaces_validities = True }
+                    }
+                  , tun_routes_validites =
+                    { unsafe_routes_validities = True
+                    , routes_validities = True
                     }
                   }
                 , network_hosts_validity = True

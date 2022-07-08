@@ -19,7 +19,7 @@ let lighthouse
       , ip = lighthouse_ip
       , lighthouse_config = Some { dns = None nebula.DNSConfig }
       , pki = nebula.mkPkiInfoWithoutBlocklist "/etc/nebula" ca lighthouse_name
-      , static_ips = [ nebula.mkIPv4WithPort 20 63 142 142 4242 ]
+      , static_ips = [ nebula.mkIPv4WithPort 10 0 2 4 4242 ]
       , punchy = nebula.PunchyInfo::{ punch = True, respond = Some True }
       }
 
@@ -28,7 +28,7 @@ let laptop1
     = nebula.Host::{
       , name = "laptop1"
       , ip = nebula.mkIPv4 192 168 100 2
-      , pki = nebula.mkPkiInfoWithoutBlocklist "/home/user/tesi" ca "laptop1"
+      , pki = nebula.mkPkiInfoWithoutBlocklist "/etc/nebula" ca "laptop1"
       , lighthouse = nebula.LighthouseInfo.default
       , punchy = nebula.PunchyInfo::{ punch = True, respond = Some True }
       }
@@ -38,9 +38,17 @@ let laptop2
     = nebula.Host::{
       , name = "laptop2"
       , ip = nebula.mkIPv4 192 168 100 3
-      , pki = nebula.mkPkiInfoWithoutBlocklist "/home/user/tesi" ca "laptop2"
+      , pki = nebula.mkPkiInfoWithoutBlocklist "/etc/nebula" ca "laptop2"
       , lighthouse = nebula.LighthouseInfo.default
       , punchy = nebula.PunchyInfo::{ punch = True, respond = Some True }
+      , tun = nebula.TunInfo::{
+        , unsafe_routes =
+          [ { u_mtu = 8880
+            , u_route = nebula.mkIPv4Network 10 0 3 0 24
+            , via = nebula.mkIPv4 192 168 100 2
+            }
+          ]
+        }
       }
 
 let hosts_list

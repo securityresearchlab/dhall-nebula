@@ -96,11 +96,11 @@ let SSHDInfo
 
 let TunRoute
     : Type
-    = { s_mtu : Natural, s_route : Text }
+    = { s_mtu : Natural, s_route : IPv4Network }
 
 let TunUnsafeRoute
     : Type
-    = { u_mtu : Natural, u_route : Text, via : Text }
+    = { u_mtu : Natural, u_route : IPv4Network, via : IPv4 }
 
 let TunInfo
     : Type

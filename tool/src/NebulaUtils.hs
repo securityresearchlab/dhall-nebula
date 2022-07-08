@@ -75,6 +75,8 @@ signKey nebulaCertPath caCrtPath caKeyPath host network keyPath = do
   let groups_names = Prelude.map (T.unpack . group_name) $ Prelude.filter (isHostInGroup host) (groups network)
   let host_ip = (show . ip) host <> "/" <> show (ip_mask network)
   let groupsOption = if null groups_names then "" else foldl (<>) "-groups \"" (intersperse "," groups_names) <> "\""
+  -- let subnets = (unsafe_routes (tun host))
+  -- let subnetOptions = if null subnets then "" else foldl (<>) "-subnets \"" (intersperse "," subnets) <> "\""
   let generatedCrtPath = replaceExtension keyPath "crt"
   let command = nebulaCertPath
           <> " sign -ca-key \""
