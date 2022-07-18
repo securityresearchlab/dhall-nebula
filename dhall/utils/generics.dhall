@@ -1,14 +1,24 @@
 let types = ../types.dhall
 
-let List/any = https://prelude.dhall-lang.org/v21.1.0/List/any
+let List/any =
+      https://prelude.dhall-lang.org/v21.1.0/List/any
+        sha256:b8e9e13b25e799f342a81f6eda4075906eb1a19dfdcb10a0ca25925eba4033b8
 
-let List/map = https://prelude.dhall-lang.org/v21.1.0/List/map
+let List/map =
+      https://prelude.dhall-lang.org/v21.1.0/List/map
+        sha256:dd845ffb4568d40327f2a817eb42d1c6138b929ca758d50bc33112ef3c885680
 
-let Map = https://prelude.dhall-lang.org/v21.1.0/Map/Type
+let Map =
+      https://prelude.dhall-lang.org/v21.1.0/Map/Type
+        sha256:210c7a9eba71efbb0f7a66b3dcf8b9d3976ffc2bc0e907aadfb6aa29c333e8ed
 
-let Map/Entry = https://prelude.dhall-lang.org/v21.1.0/Map/Entry
+let Map/Entry =
+      https://prelude.dhall-lang.org/v21.1.0/Map/Entry
+        sha256:f334283bdd9cd88e6ea510ca914bc221fc2dab5fb424d24514b2e0df600d5346
 
-let Natural/equal = https://prelude.dhall-lang.org/v21.1.0/Natural/equal
+let Natural/equal =
+      https://prelude.dhall-lang.org/v21.1.0/Natural/equal
+        sha256:7f108edfa35ddc7cebafb24dc073478e93a802e13b5bc3fd22f4768c9b066e60
 
 let showIPv4Network
     : types.IPv4Network -> Text

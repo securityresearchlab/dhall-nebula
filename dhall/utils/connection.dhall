@@ -6,19 +6,29 @@ let types = ../types.dhall
 
 let schemas = ../schemas.dhall
 
-let List/any = https://prelude.dhall-lang.org/v21.1.0/List/any
+let List/any =
+      https://prelude.dhall-lang.org/v21.1.0/List/any
+        sha256:b8e9e13b25e799f342a81f6eda4075906eb1a19dfdcb10a0ca25925eba4033b8
 
-let List/concat = https://prelude.dhall-lang.org/v21.1.0/List/concat
+let List/concat =
+      https://prelude.dhall-lang.org/v21.1.0/List/concat
+        sha256:54e43278be13276e03bd1afa89e562e94a0a006377ebea7db14c7562b0de292b
 
-let List/filter = https://prelude.dhall-lang.org/v21.1.0/List/filter
+let List/filter =
+      https://prelude.dhall-lang.org/v21.1.0/List/filter
+        sha256:8ebfede5bbfe09675f246c33eb83964880ac615c4b1be8d856076fdbc4b26ba6
 
 let List/map =
       https://prelude.dhall-lang.org/v21.1.0/List/map
         sha256:dd845ffb4568d40327f2a817eb42d1c6138b929ca758d50bc33112ef3c885680
 
-let Map = https://prelude.dhall-lang.org/v21.1.0/Map/Type
+let Map =
+      https://prelude.dhall-lang.org/v21.1.0/Map/Type
+        sha256:210c7a9eba71efbb0f7a66b3dcf8b9d3976ffc2bc0e907aadfb6aa29c333e8ed
 
-let Map/Entry = https://prelude.dhall-lang.org/v21.1.0/Map/Entry
+let Map/Entry =
+      https://prelude.dhall-lang.org/v21.1.0/Map/Entry
+        sha256:f334283bdd9cd88e6ea510ca914bc221fc2dab5fb424d24514b2e0df600d5346
 
 let isTarget
     : types.Host -> types.ConnectionTarget -> Bool

@@ -4,36 +4,65 @@ let generics = ./generics.dhall
 
 let types = ../types.dhall
 
-let Bool/and = https://prelude.dhall-lang.org/v21.1.0/Bool/and
+let Bool/and =
+      https://prelude.dhall-lang.org/v21.1.0/Bool/and
+        sha256:0b2114fa33cd76652e4360f012bc082718944fe4c5b28c975483178f8d9b0a6d
 
-let Bool/not = https://prelude.dhall-lang.org/v21.1.0/Bool/not
+let Bool/not =
+      https://prelude.dhall-lang.org/v21.1.0/Bool/not
+        sha256:723df402df24377d8a853afed08d9d69a0a6d86e2e5b2bac8960b0d4756c7dc4
 
-let List/all = https://prelude.dhall-lang.org/v21.1.0/List/all
+let List/all =
+      https://prelude.dhall-lang.org/v21.1.0/List/all
+        sha256:7ac5bb6f77e9ffe9e2356d90968d39764a9a32f75980206e6b12f815bb83dd15
 
-let List/any = https://prelude.dhall-lang.org/v21.1.0/List/any
+let List/any =
+      https://prelude.dhall-lang.org/v21.1.0/List/any
+        sha256:b8e9e13b25e799f342a81f6eda4075906eb1a19dfdcb10a0ca25925eba4033b8
 
-let List/concat = https://prelude.dhall-lang.org/v21.1.0/List/concat
+let List/concat =
+      https://prelude.dhall-lang.org/v21.1.0/List/concat
+        sha256:54e43278be13276e03bd1afa89e562e94a0a006377ebea7db14c7562b0de292b
 
-let List/filter = https://prelude.dhall-lang.org/v21.1.0/List/filter
+let List/filter =
+      https://prelude.dhall-lang.org/v21.1.0/List/filter
+        sha256:8ebfede5bbfe09675f246c33eb83964880ac615c4b1be8d856076fdbc4b26ba6
 
-let List/map = https://prelude.dhall-lang.org/v21.1.0/List/map
+let List/map =
+      https://prelude.dhall-lang.org/v21.1.0/List/map
+        sha256:dd845ffb4568d40327f2a817eb42d1c6138b929ca758d50bc33112ef3c885680
 
-let List/null = https://prelude.dhall-lang.org/v21.1.0/List/null
+let List/null =
+      https://prelude.dhall-lang.org/v21.1.0/List/null
+        sha256:2338e39637e9a50d66ae1482c0ed559bbcc11e9442bfca8f8c176bbcd9c4fc80
 
-let List/partition = https://prelude.dhall-lang.org/v21.1.0/List/partition
+let List/partition =
+      https://prelude.dhall-lang.org/v21.1.0/List/partition
+        sha256:38147ac6d750a6492736dd90cc967bf09aa405c499de943c64fab7b86ae02f03
 
-let Map = https://prelude.dhall-lang.org/v21.1.0/Map/Type
+let Map =
+      https://prelude.dhall-lang.org/v21.1.0/Map/Type
+        sha256:210c7a9eba71efbb0f7a66b3dcf8b9d3976ffc2bc0e907aadfb6aa29c333e8ed
 
-let Map/values = https://prelude.dhall-lang.org/v21.1.0/Map/values
+let Map/values =
+      https://prelude.dhall-lang.org/v21.1.0/Map/values
+        sha256:ae02cfb06a9307cbecc06130e84fd0c7b96b7f1f11648961e1b030ec00940be8
 
-let Map/keys = https://prelude.dhall-lang.org/v21.1.0/Map/keys
+let Map/keys =
+      https://prelude.dhall-lang.org/v21.1.0/Map/keys
+        sha256:d13ec34e6acf7c349d82272ef09a37c7bdf37f0dab489e9df47a1ff215d9f5e7
 
-let Natural/equal = https://prelude.dhall-lang.org/v21.1.0/Natural/equal
+let Natural/equal =
+      https://prelude.dhall-lang.org/v21.1.0/Natural/equal
+        sha256:7f108edfa35ddc7cebafb24dc073478e93a802e13b5bc3fd22f4768c9b066e60
 
-let Natural/lessThan = https://prelude.dhall-lang.org/v21.1.0/Natural/lessThan
+let Natural/lessThan =
+      https://prelude.dhall-lang.org/v21.1.0/Natural/lessThan
+        sha256:3381b66749290769badf8855d8a3f4af62e8de52d1364d838a9d1e20c94fa70c
 
 let Natural/lessThanEqual =
       https://prelude.dhall-lang.org/v21.1.0/Natural/lessThanEqual
+        sha256:1a5caa2b80a42b9f58fff58e47ac0d9a9946d0b2d36c54034b8ddfe3cb0f3c99
 
 let LocalAllowListChecks
     : Type

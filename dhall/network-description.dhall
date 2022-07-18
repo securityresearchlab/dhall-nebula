@@ -2,9 +2,13 @@ let nebula = ./package.dhall
 
 let inputs = ./inputs.dhall
 
-let Map/empty = https://prelude.dhall-lang.org/v21.1.0/Map/empty
+let Map/empty =
+      https://prelude.dhall-lang.org/v21.1.0/Map/empty
+        sha256:4c612558b8bbe8f955550ed3fb295d57b1b864c85cd52615b52d0ee0e9682e52
 
-let Map = https://prelude.dhall-lang.org/v21.1.0/Map/Type
+let Map =
+      https://prelude.dhall-lang.org/v21.1.0/Map/Type
+        sha256:210c7a9eba71efbb0f7a66b3dcf8b9d3976ffc2bc0e907aadfb6aa29c333e8ed
 
 let lighthouse_ip = inputs.lighthouse_ip
 
@@ -41,18 +45,6 @@ let laptop2
       , pki = nebula.mkPkiInfoWithoutBlocklist "/etc/nebula" ca "laptop2"
       , lighthouse = nebula.LighthouseInfo.default
       , punchy = nebula.PunchyInfo::{ punch = True, respond = Some True }
-      , tun = nebula.TunInfo::{
-        , unsafe_routes =
-          [ { u_mtu = 8880
-            , u_route = nebula.mkIPv4Network 10 0 3 0 24
-            , via = nebula.mkIPv4 192 168 100 2
-            }
-            , { u_mtu = 8880
-            , u_route = nebula.mkIPv4Network 10 0 4 0 24
-            , via = nebula.mkIPv4 192 168 100 3
-            }
-          ]
-        }
       }
 
 let hosts_list

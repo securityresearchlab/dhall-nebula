@@ -10,17 +10,29 @@ let List/map =
       https://prelude.dhall-lang.org/v21.1.0/List/map
         sha256:dd845ffb4568d40327f2a817eb42d1c6138b929ca758d50bc33112ef3c885680
 
-let List/filter = https://prelude.dhall-lang.org/v21.1.0/List/filter
+let List/filter =
+      https://prelude.dhall-lang.org/v21.1.0/List/filter
+        sha256:8ebfede5bbfe09675f246c33eb83964880ac615c4b1be8d856076fdbc4b26ba6
 
-let Map = https://prelude.dhall-lang.org/v21.1.0/Map/Type
+let Map =
+      https://prelude.dhall-lang.org/v21.1.0/Map/Type
+        sha256:210c7a9eba71efbb0f7a66b3dcf8b9d3976ffc2bc0e907aadfb6aa29c333e8ed
 
-let Map/empty = https://prelude.dhall-lang.org/v21.1.0/Map/empty
+let Map/empty =
+      https://prelude.dhall-lang.org/v21.1.0/Map/empty
+        sha256:4c612558b8bbe8f955550ed3fb295d57b1b864c85cd52615b52d0ee0e9682e52
 
-let Map/Entry = https://prelude.dhall-lang.org/v21.1.0/Map/Entry
+let Map/Entry =
+      https://prelude.dhall-lang.org/v21.1.0/Map/Entry
+        sha256:f334283bdd9cd88e6ea510ca914bc221fc2dab5fb424d24514b2e0df600d5346
 
-let Optional/map = https://prelude.dhall-lang.org/v21.1.0/Optional/map
+let Optional/map =
+      https://prelude.dhall-lang.org/v21.1.0/Optional/map
+        sha256:501534192d988218d43261c299cc1d1e0b13d25df388937add784778ab0054fa
 
-let Optional/toList = https://prelude.dhall-lang.org/v21.1.0/Optional/toList
+let Optional/toList =
+      https://prelude.dhall-lang.org/v21.1.0/Optional/toList
+        sha256:d78f160c619119ef12389e48a629ce293d69f7624c8d016b7a4767ab400344c4
 
 let rule_map
     : types.FirewallRule -> types.Rule
