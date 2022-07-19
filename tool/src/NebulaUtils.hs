@@ -122,9 +122,7 @@ generateSignOptions host network =
     groups_names = Prelude.map (T.unpack . TH.group_name) $ Prelude.filter (isHostInGroup host) (TH.groups network)
     host_ip = (show . TH.ip) host <> "/" <> show (TH.ip_mask network)
     groupsOption = if null groups_names then "" else foldl (<>) "-groups \"" (intersperse "," groups_names) <> "\""
-    unsafeRoutes = concatMap (TH.unsafe_routes . TH.tun) (TH.hosts network)
-    relevant_unsafe_routes = filter (\ur -> TH.via ur == TH.ip host) unsafeRoutes
-    subnets = Prelude.map (show . TH.u_route) relevant_unsafe_routes
+    subnets = Prelude.map show (getHostSubnets host network)
     subnetOptions = if null subnets then "" else foldl (<>) "-subnets \"" (intersperse "," subnets) <> "\""
 
 signKey :: String -> String -> String -> TH.Host -> TH.Network -> String -> IO Bool
@@ -209,14 +207,24 @@ verifyCert nebulaCertPath caCrtPath crtPath network = do
     checkCertificate cert =
       let certDetails = details cert
           uc = uncons $ Prelude.filter (\h -> (T.unpack . TH.name) h == name certDetails) (TH.hosts network)
-      in case uc of
-        Nothing -> Left "No corresponding host found"
-        Just (host, _) -> do
-          let hostGroups = Prelude.map groupFromName (groups certDetails)
-          if Nothing `elem` hostGroups
-            then Left "Invalid groups"
-            else do
-              let groupCheck = catMaybes hostGroups == Prelude.filter (isHostInGroup host) (catMaybes hostGroups)
-              let ipCheck = (show (TH.ip host) <> "/" <> show (TH.ip_mask network)) `elem` ips certDetails
-              -- TODO: add subnet check
-              if groupCheck && ipCheck then Right () else Left "Invalid groups or ips"
+       in case uc of
+            Nothing -> Left "No corresponding host found"
+            Just (host, _) -> do
+              let hostGroups = Prelude.map groupFromName (groups certDetails)
+              if Nothing `elem` hostGroups
+                then Left "Invalid groups"
+                else do
+                  let groupCheck = catMaybes hostGroups == Prelude.filter (isHostInGroup host) (catMaybes hostGroups)
+                  let ipCheck = (show (TH.ip host) <> "/" <> show (TH.ip_mask network)) `elem` ips certDetails
+                  let configSubnets = Prelude.map show (getHostSubnets host network)
+                  let subnetCheck = all (\x -> x `elem` subnets certDetails) configSubnets && all (`elem` configSubnets) (subnets certDetails)
+                  -- TODO: add subnet check
+                  if groupCheck && ipCheck && subnetCheck
+                    then Right ()
+                    else Left $ "Groups ok: " <> show groupCheck <> "; IPs ok: " <> show ipCheck <> "; subnets ok: " <> show subnetCheck
+
+getHostSubnets :: TH.Host -> TH.Network -> [TH.IPv4Network]
+getHostSubnets host network =
+  let unsafeRoutes = concatMap (TH.unsafe_routes . TH.tun) (TH.hosts network)
+      relevant_unsafe_routes = filter (\ur -> TH.via ur == TH.ip host) unsafeRoutes
+   in Prelude.map TH.u_route relevant_unsafe_routes

@@ -28,5 +28,5 @@ Sign public keys for all hosts:
 
 Verify cert:
 ```
-tool-exe.exe --dhallDir "..\dhall\" verify --crtPath .\nebula_configs\laptop1\laptop.\.stack-work\install\62d3440a\b1.crt --caCrtPath ..\..\nebula-windows-amd64\ca.crt --nebulaCertPath ..\..\nebula-windows-amd64\nebula-cert.exe
+tool-exe.exe --dhallDir "..\dhall\" verify --crtPath .\nebula_configs\laptop1\laptop1.crt --caCrtPath ..\..\nebula-windows-amd64\ca.crt --nebulaCertPath ..\..\nebula-windows-amd64\nebula-cert.exe
 ```
