@@ -25,3 +25,8 @@ Sign public keys for all hosts:
 .\.stack-work\install\62d3440a\bin\tool-exe.exe --dhallDir "..\dhall" autosign --caCrtPath "..\..\nebula-windows-amd64\ca.crt" --caKeyPath "..\..\nebula-windows-amd64\ca.key" --nebulaCertPath "..\..\nebula-windows-amd64\nebula-cert.exe" --keysDir ".\nebula_configs" --keysExt ".kpub"
 
 ```
+
+Verify cert:
+```
+tool-exe.exe --dhallDir "..\dhall\" verify --crtPath .\nebula_configs\laptop1\laptop.\.stack-work\install\62d3440a\b1.crt --caCrtPath ..\..\nebula-windows-amd64\ca.crt --nebulaCertPath ..\..\nebula-windows-amd64\nebula-cert.exe
+```

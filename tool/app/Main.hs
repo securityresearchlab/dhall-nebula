@@ -39,6 +39,9 @@ main = do
       AutoSignKey keysDir keysExt caCrtPath caKeyPath nebulaCertPath -> do
         result <- autoSignKeys nebulaCertPath caCrtPath caKeyPath network (uniformDirDelimiters keysDir) keysExt
         putStrLn $ "Done without errors: " <> show result
+      VerifyCert crtPath caCrtPath nebulaCertPath -> do
+        result <- verifyCert nebulaCertPath caCrtPath crtPath network
+        putStrLn $ "Valid: " <> show result
     else putStrLn "Illegal configuration: there are hosts with the same name"
 
 uniformDirDelimiters :: FilePath -> FilePath

@@ -31,6 +31,11 @@ data Command
         caKeyPath :: String,
         nebulaCertPath :: String
       }
+  | VerifyCert
+      { crtPath :: String,
+        caCrtPath :: String,
+        nebulaCertPath :: String
+      }
   deriving (Show)
 
 signInput :: ParserInfo Command
@@ -117,6 +122,24 @@ generateConfig = info generateConfigCommand (fullDesc <> progDesc "Generate yaml
               <> help "The base directory where to put the generated yaml files"
           )
 
+verifyCert :: ParserInfo Command
+verifyCert = info signCommand (fullDesc <> progDesc "Verify that the certificate is valid and compatible with the network configuration")
+  where
+    signCommand =
+      VerifyCert
+        <$> strOption
+          ( long "crtPath"
+              <> help "The path of the certificate to check"
+          )
+        <*> strOption
+          ( long "caCrtPath"
+              <> help "The path of the certificate of the CA to be used to sign"
+          )
+        <*> strOption
+          ( long "nebulaCertPath"
+              <> help "The path of nebula-cert executable"
+          )
+
 -- commandParser :: Parser Command
 commandParser =
   hsubparser
@@ -124,6 +147,7 @@ commandParser =
         <> command "certificates" generateCertificates
         <> command "sign" signInput
         <> command "autosign" autoSignInput
+        <> command "verify" verifyCert
     )
 
 -- dhallDirParser :: Parser Options

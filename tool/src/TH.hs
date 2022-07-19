@@ -158,7 +158,11 @@ deriving instance Ord Host
 
 deriving instance Show GroupName
 
+deriving instance Eq GroupName
+
 deriving instance Show Group
+
+deriving instance Eq Group
 
 deriving instance Show RuleDirection
 
