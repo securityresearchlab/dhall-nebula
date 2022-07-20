@@ -14,6 +14,10 @@ let List/filter =
       https://prelude.dhall-lang.org/v21.1.0/List/filter
         sha256:8ebfede5bbfe09675f246c33eb83964880ac615c4b1be8d856076fdbc4b26ba6
 
+let List/null =
+      https://prelude.dhall-lang.org/v21.1.0/List/null
+        sha256:2338e39637e9a50d66ae1482c0ed559bbcc11e9442bfca8f8c176bbcd9c4fc80
+
 let Map =
       https://prelude.dhall-lang.org/v21.1.0/Map/Type
         sha256:210c7a9eba71efbb0f7a66b3dcf8b9d3976ffc2bc0e907aadfb6aa29c333e8ed
@@ -358,6 +362,12 @@ let generateHostConfig
                                }
                   //  { routes = c_routes, unsafe_routes = c_unsafe_routes }
 
+        let relay_config =
+              { am_relay = host.am_relay
+              , use_relays = host.use_relays
+              , relays = List/map types.IPv4 Text generics.showIPv4 host.relays
+              }
+
         in  { pki = host.pki
             , static_host_map = static_hosts
             , lighthouse = lighthouse_config
@@ -373,6 +383,7 @@ let generateHostConfig
             , cipher
             , local_range = host.local_range
             , sshd = sshd_config
+            , relay = relay_config
             }
 
 in  { generateHostConfig }

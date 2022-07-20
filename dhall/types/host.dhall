@@ -138,6 +138,9 @@ let Host
       , tun : TunInfo
       , local_range : Optional Text
       , sshd : Optional SSHDInfo
+      , am_relay : Bool
+      , use_relays : Bool
+      , relays : List IPv4
       }
 
 in  { IPv4

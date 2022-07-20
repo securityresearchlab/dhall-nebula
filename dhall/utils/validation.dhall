@@ -391,6 +391,30 @@ let validateRules
               rules
           )
 
+let validateRelays
+    : List types.Host -> Bool
+    = \(hosts : List types.Host) ->
+        let relays =
+              List/filter types.Host (\(h : types.Host) -> h.am_relay) hosts
+
+        let using_relays =
+              List/filter
+                types.Host
+                (\(h : types.Host) -> Bool/not (List/null types.IPv4 h.relays))
+                hosts
+
+        let checkRelay =
+              \(r : types.IPv4) ->
+                List/any
+                  types.Host
+                  (\(h : types.Host) -> generics.areIPv4Equal h.ip r)
+                  relays
+
+        let checkRelays =
+              \(h : types.Host) -> List/all types.IPv4 checkRelay h.relays
+
+        in  Bool/and (List/map types.Host Bool checkRelays using_relays)
+
 let validate
     : types.Network -> Type
     = \(network : types.Network) ->
@@ -422,6 +446,7 @@ let validate
                   }
                 , network_hosts_validity = True
                 , lighthouse_present_check = True
+                , relays_validity = True
                 }
               , rules_checks.rules_check = True
               , network_mask_check = True
@@ -433,6 +458,7 @@ let validate
                 , network_hosts_validity = validateHostsAsNetwork network.hosts
                 , lighthouse_present_check =
                     List/any types.Host isLighthouse network.hosts
+                , relays_validity = validateRelays network.hosts
                 }
               , rules_checks.rules_check = validateRules rules
               , network_mask_check = Natural/lessThan network.ip_mask 32

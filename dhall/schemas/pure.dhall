@@ -83,6 +83,9 @@ let Host =
         , tun = TunInfo.default
         , sshd = None types.SSHDInfo
         , local_range = None Text
+        , am_relay = False
+        , relays = [] : List types.IPv4
+        , use_relays = True
         }
       }
 

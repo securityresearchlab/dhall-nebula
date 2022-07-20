@@ -98,6 +98,10 @@ let TunConfig
       , unsafe_routes : List TunConfigUnsafeRoute
       }
 
+let RelayConfig
+    : Type
+    = { relays : List Text, am_relay : Bool, use_relays : Bool }
+
 let HostConfig
     : Type
     = { pki : types.PkiInfo
@@ -111,6 +115,7 @@ let HostConfig
       , cipher : CipherValues
       , local_range : Optional Text
       , sshd : Optional SSHDConfig
+      , relay : RelayConfig
       }
 
 in  { LighthouseConfig
@@ -120,6 +125,7 @@ in  { LighthouseConfig
     , FirewallConnectionConfig
     , FirewallConfig
     , Rule
+    , RelayConfig
     , PortConfig
     , ProtoValues
     , LocalAllowListConfig
