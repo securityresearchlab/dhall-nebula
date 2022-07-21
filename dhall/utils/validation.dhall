@@ -385,6 +385,7 @@ let validateRules
                         \(r : types.PortRange) ->
                           Natural/lessThan r.r_from r.r_to
                     , AnyPort = True
+                    , Fragment = True
                     }
                     rule.fr_port
               )

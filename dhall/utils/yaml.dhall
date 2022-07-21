@@ -46,6 +46,7 @@ let rule_map
             = merge
                 { Port = \(n : Natural) -> types.PortConfig.Port n
                 , AnyPort = types.PortConfig.Description "any"
+                , Fragment = types.PortConfig.Description "fragment"
                 , Range =
                     \(r : types.PortRange) ->
                       types.PortConfig.Description

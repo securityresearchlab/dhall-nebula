@@ -36,7 +36,7 @@ let PortRange
 
 let Port
     : Type
-    = < Port : Natural | Range : PortRange | AnyPort >
+    = < Port : Natural | Range : PortRange | AnyPort | Fragment >
 
 let Proto
     : Type
