@@ -60,14 +60,14 @@ instance FromJSON CertificateDetails
 
 instance ToJSON CertificateDetails
 
-genericConfigContent :: String
-genericConfigContent = "let config = ./network-description.dhall let nebula = ./package.dhall in  nebula.generateHostConfig config.network config."
+genericConfigContent :: String -> String
+genericConfigContent configFileName = "let config = ./" <> configFileName <> ".dhall let nebula = ./package.dhall in  nebula.generateHostConfig config.network config."
 
 hostConfigFileName :: String -> String
 hostConfigFileName h = h <> "-config.dhall"
 
-generateYamlExpression :: String -> String
-generateYamlExpression = (<>) genericConfigContent
+generateYamlExpression :: String -> String -> String
+generateYamlExpression configFileName = (<>) (genericConfigContent configFileName)
 
 generateNodeDirectory :: String -> String -> String
 generateNodeDirectory baseDir name = baseDir <> if last baseDir == '/' then "" else "/" <> name <> "/"
@@ -84,11 +84,11 @@ prepareDhallDirString dir = if last dir == '/' then dir else dir <> "/"
 isHostInGroup :: TH.Host -> TH.Group -> Bool
 isHostInGroup host = elem host . TH.group_hosts
 
-writeYamlFile :: String -> String -> String -> IO ()
-writeYamlFile dhallBaseDir configDir node_name = do
+writeYamlFile :: String -> String -> String -> String -> IO ()
+writeYamlFile dhallBaseDir configFileName configDir node_name = do
   let dhallDir = prepareDhallDirString dhallBaseDir
   putStrLn ("Generating yaml configuration for " <> node_name)
-  let dhallExpression = T.pack (generateYamlExpression node_name)
+  let dhallExpression = T.pack (generateYamlExpression configFileName node_name)
   let filePath = generateYamlFilePath configDir node_name
   createDirectoryIfMissing True (generateNodeDirectory configDir node_name)
   let options = DY.defaultOptions {omission = Dhall.JSON.omitNull . Dhall.JSON.omitEmpty}

@@ -11,6 +11,7 @@ import Control.Monad.Parallel
 import Data.List.Unique
 import qualified Data.Text as T
 import qualified Dhall
+import System.FilePath (dropExtension)
 import NebulaUtils
 import Options.Applicative
 import System.Environment
@@ -20,14 +21,15 @@ main :: IO ()
 main = do
   runOptions <- customExecParser (prefs showHelpOnEmpty) opts :: IO Options
   let dir = uniformDirDelimiters $ dhallDir runOptions
+  let configFile = dropExtension $ configFileName runOptions
   let c = optCommand runOptions
-  network <- readConfig dir
+  network <- readConfig dir configFile
   let networkHosts = hosts network
   if allUnique networkHosts
     then case c of
       GenerateConfig configsPath -> do
         let hostNames = Prelude.map (T.unpack . name) networkHosts
-        Control.Monad.Parallel.mapM_ (writeYamlFile dir (uniformDirDelimiters configsPath)) hostNames
+        Control.Monad.Parallel.mapM_ (writeYamlFile dir configFile (uniformDirDelimiters configsPath)) hostNames
         putStrLn "Done"
       GenerateCertificates configsPath caCrtPath caKeyPath nebulaCertPath -> do
         results <- Control.Monad.Parallel.mapM (\h -> generateCertKey nebulaCertPath caCrtPath caKeyPath h network (uniformDirDelimiters configsPath)) networkHosts
@@ -47,10 +49,10 @@ main = do
 uniformDirDelimiters :: FilePath -> FilePath
 uniformDirDelimiters = map (\c -> if c == '\\' then '/' else c)
 
-readConfig :: String -> IO Network
-readConfig dhallBaseDir = do
+readConfig :: String -> String -> IO Network
+readConfig dhallBaseDir configFile = do
   let dir = prepareDhallDirString (uniformDirDelimiters dhallBaseDir)
   putStrLn "Reading network configuration"
-  network <- Dhall.input Dhall.auto (T.pack ("(" <> dir <> "network-description.dhall).network")) :: IO Network
+  network <- Dhall.input Dhall.auto (T.pack ("(" <> dir <> configFile <> ".dhall).network")) :: IO Network
   putStrLn "Configuration read"
   pure network

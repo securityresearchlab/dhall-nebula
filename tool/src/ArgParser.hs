@@ -4,6 +4,7 @@ import Options.Applicative
 
 data Options = Options
   { dhallDir :: String,
+    configFileName :: String,
     optCommand :: Command
   }
   deriving (Show)
@@ -151,7 +152,14 @@ commandParser =
     )
 
 -- dhallDirParser :: Parser Options
-dhallDirParser = Options <$> strOption (long "dhallDir" <> help "The directory of the Dhall configuration")
+dhallDirParser =
+  Options
+    <$> strOption
+      (long "dhallDir"
+        <> help "The directory of the Dhall configuration")
+    <*> strOption
+      (long "configFileName"
+        <> help "The name of the file containing the Dhall configuration, without extension")
 
 opts :: ParserInfo Options
 -- opts = info (signInput <|> generateConfig <|> generateCertificates) (fullDesc <> progDesc "Generate configuration for Nebula")
