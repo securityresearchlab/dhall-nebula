@@ -102,7 +102,8 @@ writeYamlFile dhallBaseDir configFileName configDir host = do
   createDirectoryIfMissing True (generateNodeDirectory configDir host_name)
   let options = DY.defaultOptions {omission = Dhall.JSON.omitNull . Dhall.JSON.omitEmpty}
   yamlContent <- DY.dhallToYaml options (Just dhallDir) dhallExpression
-  if yamlContent == "null"
+  print yamlContent
+  if yamlContent == "null\n"
     then pure False
     else do
       _ <- B.writeFile filePath yamlContent
