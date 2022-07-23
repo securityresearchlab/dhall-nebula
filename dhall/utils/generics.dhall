@@ -4,6 +4,10 @@ let List/any =
       https://prelude.dhall-lang.org/v21.1.0/List/any
         sha256:b8e9e13b25e799f342a81f6eda4075906eb1a19dfdcb10a0ca25925eba4033b8
 
+let List/filter =
+      https://prelude.dhall-lang.org/v21.1.0/List/filter
+        sha256:8ebfede5bbfe09675f246c33eb83964880ac615c4b1be8d856076fdbc4b26ba6
+
 let List/map =
       https://prelude.dhall-lang.org/v21.1.0/List/map
         sha256:dd845ffb4568d40327f2a817eb42d1c6138b929ca758d50bc33112ef3c885680
@@ -95,6 +99,18 @@ let fromTextBoolMapToMap
           )
           entries
 
+let selectHostFromIP
+    : types.Network -> types.IPv4 -> Optional types.Host
+    = \(network : types.Network) ->
+      \(ip : types.IPv4) ->
+        List/head
+          types.Host
+          ( List/filter
+              types.Host
+              (\(h : types.Host) -> areIPv4Equal ip h.ip)
+              network.hosts
+          )
+
 in  { showIPv4Network
     , showIPv4
     , showIPv4WithPort
@@ -103,4 +119,5 @@ in  { showIPv4Network
     , isIPInNetwork
     , fromIPv4NetworkBoolMapToMap
     , fromTextBoolMapToMap
+    , selectHostFromIP
     }

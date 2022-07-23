@@ -28,9 +28,8 @@ main = do
   if allUnique networkHosts
     then case c of
       GenerateConfig configsPath -> do
-        let hostNames = Prelude.map (T.unpack . name) networkHosts
-        Control.Monad.Parallel.mapM_ (writeYamlFile dir configFile (uniformDirDelimiters configsPath)) hostNames
-        putStrLn "Done"
+        results <- Control.Monad.Parallel.mapM (writeYamlFile dir configFile (uniformDirDelimiters configsPath)) networkHosts
+        putStrLn $ "Everything done: " <> show (and results)
       GenerateCertificates configsPath caCrtPath caKeyPath nebulaCertPath -> do
         results <- Control.Monad.Parallel.mapM (\h -> generateCertKey nebulaCertPath caCrtPath caKeyPath h network (uniformDirDelimiters configsPath)) networkHosts
         putStrLn $ "Done without errors: " <> show (and results)

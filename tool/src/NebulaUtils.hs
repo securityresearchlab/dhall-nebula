@@ -60,14 +60,21 @@ instance FromJSON CertificateDetails
 
 instance ToJSON CertificateDetails
 
-genericConfigContent :: String -> String
-genericConfigContent configFileName = "let config = ./" <> configFileName <> ".dhall let nebula = ./package.dhall in  nebula.generateHostConfig config.network config."
+genericConfigContent :: String -> TH.IPv4 -> String
+genericConfigContent configFileName ip =
+  let ipString :: String
+      ipString = foldl (<>) "" (intersperse " " (Prelude.map show [TH.i1 ip, TH.i2 ip, TH.i3 ip, TH.i4 ip]))
+  in "let config = ./"
+      <> configFileName
+      <> ".dhall let nebula = ./package.dhall in  nebula.configFromIP config.network (nebula.mkIPv4 "
+      <> ipString
+      <> ")"
 
 hostConfigFileName :: String -> String
 hostConfigFileName h = h <> "-config.dhall"
 
-generateYamlExpression :: String -> String -> String
-generateYamlExpression configFileName = (<>) (genericConfigContent configFileName)
+generateYamlExpression :: String -> TH.IPv4 -> String
+generateYamlExpression = genericConfigContent
 
 generateNodeDirectory :: String -> String -> String
 generateNodeDirectory baseDir name = baseDir <> if last baseDir == '/' then "" else "/" <> name <> "/"
@@ -84,16 +91,22 @@ prepareDhallDirString dir = if last dir == '/' then dir else dir <> "/"
 isHostInGroup :: TH.Host -> TH.Group -> Bool
 isHostInGroup host = elem host . TH.group_hosts
 
-writeYamlFile :: String -> String -> String -> String -> IO ()
-writeYamlFile dhallBaseDir configFileName configDir node_name = do
+writeYamlFile :: String -> String -> String -> TH.Host -> IO Bool
+writeYamlFile dhallBaseDir configFileName configDir host = do
+  let host_name = T.unpack $ TH.name host
+  let host_ip = TH.ip host
   let dhallDir = prepareDhallDirString dhallBaseDir
-  putStrLn ("Generating yaml configuration for " <> node_name)
-  let dhallExpression = T.pack (generateYamlExpression configFileName node_name)
-  let filePath = generateYamlFilePath configDir node_name
-  createDirectoryIfMissing True (generateNodeDirectory configDir node_name)
+  putStrLn ("Generating yaml configuration for " <> host_name)
+  let dhallExpression = T.pack (generateYamlExpression configFileName host_ip)
+  let filePath = generateYamlFilePath configDir host_name
+  createDirectoryIfMissing True (generateNodeDirectory configDir host_name)
   let options = DY.defaultOptions {omission = Dhall.JSON.omitNull . Dhall.JSON.omitEmpty}
   yamlContent <- DY.dhallToYaml options (Just dhallDir) dhallExpression
-  B.writeFile filePath yamlContent
+  if yamlContent == "null"
+    then pure False
+    else do
+      _ <- B.writeFile filePath yamlContent
+      pure True
 
 executeShellCommand :: String -> IO Bool
 executeShellCommand command = fst <$> executeShellCommandWithOutput command

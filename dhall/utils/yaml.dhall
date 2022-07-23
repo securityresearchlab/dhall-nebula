@@ -387,4 +387,14 @@ let generateHostConfig
             , relay = relay_config
             }
 
-in  { generateHostConfig }
+let configFromIP
+    : types.Network -> types.IPv4 -> Optional types.HostConfig
+    = \(network : types.Network) ->
+      \(ip : types.IPv4) ->
+        Optional/map
+          types.Host
+          types.HostConfig
+          (\(host : types.Host) -> generateHostConfig network host)
+          (generics.selectHostFromIP network ip)
+
+in  { generateHostConfig, configFromIP }

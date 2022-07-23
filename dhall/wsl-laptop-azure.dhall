@@ -6,6 +6,7 @@ let Map/empty =
 
 let Map =
       https://prelude.dhall-lang.org/v21.1.0/Map/Type
+        sha256:210c7a9eba71efbb0f7a66b3dcf8b9d3976ffc2bc0e907aadfb6aa29c333e8ed
 
 let lighthouse
     : nebula.Host.Type
@@ -13,8 +14,7 @@ let lighthouse
       , name = "lighthouse"
       , ip = nebula.mkIPv4 192 168 100 1
       , lighthouse_config = Some { dns = None nebula.DNSConfig }
-      , pki =
-          nebula.mkPkiInfoWithoutBlocklist "/etc/nebula" "ca" "lighthouse"
+      , pki = nebula.mkPkiInfoWithoutBlocklist "/etc/nebula" "ca" "lighthouse"
       , static_ips = [ nebula.mkIPv4WithPort 20 63 142 142 4242 ]
       , punchy = nebula.PunchyInfo::{ punch = True, respond = Some True }
       , am_relay = True
@@ -25,7 +25,11 @@ let laptop1
     = nebula.Host::{
       , name = "laptop1"
       , ip = nebula.mkIPv4 192 168 100 2
-      , pki = nebula.mkPkiInfoWithoutBlocklist "C:\\Users\\Giorgia\\Documents\\Universita\\Magistrale-Ingegneria_informatica\\Tesi\\nebula-windows-amd64" "ca" "laptop1"
+      , pki =
+          nebula.mkPkiInfoWithoutBlocklist
+            "C:\\Users\\Giorgia\\Documents\\Universita\\Magistrale-Ingegneria_informatica\\Tesi\\nebula-windows-amd64"
+            "ca"
+            "laptop1"
       , lighthouse = nebula.LighthouseInfo.default
       , punchy = nebula.PunchyInfo::{ punch = True, respond = Some True }
       , relays = [ lighthouse.ip ]
