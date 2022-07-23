@@ -64,11 +64,16 @@ genericConfigContent :: String -> TH.IPv4 -> String
 genericConfigContent configFileName ip =
   let ipString :: String
       ipString = foldl (<>) "" (intersperse " " (Prelude.map show [TH.i1 ip, TH.i2 ip, TH.i3 ip, TH.i4 ip]))
-  in "let config = ./"
-      <> configFileName
-      <> ".dhall let nebula = ./package.dhall in  nebula.configFromIP config.network (nebula.mkIPv4 "
-      <> ipString
-      <> ")"
+  in "let config = ./" <> configFileName <> ".dhall \
+      \let nebula = ./package.dhall \
+      \let Optional/null \
+      \  = https://prelude.dhall-lang.org/v21.1.0/Optional/null \
+      \    sha256:3871180b87ecaba8b53fffb2a8b52d3fce98098fab09a6f759358b9e8042eedc \
+      \let yaml = nebula.configFromIP config.network (nebula.mkIPv4 " <> ipString <> ") \
+      \let isNone = Optional/null nebula.HostConfig yaml \
+      \let _ = assert : False === isNone \
+      \in  yaml"
+
 
 hostConfigFileName :: String -> String
 hostConfigFileName h = h <> "-config.dhall"
@@ -102,7 +107,7 @@ writeYamlFile dhallBaseDir configFileName configDir host = do
   createDirectoryIfMissing True (generateNodeDirectory configDir host_name)
   let options = DY.defaultOptions {omission = Dhall.JSON.omitNull . Dhall.JSON.omitEmpty}
   yamlContent <- DY.dhallToYaml options (Just dhallDir) dhallExpression
-  print yamlContent
+  -- print yamlContent
   if yamlContent == "null\n"
     then pure False
     else do
