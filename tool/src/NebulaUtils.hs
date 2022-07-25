@@ -64,13 +64,14 @@ genericConfigContent :: String -> TH.IPv4 -> String
 genericConfigContent configFileName ip =
   let ipString :: String
       ipString = foldl (<>) "" (intersperse " " (Prelude.map show [TH.i1 ip, TH.i2 ip, TH.i3 ip, TH.i4 ip]))
-  in "let config = ./" <> configFileName <> ".dhall \
+  in "let network = ./" <> configFileName <> ".dhall \
       \let nebula = ./package.dhall \
       \let Optional/null \
       \  = https://prelude.dhall-lang.org/v21.1.0/Optional/null \
       \    sha256:3871180b87ecaba8b53fffb2a8b52d3fce98098fab09a6f759358b9e8042eedc \
-      \let yaml = nebula.configFromIP config.network (nebula.mkIPv4 " <> ipString <> ") \
+      \let yaml = nebula.configFromIP network (nebula.mkIPv4 " <> ipString <> ") \
       \let isNone = Optional/null nebula.HostConfig yaml \
+      \let _ = assert : nebula.validate network \
       \let _ = assert : False === isNone \
       \in  yaml"
 

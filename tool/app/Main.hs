@@ -53,6 +53,6 @@ readConfig :: String -> String -> IO Network
 readConfig dhallBaseDir configFile = do
   let dir = prepareDhallDirString (uniformDirDelimiters dhallBaseDir)
   putStrLn "Reading network configuration"
-  network <- Dhall.input Dhall.auto (T.pack ("(" <> dir <> configFile <> ".dhall).network")) :: IO Network
+  network <- Dhall.input Dhall.auto (T.pack ("(" <> dir <> configFile <> ".dhall)")) :: IO Network
   putStrLn "Configuration read"
   pure network

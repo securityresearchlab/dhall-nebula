@@ -108,6 +108,6 @@ let network
       , ip_mask = 24
       }
 
-let _ = assert : nebula.validate network
+-- let _ = assert : nebula.validate network
 
-in  { network }
+in  network
