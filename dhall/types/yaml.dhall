@@ -4,6 +4,10 @@ let Map =
       https://prelude.dhall-lang.org/v21.1.0/Map/Type
         sha256:210c7a9eba71efbb0f7a66b3dcf8b9d3976ffc2bc0e907aadfb6aa29c333e8ed
 
+let PkiConfig
+    : Type
+    = { ca : Text, cert : Text, key : Text, blocklist : List Text }
+
 let LocalAllowListElement
     : Type
     = < InterfacesInfo : Map Text Bool | CIDR : Bool >
@@ -104,7 +108,7 @@ let RelayConfig
 
 let HostConfig
     : Type
-    = { pki : types.PkiInfo
+    = { pki : PkiConfig
       , static_host_map : Map Text (List Text)
       , lighthouse : LighthouseConfig
       , listen : ListenConfig
@@ -118,19 +122,20 @@ let HostConfig
       , relay : RelayConfig
       }
 
-in  { LighthouseConfig
-    , SSHDConfig
-    , ListenConfig
-    , HostConfig
-    , FirewallConnectionConfig
+in  { CipherValues
     , FirewallConfig
-    , Rule
-    , RelayConfig
-    , PortConfig
-    , ProtoValues
+    , FirewallConnectionConfig
+    , HostConfig
+    , LighthouseConfig
+    , ListenConfig
     , LocalAllowListConfig
     , LocalAllowListElement
-    , CipherValues
+    , PkiConfig
+    , PortConfig
+    , ProtoValues
+    , Rule
+    , RelayConfig
+    , SSHDConfig
     , TunConfig
     , TunConfigUnsafeRoute
     , TunConfigRoute

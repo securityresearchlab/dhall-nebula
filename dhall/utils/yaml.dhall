@@ -369,7 +369,9 @@ let generateHostConfig
               , relays = List/map types.IPv4 Text generics.showIPv4 host.relays
               }
 
-        in  { pki = host.pki
+        let pki_config = host.pki // { blocklist = network.blocklist }
+
+        in  { pki = pki_config
             , static_host_map = static_hosts
             , lighthouse = lighthouse_config
             , listen = listen_config

@@ -45,7 +45,7 @@ let HostName
 
 let PkiInfo
     : Type
-    = { ca : Text, cert : Text, key : Text, blocklist : Optional (List Text) }
+    = { ca : Text, cert : Text, key : Text }
 
 let InterfaceInfo
     : Type

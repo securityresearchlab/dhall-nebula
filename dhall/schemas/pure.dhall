@@ -12,7 +12,6 @@ let PkiInfo =
         { ca = "/etc/nebula/ca.crt"
         , cert = "/etc/nebula/host.crt"
         , key = "/etc/nebula/host.key"
-        , blocklist = None (List Text)
         }
       }
 

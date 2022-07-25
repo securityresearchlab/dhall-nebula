@@ -87,6 +87,7 @@ let Network
       , groups : List Group
       , connections : List Connection
       , ad_hoc_rules : List AdHocFirewallRule
+      , blocklist : List Text
       , cipher : Cipher
       , ip_mask : Natural
       }

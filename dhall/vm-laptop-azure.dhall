@@ -14,7 +14,7 @@ let lighthouse
       , name = "lighthouse"
       , ip = nebula.mkIPv4 192 168 100 1
       , lighthouse_config = Some { dns = None nebula.DNSConfig }
-      , pki = nebula.mkPkiInfoWithoutBlocklist "/etc/nebula" "ca" "lighthouse"
+      , pki = nebula.mkPkiInfo "/etc/nebula" "ca" "lighthouse"
       , static_ips = [ nebula.mkIPv4WithPort 20 63 142 142 4242 ]
       , punchy = nebula.PunchyInfo::{ punch = True, respond = Some True }
       , am_relay = True
@@ -26,7 +26,7 @@ let laptop1
       , name = "laptop1"
       , ip = nebula.mkIPv4 192 168 100 2
       , pki =
-          nebula.mkPkiInfoWithoutBlocklist
+          nebula.mkPkiInfo
             "C:\\Users\\Giorgia\\Documents\\Universita\\Magistrale-Ingegneria_informatica\\Tesi\\nebula-windows-amd64"
             "ca"
             "laptop1"
@@ -40,7 +40,7 @@ let vm
     = nebula.Host::{
       , name = "vm"
       , ip = nebula.mkIPv4 192 168 100 3
-      , pki = nebula.mkPkiInfoWithoutBlocklist "/etc/nebula" "ca" "vm"
+      , pki = nebula.mkPkiInfo "/etc/nebula" "ca" "vm"
       , lighthouse = nebula.LighthouseInfo.default
       , punchy = nebula.PunchyInfo::{ punch = True, respond = Some True }
       , relays = [ lighthouse.ip ]
@@ -92,6 +92,7 @@ let network
     = { hosts = hosts_list
       , groups = [ all_group, home_group ]
       , connections = [ home_connection, outbound_connection, icmp_connection ]
+      , blocklist = [] : List Text
       , ad_hoc_rules = [] : List nebula.AdHocFirewallRule
       , cipher = nebula.Cipher.AES
       , ip_mask = 24
@@ -99,4 +100,4 @@ let network
 
 let _ = assert : nebula.validate network
 
-in  { network, lighthouse, laptop1, vm }
+in  { network }

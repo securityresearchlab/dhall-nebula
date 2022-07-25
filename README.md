@@ -2,7 +2,7 @@
 
 Generate configuration:
 ```
-tool-exe.exe --dhallDir "..\dhall" --configFileName "wsl-laptop-azure" config --configsPath "./nebula_configs"
+.\.stack-work\install\62d3440a\bin\tool-exe.exe --dhallDir "..\dhall" --configFileName "wsl-laptop-azure" config --configsPath "./nebula_configs"
 ```
 
 Generate certificates and private key for each host of the configuration:
@@ -28,5 +28,5 @@ Sign public keys for all hosts:
 
 Verify cert:
 ```
-tool-exe.exe --dhallDir "..\dhall\" verify --crtPath .\nebula_configs\laptop1\laptop1.crt --caCrtPath ..\..\nebula-windows-amd64\ca.crt --nebulaCertPath ..\..\nebula-windows-amd64\nebula-cert.exe
+.\.stack-work\install\62d3440a\bin\tool-exe.exe --dhallDir "..\dhall\" --configFileName "wsl-laptop-azure" verify --crtPath .\nebula_configs\laptop1\laptop1.crt --caCrtPath ..\..\nebula-windows-amd64\ca.crt --nebulaCertPath ..\..\nebula-windows-amd64\nebula-cert.exe
 ```

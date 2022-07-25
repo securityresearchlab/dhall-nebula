@@ -18,8 +18,7 @@ let azure_lighthouse
       , name = "azure_lighthouse"
       , ip = nebula.mkIPv4 192 168 100 1
       , lighthouse_config = Some { dns = None nebula.DNSConfig }
-      , pki =
-          nebula.mkPkiInfoWithoutBlocklist "/etc/nebula" ca "azure_lighthouse"
+      , pki = nebula.mkPkiInfo "/etc/nebula" ca "azure_lighthouse"
       , static_ips = [ nebula.mkIPv4WithPort 20 63 142 142 4242 ]
       , punchy = nebula.PunchyInfo::{ punch = True, respond = Some True }
       , am_relay = True
@@ -31,8 +30,7 @@ let local_lighthouse
       , name = "local_lighthouse"
       , ip = nebula.mkIPv4 192 168 100 2
       , lighthouse_config = Some { dns = None nebula.DNSConfig }
-      , pki =
-          nebula.mkPkiInfoWithoutBlocklist "/etc/nebula" ca "local_lighthouse"
+      , pki = nebula.mkPkiInfo "/etc/nebula" ca "local_lighthouse"
       , static_ips = [ nebula.mkIPv4WithPort 10 0 2 10 4242 ]
       , punchy = nebula.PunchyInfo::{ punch = True, respond = Some True }
       }
@@ -42,7 +40,7 @@ let laptop1
     = nebula.Host::{
       , name = "laptop1"
       , ip = nebula.mkIPv4 192 168 100 3
-      , pki = nebula.mkPkiInfoWithoutBlocklist "/etc/nebula" ca "laptop1"
+      , pki = nebula.mkPkiInfo "/etc/nebula" ca "laptop1"
       , lighthouse = nebula.LighthouseInfo.default
       , punchy = nebula.PunchyInfo::{ punch = True, respond = Some True }
       , relays = [ azure_lighthouse.ip ]
@@ -53,7 +51,7 @@ let laptop2
     = nebula.Host::{
       , name = "laptop2"
       , ip = nebula.mkIPv4 192 168 100 4
-      , pki = nebula.mkPkiInfoWithoutBlocklist "/etc/nebula" ca "laptop2"
+      , pki = nebula.mkPkiInfo "/etc/nebula" ca "laptop2"
       , lighthouse = nebula.LighthouseInfo.default
       , punchy = nebula.PunchyInfo::{ punch = True, respond = Some True }
       , relays = [ azure_lighthouse.ip ]
@@ -105,6 +103,7 @@ let network
     = { hosts = hosts_list
       , groups = [ all_group, home_group ]
       , connections = [ home_connection, outbound_connection, icmp_connection ]
+      , blocklist = [] : List Text
       , ad_hoc_rules = [] : List nebula.AdHocFirewallRule
       , cipher = nebula.Cipher.AES
       , ip_mask = 24
@@ -112,4 +111,4 @@ let network
 
 let _ = assert : nebula.validate network
 
-in  { network, azure_lighthouse, local_lighthouse, laptop1, laptop2 }
+in  { network }

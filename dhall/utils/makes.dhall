@@ -1,22 +1,6 @@
 let types = ../types.dhall
 
-let mkPkiInfoWithBlocklist
-    : types.Directory ->
-      types.CAName ->
-      types.HostName ->
-      List Text ->
-        types.PkiInfo
-    = \(dir : types.Directory) ->
-      \(ca : types.CAName) ->
-      \(name : types.HostName) ->
-      \(blocklist : List Text) ->
-        { ca = dir ++ "/" ++ ca ++ ".crt"
-        , cert = dir ++ "/" ++ name ++ ".crt"
-        , key = dir ++ "/" ++ name ++ ".key"
-        , blocklist = Some blocklist
-        }
-
-let mkPkiInfoWithoutBlocklist
+let mkPkiInfo
     : types.Directory -> types.CAName -> types.HostName -> types.PkiInfo
     = \(dir : types.Directory) ->
       \(ca : types.CAName) ->
@@ -24,7 +8,6 @@ let mkPkiInfoWithoutBlocklist
         { ca = dir ++ "/" ++ ca ++ ".crt"
         , cert = dir ++ "/" ++ name ++ ".crt"
         , key = dir ++ "/" ++ name ++ ".key"
-        , blocklist = None (List Text)
         }
 
 let mkBidirectionalConnection
@@ -108,8 +91,7 @@ let mkIPv4Network
       \(mask : Natural) ->
         { in1, in2, in3, in4, mask }
 
-in  { mkPkiInfoWithBlocklist
-    , mkPkiInfoWithoutBlocklist
+in  { mkPkiInfo
     , mkBidirectionalConnection
     , mkUnidirectionalConnection
     , mkIntraGroupConnection
