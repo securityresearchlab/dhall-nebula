@@ -8,6 +8,7 @@ module Main where
 import ArgParser
 import Control.Monad
 import Control.Monad.Parallel
+import Data.Either (fromLeft)
 import Data.List.Unique
 import qualified Data.Text as T
 import qualified Dhall
@@ -42,7 +43,7 @@ main = do
         putStrLn $ "Done without errors: " <> show result
       VerifyCert crtPath caCrtPath nebulaCertPath -> do
         result <- verifyCert nebulaCertPath caCrtPath crtPath network
-        putStrLn $ "Valid: " <> show result
+        putStrLn $ fromLeft "Valid certificate" result
     else putStrLn "Illegal configuration: there are hosts with the same name"
 
 uniformDirDelimiters :: FilePath -> FilePath
