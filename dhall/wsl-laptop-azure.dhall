@@ -93,7 +93,6 @@ let network
       , groups = [ all_group, home_group ]
       , connections = [ home_connection, outbound_connection, icmp_connection ]
       , blocklist = [] : List Text
-      , ad_hoc_rules = [] : List nebula.AdHocFirewallRule
       , cipher = nebula.Cipher.AES
       , ip_mask = 24
       }

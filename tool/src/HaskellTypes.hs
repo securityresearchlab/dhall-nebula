@@ -66,7 +66,6 @@ connectionTypes =
     TypeInfo {name = "Connection", t = Record},
     TypeInfo {name = "Cipher", t = Union},
     TypeInfo {name = "FirewallRule", t = Record},
-    TypeInfo {name = "AdHocFirewallRule", t = Record},
     TypeInfo {name = "Network", t = Record}
   ]
 

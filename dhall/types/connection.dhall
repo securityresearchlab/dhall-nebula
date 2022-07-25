@@ -66,17 +66,6 @@ let FirewallRule
       , fr_ca_sha : Optional Text
       }
 
-let AdHocFirewallRule
-    : Type
-    = { target : host.Host
-      , ah_port : Port
-      , ah_proto : Proto
-      , ah_traffic_target : TrafficTarget
-      , ah_direction : RuleDirection
-      , ah_ca_name : Optional Text
-      , ah_ca_sha : Optional Text
-      }
-
 let Cipher
     : Type
     = < AES | Chachapoly >
@@ -86,7 +75,6 @@ let Network
     = { hosts : List host.Host
       , groups : List Group
       , connections : List Connection
-      , ad_hoc_rules : List AdHocFirewallRule
       , blocklist : List Text
       , cipher : Cipher
       , ip_mask : Natural
@@ -105,5 +93,4 @@ in  { GroupName
     , TrafficTarget
     , RuleDirection
     , FirewallRule
-    , AdHocFirewallRule
     }

@@ -137,28 +137,6 @@ let getHostRules
             : List types.FirewallRule
             = List/concat types.FirewallRule rules_lists
 
-        let ad_hoc_rules
-            : List types.FirewallRule
-            = List/map
-                types.AdHocFirewallRule
-                types.FirewallRule
-                ( \(rule : types.AdHocFirewallRule) ->
-                    { fr_port = rule.ah_port
-                    , fr_proto = rule.ah_proto
-                    , traffic_target = rule.ah_traffic_target
-                    , direction = rule.ah_direction
-                    , fr_ca_name = rule.ah_ca_name
-                    , fr_ca_sha = rule.ah_ca_sha
-                    }
-                )
-                ( List/filter
-                    types.AdHocFirewallRule
-                    ( \(rule : types.AdHocFirewallRule) ->
-                        generics.areIPv4Equal rule.target.ip host.ip
-                    )
-                    network.ad_hoc_rules
-                )
-
         let dns_rules
             : List types.FirewallRule
             = merge
@@ -182,7 +160,7 @@ let getHostRules
                 }
                 host.lighthouse_config
 
-        in  connection_rules # ad_hoc_rules # dns_rules
+        in  connection_rules # dns_rules
 
 let getRules
     : types.Network -> Map types.Host (List types.FirewallRule)

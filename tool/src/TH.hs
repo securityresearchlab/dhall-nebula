@@ -184,6 +184,4 @@ deriving instance Show Cipher
 
 deriving instance Show FirewallRule
 
-deriving instance Show AdHocFirewallRule
-
 deriving instance Show Network
