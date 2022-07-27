@@ -23,7 +23,6 @@ Sign a specific public key:
 Sign public keys for all hosts:
 ```
 .\.stack-work\install\62d3440a\bin\tool-exe.exe --dhallDir "..\dhall" --configFileName "wsl-laptop-azure" autosign --caCrtPath "..\..\nebula-windows-amd64\ca.crt" --caKeyPath "..\..\nebula-windows-amd64\ca.key" --nebulaCertPath "..\..\nebula-windows-amd64\nebula-cert.exe" --keysDir ".\nebula_configs" --keysExt ".kpub"
-
 ```
 
 Verify cert:

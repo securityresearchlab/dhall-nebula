@@ -1,0 +1,15 @@
+services:
+  tool:
+    build: ../
+    image: tool
+
+  client:
+    build: ./
+    command:
+      - "/bin/bash"
+      - "-c"
+      - "/home/app/run-client.sh 3"
+    depends_on:
+      - tool
+    cap_add:
+      - NET_ADMIN
