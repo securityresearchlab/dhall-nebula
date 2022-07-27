@@ -9,6 +9,7 @@ import ArgParser
 import Control.Monad
 import Control.Monad.Parallel
 import Data.Either (fromLeft)
+import Data.List
 import Data.List.Unique
 import qualified Data.Text as T
 import qualified Dhall
@@ -35,9 +36,15 @@ main = do
         results <- Control.Monad.Parallel.mapM (\h -> generateCertKey nebulaCertPath caCrtPath caKeyPath h network (uniformDirDelimiters configsPath)) networkHosts
         putStrLn $ "Done without errors: " <> show (and results)
       SignKey keyPath hostName caCrtPath caKeyPath nebulaCertPath -> do
+        putStrLn hostName
+        print $ Prelude.map name networkHosts
         let matches = Prelude.filter (\h -> (T.unpack . name) h == hostName) networkHosts
-        result <- signKey nebulaCertPath caCrtPath caKeyPath (head matches) network keyPath
-        putStrLn $ "Signed: " <> show result
+        let maybeHead = Data.List.uncons matches
+        case maybeHead of
+          Nothing -> putStrLn $ "No host with name " <> hostName <> " found"
+          Just (h, _) -> do
+            result <- signKey nebulaCertPath caCrtPath caKeyPath h network keyPath
+            putStrLn $ "Signed: " <> show result
       AutoSignKey keysDir keysExt caCrtPath caKeyPath nebulaCertPath -> do
         result <- autoSignKeys nebulaCertPath caCrtPath caKeyPath network (uniformDirDelimiters keysDir) keysExt
         putStrLn $ "Done without errors: " <> show result
