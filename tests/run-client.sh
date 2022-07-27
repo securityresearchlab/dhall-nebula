@@ -28,4 +28,17 @@ mknod /dev/net/tun c 10 200
 chmod 600 /dev/net/tun
 
 # run nebula
-nebula -config /etc/nebula/config.yaml
+nebula -config /etc/nebula/config.yaml > /dev/null &
+
+sleep 10
+echo "starting requests"
+start=`date +%s`
+stop=$start
+while [[ $(($stop - $start)) != $(( $2 * 60)) ]]; do
+     curl -w "%{response_code};%{time_total}\n" -o /dev/null -s --max-time 10 http://192.168.0.2:8080 >> $NAME.txt
+     sleep 0.25s
+     stop=`date +%s`
+done
+
+echo "upload results"
+curl -d @$NAME.txt http://192.168.0.2:8090

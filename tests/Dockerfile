@@ -1,7 +1,7 @@
 FROM tool
 
 RUN apt-get update && \
-    apt-get install libnuma-dev ca-certificates bsdmainutils bc -y
+    apt-get install libnuma-dev ca-certificates bsdmainutils bc curl -y
 
 WORKDIR /etc/nebula
 ADD ./ca.crt /etc/nebula/
