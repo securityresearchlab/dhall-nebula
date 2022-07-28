@@ -10,6 +10,6 @@ FROM gcr.io/distroless/base:latest
 WORKDIR /
 COPY --from=build /app.exe /app.exe
 ENV GIN_MODE release
-ENV PORT 8080
+ENV PORT 8090
 USER nonroot:nonroot
 ENTRYPOINT [ "/app.exe" ]

@@ -41,4 +41,4 @@ while [[ $(($stop - $start)) != $(( $2 * 60)) ]]; do
 done
 
 echo "upload results"
-curl -d @$NAME.txt http://192.168.0.2:8090/$NAME
+curl -F "file=@$NAME.txt" -X POST http://192.168.0.2:8090/$NAME

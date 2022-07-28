@@ -7,6 +7,7 @@ import (
 
 func main() {
 	r := gin.Default()
+	r.SetTrustedProxies(nil)
 	r.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "")
 	})
