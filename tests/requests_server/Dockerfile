@@ -3,7 +3,7 @@ WORKDIR /build
 COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
-COPY ./src/*.go ./
+COPY *.go ./
 RUN GOOS=linux go build -a -o /app.exe
 
 FROM gcr.io/distroless/base:latest
