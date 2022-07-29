@@ -1,4 +1,4 @@
-module requsts_server
+module requests_server
 
 go 1.18
 

@@ -1,11 +1,12 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: client-deployment
   labels:
     app: client
 spec:
-  replicas: 50
+  serviceName: "client"
+  replicas: 3
   selector:
     matchLabels:
       app: client
@@ -15,7 +16,20 @@ spec:
         app: client
     spec:
       containers:
-      - name: client
-        image: gior/nebula-client:1.1
-        # ports:
-        # - containerPort: 80
+      - name: nebula
+        image: gior/nebula-client:2.0
+        command:
+          - "/bin/bash"
+          - "-c"
+          - "./run-nebula.sh $((${HOSTNAME##*-} + 3))"
+        securityContext:
+          privileged: true
+          capabilities:
+            add:
+              - NET_ADMIN
+      - name: requests
+        image: gior/requests:1.3
+        command:
+          - "/bin/bash"
+          - "-c"
+          - "./make-requests.sh $((${HOSTNAME##*-} + 3)) 1"

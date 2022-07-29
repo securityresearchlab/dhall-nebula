@@ -12,6 +12,6 @@ ADD ./test.dhall /home/app/dhall
 ADD ./client-config.dhall /home/app/dhall
 
 WORKDIR /home/app
-ADD ./run-client.sh /home/app/
+ADD ./run-nebula.sh /home/app/
 
 # ENTRYPOINT [ "/bin/bash", "-c", "/home/app/run-client.sh" ]
