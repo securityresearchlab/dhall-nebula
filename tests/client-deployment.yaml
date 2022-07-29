@@ -32,4 +32,4 @@ spec:
         command:
           - "/bin/bash"
           - "-c"
-          - "./make-requests.sh $((${HOSTNAME##*-} + 3)) 1"
+          - "./make-requests.sh $((${HOSTNAME##*-} + 3)) 15"
