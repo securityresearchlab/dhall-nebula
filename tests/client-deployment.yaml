@@ -40,7 +40,7 @@ spec:
           initialDelaySeconds: 60
           periodSeconds: 20
       - name: requests
-        image: gior/requests:1.6
+        image: gior/requests:1.7
         command:
           - "/bin/bash"
           - "-c"
