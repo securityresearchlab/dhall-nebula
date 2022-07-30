@@ -40,8 +40,8 @@ spec:
           initialDelaySeconds: 60
           periodSeconds: 20
       - name: requests
-        image: gior/requests:1.7
+        image: gior/requests:1.8
         command:
           - "/bin/bash"
           - "-c"
-          - "./make-requests.sh $((${HOSTNAME##*-} + 3)) 15"
+          - "./make-requests.sh $((${HOSTNAME##*-} + 3)) 15 192.168.0.2"
