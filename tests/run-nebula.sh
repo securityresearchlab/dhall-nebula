@@ -15,13 +15,20 @@ dhall-to-yaml-ng --omit-empty --file /home/app/dhall/client-config.dhall --outpu
 nebula-cert keygen --out-key /etc/nebula/client$NAME.key --out-pub /etc/nebula/client$NAME.pub
 echo client$NAME
 # sign key
-tool --dhallDir /home/app/dhall \
-     --configFileName test \
-     sign \
-     --caCrtPath /etc/nebula/ca.crt \
-     --caKeyPath /etc/nebula/ca.key \
-     --nebulaCertPath "nebula-cert" \
-     --keyPath /etc/nebula/client$NAME.pub --hostName client$NAME
+nebula-cert sign \
+     -ca-crt /etc/nebula/ca.crt \
+     -ca-key /etc/nebula/ca.key \
+     -in-pub /etc/nebula/client$NAME.pub \
+     -ip "192.168.$N_IP3.$N_IP4/16" \
+     -name client$NAME \
+     -out-crt /etc/nebula/client$NAME.crt
+# tool --dhallDir /home/app/dhall \
+#      --configFileName test \
+#      sign \
+#      --caCrtPath /etc/nebula/ca.crt \
+#      --caKeyPath /etc/nebula/ca.key \
+#      --nebulaCertPath "nebula-cert" \
+#      --keyPath /etc/nebula/client$NAME.pub --hostName client$NAME
 
 echo "creating tun device"
 mkdir -p /dev/net

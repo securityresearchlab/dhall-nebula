@@ -6,7 +6,7 @@ metadata:
     app: client
 spec:
   serviceName: "client"
-  replicas: 50
+  replicas: 4
   selector:
     matchLabels:
       app: client
@@ -17,11 +17,16 @@ spec:
     spec:
       containers:
       - name: nebula
-        image: gior/nebula-client:2.1
+        image: gior/nebula-client:2.2
         command:
           - "/bin/bash"
           - "-c"
           - "./run-nebula.sh $((${HOSTNAME##*-} + 3))"
+        resources:
+          limits:
+            memory: 400M
+          requests:
+            memory: 30M
         securityContext:
           privileged: true
           capabilities:
