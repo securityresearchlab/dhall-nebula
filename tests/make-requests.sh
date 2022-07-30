@@ -7,7 +7,7 @@ echo nebula ip _._.$N_IP3.$N_IP4
 
 NAME=${N_IP3}${N_IP4}
 
-echo "now waiting for nebula to connect"
+echo "now waiting for $3 to connect"
 curl --max-time 10 http://$3:8080
 while [[ "$?" == 28 ]]; do echo "waiting for nebula to connect"; sleep 20; curl --max-time 10 http://$3:8080; done
 
