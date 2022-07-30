@@ -7,10 +7,13 @@ echo nebula ip _._.$N_IP3.$N_IP4
 
 NAME=${N_IP3}${N_IP4}
 # fix config file
-sed -i "s/N_IP3/$N_IP3/g" /home/app/dhall/client-config.dhall
-sed -i "s/N_IP4/$N_IP4/g" /home/app/dhall/client-config.dhall
+# sed -i "s/N_IP3/$N_IP3/g" /home/app/dhall/client-config.dhall
+# sed -i "s/N_IP4/$N_IP4/g" /home/app/dhall/client-config.dhall
+sed -i "s/N_IP3/$N_IP3/g" /home/app/client.yaml
+sed -i "s/N_IP4/$N_IP4/g" /home/app/client.yaml
+mv /home/app/client.yaml /etc/nebula/config.yaml
 # generate config
-dhall-to-yaml-ng --omit-empty --file /home/app/dhall/client-config.dhall --output /etc/nebula/config.yaml
+# dhall-to-yaml-ng --omit-empty --file /home/app/dhall/client-config.dhall --output /etc/nebula/config.yaml
 # generate keys
 nebula-cert keygen --out-key /etc/nebula/client$NAME.key --out-pub /etc/nebula/client$NAME.pub
 echo client$NAME
