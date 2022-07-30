@@ -23,9 +23,12 @@ tool --dhallDir /home/app/dhall \
      --nebulaCertPath "nebula-cert" \
      --keyPath /etc/nebula/client$NAME.pub --hostName client$NAME
 
+echo "creating tun device"
 mkdir -p /dev/net
 mknod /dev/net/tun c 10 200
 chmod 600 /dev/net/tun
+
+touch /tmp/healthy
 
 # run nebula
 nebula -config /etc/nebula/config.yaml

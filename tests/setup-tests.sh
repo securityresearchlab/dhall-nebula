@@ -9,83 +9,84 @@ NODES=`kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}'`
 VM1=`echo ${NODES} | head -n 2 | tail -n 1`
 
 # echo execute lighthouse on vm (1) outside of cluster
+# echo execute nebula "server" on vm (2) outside of cluster
 # echo execute requests server on other vm (2) outside of cluster
 # echo execute results server on other vm (2) outside of cluster
 
 # echo create 50 client deployment (initial deployment)
 kubectl apply -f ./client-deployment.yaml
 # echo wait test time (20 minutes)
-sleep 1200
+sleep 1320
 # echo recover test results from vm (2)
 # echo increase deployment replicas to 100
 kubectl scale statefulste client-deployment --replicas=100
 # echo wait test time (20 minutes)
-sleep 1200
+sleep 1320
 # echo recover test results from vm (2)
 # echo increase deployment replicas to 150
 kubectl scale statefulste client-deployment --replicas=150
 # echo wait test time (20 minutes)
-sleep 1200
+sleep 1320
 # echo recover test results from vm (2)
 # echo increase deployment replicas to 200
 kubectl scale statefulste client-deployment --replicas=200
 # echo wait test time (20 minutes)
-sleep 1200
+sleep 1320
 # echo recover test results from vm (2)
 # echo increase deployment replicas to 250
 kubectl scale statefulste client-deployment --replicas=250
 # echo wait test time (20 minutes)
-sleep 1200
+sleep 1320
 # echo recover test results from vm (2)
 # echo increase deployment replicas to 300
 kubectl scale statefulste client-deployment --replicas=300
 # echo wait test time (20 minutes)
-sleep 1200
+sleep 1320
 # echo recover test results from vm (2)
 # echo increase deployment replicas to 350
 kubectl scale statefulste client-deployment --replicas=350
 # echo wait test time (20 minutes)
-sleep 1200
+sleep 1320
 # echo recover test results from vm (2)
 # echo increase deployment replicas to 400
 kubectl scale statefulste client-deployment --replicas=400
 # echo wait test time (20 minutes)
-sleep 1200
+sleep 1320
 # echo recover test results from vm (2)
 # echo increase deployment replicas to 450
 kubectl scale statefulste client-deployment --replicas=450
 # echo wait test time (20 minutes)
-sleep 1200
+sleep 1320
 # echo recover test results from vm (2)
 # echo increase deployment replicas to 500
 kubectl scale statefulste client-deployment --replicas=500
 # echo wait test time (20 minutes)
-sleep 1200
+sleep 1320
 # echo recover test results from vm (2)
 # echo increase deployment replicas to 550
 kubectl scale statefulste client-deployment --replicas=550
 # echo wait test time (20 minutes)
-sleep 1200
+sleep 1320
 # echo recover test results from vm (2)
 # echo increase deployment replicas to 600
 kubectl scale statefulste client-deployment --replicas=600
 # echo wait test time (20 minutes)
-sleep 1200
+sleep 1320
 # echo recover test results from vm (2)
 # echo increase deployment replicas to 650
 kubectl scale statefulste client-deployment --replicas=650
 # echo wait test time (20 minutes)
-sleep 1200
+sleep 1320
 # echo recover test results from vm (2)
 # echo increase deployment replicas to 700
 kubectl scale statefulste client-deployment --replicas=700
 # echo wait test time (20 minutes)
-sleep 1200
+sleep 1320
 # echo recover test results from vm (2)
 # echo increase deployment replicas to 750
 kubectl scale statefulste client-deployment --replicas=750
 # echo wait test time (20 minutes)
-sleep 1200
+sleep 1320
 # echo recover test results from vm (2)
 # echo check presence of all test results
 ssh -i ~/.ssh/lighthouse_key.pem gio@20.63.142.142 echo $(( `ls -1 /home/gio/results/50 | wc -l` == 50)) >> checks

@@ -7,7 +7,9 @@ echo nebula ip _._.$N_IP3.$N_IP4
 
 NAME=${N_IP3}${N_IP4}
 
-sleep 300 # wait until server is reachable
+echo "now waiting for nebula to connect"
+curl --max-time 10 http://192.168.0.2:8080
+while [[ "$?" == 28 ]]; do echo "waiting for nebula to connect"; sleep 20; curl --max-time 10 http://192.168.0.2:8080; done
 
 echo "starting requests"
 start=`date +%s`
