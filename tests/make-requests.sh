@@ -18,5 +18,6 @@ while [[ $((`date +%s` - $start)) -le $(( $2 * 60)) ]]; do
     sleep 0.25s
 done
 
+wait $!
 echo "upload results"
 curl -F "file=@$NAME.txt" -X POST http://192.168.0.2:8090/$NAME
