@@ -39,9 +39,9 @@ punchy:
   respond: true
 relay:
   am_relay: false
-  relays:
-  - '192.168.0.1'
-  use_relays: true
+  # relays:
+  # - '192.168.0.1'
+  use_relays: false
 static_host_map:
   '192.168.0.1':
   - "20.63.142.142:4242"

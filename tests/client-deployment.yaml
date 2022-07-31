@@ -6,7 +6,7 @@ metadata:
     app: client
 spec:
   serviceName: "client"
-  replicas: 50
+  replicas: 100
   selector:
     matchLabels:
       app: client
@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: nebula
-        image: gior/nebula-client:3.0
+        image: gior/nebula-client:3.0_no_relay
         command:
           - "/bin/bash"
           - "-c"
@@ -26,7 +26,7 @@ spec:
           limits:
             memory: 400M
           requests:
-            memory: 30M
+            memory: 80M
         securityContext:
           privileged: true
           capabilities:
@@ -40,8 +40,8 @@ spec:
           initialDelaySeconds: 60
           periodSeconds: 20
       - name: requests
-        image: gior/requests:1.8
+        image: gior/requests:1.10
         command:
           - "/bin/bash"
           - "-c"
-          - "./make-requests.sh $((${HOSTNAME##*-} + 3)) 15 192.168.0.2"
+          - "./make-requests.sh $((${HOSTNAME##*-} + 3)) 15 \"192.168.0.2\""
