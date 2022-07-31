@@ -4,6 +4,7 @@ RUN apt-get update && \
     apt-get install libnuma-dev ca-certificates bsdmainutils bc curl iputils-ping -y
 
 WORKDIR /home/app
+ADD ./request.sh /home/app/
 ADD ./make-requests.sh /home/app/
 
 # ENTRYPOINT [ "/bin/bash", "-c", "/home/app/run-client.sh" ]

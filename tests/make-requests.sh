@@ -14,7 +14,7 @@ while [[ "$?" == 28 ]]; do echo "waiting for nebula to connect"; sleep 20; curl 
 echo "starting requests"
 start=`date +%s`
 while [[ $((`date +%s` - $start)) -le $(( $2 * 60)) ]]; do
-    echo -n `date +%s`';' >> $NAME.txt && curl -w "%{response_code};%{time_total}\n" -o /dev/null -s --max-time 10 http://$3:8080 >> $NAME.txt &
+    ./request.sh $3 >> $NAME.txt &
     sleep 0.25s
 done
 
