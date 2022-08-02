@@ -19,8 +19,8 @@ for t in tests:
 	nameNN = "all" + str(t) + "nn.txt"
 	dfWN = pd.read_csv(nameWN, sep=';', header=None, names=['date', 'code', 'time'], on_bad_lines='skip', index_col=False).dropna()
 	dfNN = pd.read_csv(nameNN, sep=';', header=None, names=['date', 'code', 'time'], on_bad_lines='skip', index_col=False).dropna()
-	goodWN = dfWN[dfWN['code'] != 0]
-	goodNN = dfNN[dfNN['code'] != 0]
+	goodWN = dfWN[dfWN['code'] == 200]
+	goodNN = dfNN[dfNN['code'] == 200]
 	badWN = dfWN[dfWN['code'] == 0]
 	badNN = dfNN[dfNN['code'] == 0]
 	meanWNs.append([np.mean(dfWN['time'])])

@@ -22,7 +22,7 @@ dfNN = pd.read_csv(nameNN, sep=';', header=None, names=['date', 'code', 'time'],
 
 maxT = max(dfWN['time'].max(), dfNN['time'].max())
 
-goodWN = dfWN[dfWN['code'] != 0]
+goodWN = dfWN[dfWN['code'] == 200]
 badWN = dfWN[dfWN['code'] == 0]
 
 img(dfWN, maxT, 'Risultati test con ' + sys.argv[1] + ' client', nameWN)
