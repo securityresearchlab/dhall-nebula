@@ -6,6 +6,8 @@ import sys
 tests = range(int(sys.argv[1]), int(sys.argv[2]) + 50, int(sys.argv[3]))
 meanWNs = []
 meanNNs = []
+goodMeanWNs = []
+goodMeanNNs = []
 goodWNs = []
 goodNNs = []
 badWNs = []
@@ -23,23 +25,41 @@ for t in tests:
 	badNN = dfNN[dfNN['code'] == 0]
 	meanWNs.append([np.mean(dfWN['time'])])
 	meanNNs.append([np.mean(dfNN['time'])])
+	goodMeanWNs.append([np.mean(goodWN['time'])])
+	goodMeanNNs.append([np.mean(goodNN['time'])])
 	goodWNs.append(goodWN.shape[0] / dfWN.shape[0] * 100)
 	goodNNs.append(goodNN.shape[0] / dfNN.shape[0] * 100)
 	badWNs.append(badWN.shape[0] / dfWN.shape[0] * 100)
 	badNNs.append(badNN.shape[0] / dfNN.shape[0] * 100)
 	xs.append(t)
+	print(str(t) + " nebula client -- Total " + str(dfWN.shape[0]) + ", good " + str(goodWN.shape[0]) + " (" + str(goodWN.shape[0] / dfWN.shape[0] * 100) + "%)")
+	print(str(t) + " non nebula client -- Total " + str(dfNN.shape[0]) + ", good " + str(goodNN.shape[0]) + " (" + str(goodNN.shape[0] / dfNN.shape[0] * 100) + "%)")
 
 plt.title("Confronto tra test con e senza Nebula")
 
 plt.plot(xs, np.array(meanWNs), label='Media con Nebula', linestyle='-', marker='x', color='red')
-plt.plot(xs, np.array(meanNNs), label='Media con Nebula', linestyle='-', marker='x', color='blue')
+plt.plot(xs, np.array(meanNNs), label='Media senza Nebula', linestyle='-', marker='x', color='blue')
 
+# plt.yscale('log')
+plt.ylabel('tempo medio (s)')
+plt.xlabel('numero di client')
+
+plt.legend()
+plt.savefig("cumulative.png")
+
+plt.clf()
+plt.title("Confronto tra test con e senza Nebula (solo successi)")
+
+plt.plot(xs, np.array(goodMeanWNs), label='Media con Nebula', linestyle='-', marker='x', color='red')
+plt.plot(xs, np.array(goodMeanNNs), label='Media senza Nebula', linestyle='-', marker='x', color='blue')
+
+# plt.yscale('log')
 plt.ylabel('tempo medio (s)')
 plt.xlabel('numero di client')
 
 plt.legend()
 
-plt.savefig("cumulative.png")
+plt.savefig("cumulative_good.png")
 
 x = np.arange(len(xs))
 width = 0.2
