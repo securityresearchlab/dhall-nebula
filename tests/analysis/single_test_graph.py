@@ -3,15 +3,17 @@ import numpy as np
 import pandas as pd
 import sys
 
-def img(df, maxT, title, name):
+def img(df, good, bad, maxT, title, name):
 	mean = [np.mean(df['time'])]*df.shape[0]
 	_, ax = plt.subplots()
 	plt.title(title)
 	ax.set_ylim([0, maxT])
-	ax.scatter(df['date'], df['time'], marker='o', s=3)
+	ax.scatter(good['date'], good['time'], marker='o', s=1, color='blue', label='200')
+	ax.scatter(bad['date'], bad['time'], marker='o', s=1, color='pink', label='Fallimento')
 	ax.plot(df['date'], mean, label='Media', linestyle='--', color='red')
 	plt.ylabel('time (s)')
 	plt.xlabel('timestamp')
+	plt.legend(loc=1)
 	plt.savefig(name + ".png")
 
 nameWN = "all" + sys.argv[1] + ".txt"
@@ -25,5 +27,8 @@ maxT = max(dfWN['time'].max(), dfNN['time'].max())
 goodWN = dfWN[dfWN['code'] == 200]
 badWN = dfWN[dfWN['code'] == 0]
 
-img(dfWN, maxT, 'Risultati test con ' + sys.argv[1] + ' client', nameWN)
-img(dfNN, maxT, 'Risultati test senza Nebula con ' + sys.argv[1] + ' client', nameNN)
+goodNN = dfNN[dfNN['code'] == 200]
+badNN = dfNN[dfNN['code'] == 0]
+
+img(dfWN, goodWN, badWN, maxT, 'Risultati test con ' + sys.argv[1] + ' client', nameWN)
+img(dfNN, goodNN, badNN, maxT, 'Risultati test senza Nebula con ' + sys.argv[1] + ' client', nameNN)
