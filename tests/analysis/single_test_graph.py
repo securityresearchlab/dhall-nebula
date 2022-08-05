@@ -1,3 +1,4 @@
+import datetime as dt
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -21,6 +22,11 @@ nameNN = "all" + sys.argv[1] + "nn.txt"
 
 dfWN = pd.read_csv(nameWN, sep=';', header=None, names=['date', 'code', 'time'], on_bad_lines='skip', index_col=False).dropna()
 dfNN = pd.read_csv(nameNN, sep=';', header=None, names=['date', 'code', 'time'], on_bad_lines='skip', index_col=False).dropna()
+
+dfWN['date'] = dfWN['date'].map(dt.datetime.fromtimestamp)
+dfNN['date'] = dfNN['date'].map(dt.datetime.fromtimestamp)
+
+print(dfWN.dtypes)
 
 maxT = max(dfWN['time'].max(), dfNN['time'].max())
 
