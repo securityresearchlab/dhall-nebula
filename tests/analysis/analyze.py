@@ -21,6 +21,15 @@ bad = df[df['code'] == 0]
 
 mean_good = np.mean(good['time'].values)
 mean_all = np.mean(df['time'].values)
+std_good = np.std(good['time'].values)
+std_all = np.std(df['time'].values)
 perc = 100 * good.shape[0] / df.shape[0]
 
-print(sys.argv[1] + ": " + str(df.shape[0]) + ' requests, goods were ' + str(perc) + '%; avg good time ' + str(mean_good) + 's; avg time ' + str(mean_all))
+print(sys.argv[1] + ": "
+        + str(df.shape[0]) + ' requests, goods were '
+        + str(perc)
+        + '%; avg good time ' + str(mean_good)
+        + 's; avg time ' + str(mean_all)
+        + 's; std good time ' + str(std_good)
+        + 's; std time ' + str(std_all)
+    )

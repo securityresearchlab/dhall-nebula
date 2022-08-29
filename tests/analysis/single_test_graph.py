@@ -9,13 +9,14 @@ def img(df, good, bad, maxT, title, name):
 	_, ax = plt.subplots()
 	plt.title(title)
 	ax.set_ylim([0, maxT])
-	ax.scatter(good['date'], good['time'], marker='o', s=1, color='blue', label='200')
+	ax.scatter(good['date'], good['time'], marker='o', s=1, color='blue', label='Successo')
 	ax.scatter(bad['date'], bad['time'], marker='o', s=1, color='pink', label='Fallimento')
 	ax.plot(df['date'], mean, label='Media', linestyle='--', color='red')
 	plt.ylabel('time (s)')
 	plt.xlabel('timestamp')
 	plt.legend(loc=1)
 	plt.savefig(name + ".png")
+	plt.savefig(name + ".pdf")
 
 nameWN = "all" + sys.argv[1] + ".txt"
 nameNN = "all" + sys.argv[1] + "nn.txt"
@@ -26,7 +27,7 @@ dfNN = pd.read_csv(nameNN, sep=';', header=None, names=['date', 'code', 'time'],
 dfWN['date'] = dfWN['date'].map(dt.datetime.fromtimestamp)
 dfNN['date'] = dfNN['date'].map(dt.datetime.fromtimestamp)
 
-print(dfWN.dtypes)
+# print(dfWN.dtypes)
 
 maxT = max(dfWN['time'].max(), dfNN['time'].max())
 

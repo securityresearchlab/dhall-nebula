@@ -23,17 +23,17 @@ for t in tests:
 	goodNN = dfNN[dfNN['code'] == 200]
 	badWN = dfWN[dfWN['code'] == 0]
 	badNN = dfNN[dfNN['code'] == 0]
-	meanWNs.append([np.mean(dfWN['time'])])
-	meanNNs.append([np.mean(dfNN['time'])])
-	goodMeanWNs.append([np.mean(goodWN['time'])])
-	goodMeanNNs.append([np.mean(goodNN['time'])])
+	meanWNs.append(np.mean(dfWN['time']))
+	meanNNs.append(np.mean(dfNN['time']))
+	goodMeanWNs.append(np.mean(goodWN['time']))
+	goodMeanNNs.append(np.mean(goodNN['time']))
 	goodWNs.append(goodWN.shape[0] / dfWN.shape[0] * 100)
 	goodNNs.append(goodNN.shape[0] / dfNN.shape[0] * 100)
 	badWNs.append(badWN.shape[0] / dfWN.shape[0] * 100)
 	badNNs.append(badNN.shape[0] / dfNN.shape[0] * 100)
 	xs.append(t)
-	print(str(t) + " nebula client -- Total " + str(dfWN.shape[0]) + ", good " + str(goodWN.shape[0]) + " (" + str(goodWN.shape[0] / dfWN.shape[0] * 100) + "%)")
-	print(str(t) + " non nebula client -- Total " + str(dfNN.shape[0]) + ", good " + str(goodNN.shape[0]) + " (" + str(goodNN.shape[0] / dfNN.shape[0] * 100) + "%)")
+	print(str(t) + " nebula client -- Total " + str(dfWN.shape[0]) + ", good " + str(goodWN.shape[0]) + " (" + str(goodWN.shape[0] / dfWN.shape[0] * 100) + "%) -- avg " + str(np.mean(dfWN['time'])) + "s, avg good " + str(np.mean(goodWN['time'])) + "s")
+	print(str(t) + " non nebula client -- Total " + str(dfNN.shape[0]) + ", good " + str(goodNN.shape[0]) + " (" + str(goodNN.shape[0] / dfNN.shape[0] * 100) + "%) -- avg " + str(np.mean(dfNN['time'])) + "s, avg good " + str(np.mean(goodNN['time'])) + "s")
 
 plt.title("Confronto tra test con e senza Nebula")
 
@@ -45,7 +45,7 @@ plt.ylabel('tempo medio (s)')
 plt.xlabel('numero di client')
 
 plt.legend()
-plt.savefig("cumulative.png")
+plt.savefig("cumulative.pdf")
 
 plt.clf()
 plt.title("Confronto tra test con e senza Nebula (solo successi)")
@@ -59,14 +59,14 @@ plt.xlabel('numero di client')
 
 plt.legend()
 
-plt.savefig("cumulative_good.png")
+plt.savefig("cumulative_good.pdf")
 
 x = np.arange(len(xs))
 width = 0.2
 
 fig, ax = plt.subplots()
-rects1 = ax.bar(x - 0.3, np.array(goodWNs), width, label='200 con Nebula')
-rects2 = ax.bar(x - 0.1, np.array(goodNNs), width, label='200 senza Nebula')
+rects1 = ax.bar(x - 0.3, np.array(goodWNs), width, label='Successi con Nebula')
+rects2 = ax.bar(x - 0.1, np.array(goodNNs), width, label='Successi senza Nebula')
 rects3 = ax.bar(x + 0.1, np.array(badWNs), width, label='Fallimenti con Nebula')
 rects4 = ax.bar(x + 0.3, np.array(badNNs), width, label='Fallimenti senza Nebula')
 
@@ -83,4 +83,4 @@ ax.legend()
 # fig.tight_layout()
 
 plt.title("Confronto percentuali successi con e senza Nebula")
-plt.savefig("bars.png")
+plt.savefig("bars.pdf")
