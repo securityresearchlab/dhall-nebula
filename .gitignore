@@ -1,0 +1,4 @@
+*.exe
+.stack-work
+dist-newstyle
+nebula_configs*/

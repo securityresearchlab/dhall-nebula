@@ -1,0 +1,105 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           tool
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/githubuser/tool#readme>
+homepage:       https://github.com/githubuser/tool#readme
+bug-reports:    https://github.com/githubuser/tool/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2022 Author name here
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/tool
+
+library
+  exposed-modules:
+      ArgParser
+      HaskellTypes
+      NebulaUtils
+      TH
+  other-modules:
+      Paths_tool
+  hs-source-dirs:
+      src
+  build-depends:
+      Unique ==0.4.7.9
+    , aeson ==2.0.3.0
+    , base >=4.7 && <5
+    , bytestring ==0.10.12.1
+    , dhall ==1.40.2
+    , dhall-json ==1.7.9
+    , dhall-yaml ==1.2.10
+    , directory ==1.3.6.2
+    , filepath ==1.4.2.1
+    , monad-parallel ==0.7.2.5
+    , optparse-applicative ==0.16.1.0
+    , prettyprinter ==1.7.1
+    , process ==1.6.13.2
+    , template-haskell ==2.17.0.0
+    , text ==1.2.5.0
+  default-language: Haskell2010
+
+executable tool
+  main-is: Main.hs
+  other-modules:
+      Paths_tool
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      Unique ==0.4.7.9
+    , aeson ==2.0.3.0
+    , base >=4.7 && <5
+    , bytestring ==0.10.12.1
+    , dhall ==1.40.2
+    , dhall-json ==1.7.9
+    , dhall-yaml ==1.2.10
+    , directory ==1.3.6.2
+    , filepath ==1.4.2.1
+    , monad-parallel ==0.7.2.5
+    , optparse-applicative ==0.16.1.0
+    , prettyprinter ==1.7.1
+    , process ==1.6.13.2
+    , template-haskell ==2.17.0.0
+    , text ==1.2.5.0
+    , tool
+  default-language: Haskell2010
+
+test-suite tool-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_tool
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      Unique ==0.4.7.9
+    , aeson ==2.0.3.0
+    , base >=4.7 && <5
+    , bytestring ==0.10.12.1
+    , dhall ==1.40.2
+    , dhall-json ==1.7.9
+    , dhall-yaml ==1.2.10
+    , directory ==1.3.6.2
+    , filepath ==1.4.2.1
+    , monad-parallel ==0.7.2.5
+    , optparse-applicative ==0.16.1.0
+    , prettyprinter ==1.7.1
+    , process ==1.6.13.2
+    , template-haskell ==2.17.0.0
+    , text ==1.2.5.0
+    , tool
+  default-language: Haskell2010
